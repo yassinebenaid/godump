@@ -11,13 +11,15 @@ import (
 )
 
 var (
-	color_str        = lipgloss.NewStyle().Foreground(lipgloss.Color("#8ac926")).Render
-	color_str_quotes = lipgloss.NewStyle().Foreground(lipgloss.Color("#70d6ff")).Render
-	color_bool       = lipgloss.NewStyle().Foreground(lipgloss.Color("#f95738")).Render
-	color_number     = lipgloss.NewStyle().Foreground(lipgloss.Color("#00a8e8")).Render
-	color_var_type   = lipgloss.NewStyle().Foreground(lipgloss.Color("#1982c4")).Render
-	color_ptr        = lipgloss.NewStyle().Foreground(lipgloss.Color("#7678ed")).Render
-	color_func       = lipgloss.NewStyle().Foreground(lipgloss.Color("#ff7b00")).Render
+	color_str            = lipgloss.NewStyle().Foreground(lipgloss.Color("#8ac926")).Render
+	color_str_quotes     = lipgloss.NewStyle().Foreground(lipgloss.Color("#70d6ff")).Render
+	color_bool           = lipgloss.NewStyle().Foreground(lipgloss.Color("#f95738")).Render
+	color_number         = lipgloss.NewStyle().Foreground(lipgloss.Color("#00a8e8")).Render
+	color_var_type       = lipgloss.NewStyle().Foreground(lipgloss.Color("#1982c4")).Render
+	color_ptr            = lipgloss.NewStyle().Foreground(lipgloss.Color("#7678ed")).Render
+	color_func           = lipgloss.NewStyle().Foreground(lipgloss.Color("#ff7b00")).Render
+	color_struct_field   = lipgloss.NewStyle().Foreground(lipgloss.Color("#cfdbd5")).Render
+	struct_private_field = lipgloss.NewStyle().Foreground(lipgloss.Color("#ff7b00")).Render("#")
 )
 
 func Dump(v any) error {
@@ -75,6 +77,11 @@ func (d *dumper) dump(v any, ignore_deep ...bool) {
 
 	if strings.HasPrefix(var_t, "func") {
 		d.dumpFunc(var_t)
+		return
+	}
+
+	if reflect.TypeOf(v).Kind() == reflect.Struct {
+		d.dumpStruct(v)
 		return
 	}
 }
@@ -147,6 +154,49 @@ func (d *dumper) dumpPointer(ptr string) {
 
 func (d *dumper) dumpFunc(fn string) {
 	d.buf.WriteString(color_func(fn))
+}
+
+func (d *dumper) dumpStruct(v any) {
+	d.buf.WriteString(color_var_type(fmt.Sprintf("%T {", v)))
+
+	def := reflect.TypeOf(v)
+	value := reflect.ValueOf(v)
+
+	d.deep++
+	for i := 0; i < def.NumField(); i++ {
+		d.buf.WriteByte(0xa)
+		k := def.Field(i)
+		d.dumpStructKey(k)
+		d.buf.WriteString((": "))
+
+		if !k.IsExported() {
+			d.buf.WriteString("-")
+			continue
+		}
+
+		v := value.Field(i).Interface()
+		if isprim(v) {
+			deep := d.deep
+			d.deep = 0
+			d.dump(v)
+			d.deep = deep
+		} else {
+			d.dump(v, true)
+		}
+
+		d.buf.WriteString((","))
+	}
+	d.deep--
+
+	d.buf.WriteString("\n" + strings.Repeat("   ", d.deep) + color_var_type("}"))
+}
+
+func (d *dumper) dumpStructKey(key reflect.StructField) {
+	d.buf.WriteString(strings.Repeat("   ", d.deep))
+	if !key.IsExported() {
+		d.buf.WriteString(struct_private_field)
+	}
+	d.buf.WriteString(color_struct_field(key.Name))
 }
 
 func isprim(v any) bool {
