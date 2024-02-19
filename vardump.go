@@ -130,17 +130,7 @@ func (d *dumper) dumpMap(v any) {
 		d.buf.WriteByte(0xa)
 		d.dump(key.Interface())
 		d.buf.WriteString((": "))
-
-		v := value.MapIndex(key).Interface()
-		if isprim(v) {
-			deep := d.deep
-			d.deep = 0
-			d.dump(v)
-			d.deep = deep
-		} else {
-			d.dump(v, true)
-		}
-
+		d.dump(value.MapIndex(key).Interface(), true)
 		d.buf.WriteString((","))
 	}
 	d.deep--
@@ -174,15 +164,7 @@ func (d *dumper) dumpStruct(v any) {
 			continue
 		}
 
-		v := value.Field(i).Interface()
-		if isprim(v) {
-			deep := d.deep
-			d.deep = 0
-			d.dump(v)
-			d.deep = deep
-		} else {
-			d.dump(v, true)
-		}
+		d.dump(value.Field(i).Interface(), true)
 
 		d.buf.WriteString((","))
 	}
@@ -197,12 +179,4 @@ func (d *dumper) dumpStructKey(key reflect.StructField) {
 		d.buf.WriteString(struct_private_field)
 	}
 	d.buf.WriteString(color_struct_field(key.Name))
-}
-
-func isprim(v any) bool {
-	t := fmt.Sprintf("%T", v)
-	return t == "string" ||
-		t == "bool" ||
-		strings.HasPrefix(t, "int") ||
-		strings.HasPrefix(t, "float")
 }
