@@ -1,4 +1,4 @@
-package vardump
+package godump
 
 import (
 	"bytes"

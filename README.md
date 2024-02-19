@@ -1,4 +1,4 @@
-# vardump
+# godump
 
 A simple GO library to dump any GO variable in a structured and colored way.
 
@@ -10,7 +10,7 @@ Useful during development when the standard `fmt` library doesn't help you extra
 package main
 
 import (
-	"github.com/yassinebenaid/vardump"
+	"github.com/yassinebenaid/godump"
 )
 
 type SomeError struct{ E string }
@@ -30,7 +30,7 @@ func main() {
 
 	var a int = 55644133
 
-	vardump.Dump(map[any]any{
+	godump.Dump(map[any]any{
 		"int":          1234,
 		"signed-int":   -1234,
 		"float":        1234.5678,
