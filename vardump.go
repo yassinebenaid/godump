@@ -60,7 +60,7 @@ func (d *dumper) dump(v any, ignore_deep ...bool) {
 
 	var_t := fmt.Sprintf("%T", v)
 
-	if strings.HasPrefix(var_t, "int") || strings.HasPrefix(var_t, "float") {
+	if strings.HasPrefix(var_t, "int") || strings.HasPrefix(var_t, "float") || strings.HasPrefix(var_t, "complex") {
 		d.dumpNum(v)
 		return
 	}
