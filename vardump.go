@@ -53,6 +53,11 @@ func (d *dumper) dump(v any, ignore_deep ...bool) {
 		return
 	}
 
+	if b, ok := v.(error); ok {
+		d.dumpErr(b)
+		return
+	}
+
 	var_t := fmt.Sprintf("%T", v)
 
 	if strings.HasPrefix(var_t, "int") || strings.HasPrefix(var_t, "float") {
@@ -176,6 +181,16 @@ func (d *dumper) dumpStruct(v any) {
 	}
 	d.deep--
 
+	d.buf.WriteString("\n" + strings.Repeat("   ", d.deep) + color_var_type("}"))
+}
+
+func (d *dumper) dumpErr(err error) {
+	d.buf.WriteString(color_var_type(fmt.Sprintf("%T {", err)))
+	d.buf.WriteString("\n")
+	d.buf.WriteString(strings.Repeat("   ", d.deep+1))
+	d.buf.WriteString(color_str_quotes(`"`))
+	d.buf.WriteString(color_str(err.Error()))
+	d.buf.WriteString(color_str_quotes(`"`))
 	d.buf.WriteString("\n" + strings.Repeat("   ", d.deep) + color_var_type("}"))
 }
 
