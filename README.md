@@ -63,4 +63,5 @@ func main() {
 ```
 
 Output:
+
 ![example](./example/example.png)
