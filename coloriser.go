@@ -2,6 +2,7 @@ package godump
 
 var colors_disabled bool
 
+// DisableColors disables the colors globally.
 func DisableColors() {
 	colors_disabled = true
 }
