@@ -56,6 +56,7 @@ func main() {
 				698.4521,
 			},
 		},
+		"func": func(string) string { return "" },
 	})
 
 }
@@ -64,4 +65,4 @@ func main() {
 
 Output:
 
-![example](./example/example.png)
+![demo](./demo/demo.png)
