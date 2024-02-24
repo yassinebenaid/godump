@@ -1,10 +1,66 @@
-# godump
+<div align="center"> 
+<h1>godump</h1>
+</div>
+
+<div align="center">
+
+[![Version](https://badge.fury.io/gh/yassinebenaid%2Fdotenv.svg)](https://badge.fury.io/gh/yassinebenaid%2Fdotenv)
+[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENCE)
+
+</div>
 
 A simple GO library to dump any GO variable in a structured and colored way.
 
 Useful during development when the standard `fmt` library doesn't help you extract arbitrary data.
 
-## Example
+## Get Started
+
+Install the library:
+
+```bash
+go get -u github.com/yassinebenaid/godump
+```
+
+Then use the **Dump** function , you can pass any variable of any type:
+
+```go
+package main
+
+import (
+	"github.com/yassinebenaid/godump"
+)
+
+func main() {
+	// String
+	var name = "yassinebenaid"
+	godump.Dump(name)
+
+	// Int
+	var num = 1234
+	godump.Dump(num)
+
+	// Slice
+	var slc = []int{1,2,3}
+	godump.Dump(slc)
+
+	// Map
+	var mp = map[int]string{1:"foo",2:"bar"}
+	godump.Dump(mp)
+
+	// Struct
+	var strct = struct{
+		Type string
+		Quantity float64
+	}{
+		"foo bar",
+		123.456
+	}
+	godump.Dump(strct)
+}
+
+```
+
+# Demo
 
 ```go
 package main
