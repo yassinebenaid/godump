@@ -4,7 +4,7 @@
 
 <div align="center">
 
-[![Version](https://badge.fury.io/gh/yassinebenaid%2Fdotenv.svg)](https://badge.fury.io/gh/yassinebenaid%2Fdotenv)
+[![Version](https://badge.fury.io/gh/yassinebenaid%2Fgodump.svg)](https://badge.fury.io/gh/yassinebenaid%2Fgodump)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENCE)
 
 </div>
