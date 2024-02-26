@@ -31,31 +31,8 @@ import (
 )
 
 func main() {
-	// String
-	var name = "yassinebenaid"
-	godump.Dump(name)
-
-	// Int
-	var num = 1234
-	godump.Dump(num)
-
-	// Slice
-	var slc = []int{1,2,3}
-	godump.Dump(slc)
-
-	// Map
-	var mp = map[int]string{1:"foo",2:"bar"}
-	godump.Dump(mp)
-
-	// Struct
-	var strct = struct{
-		Type string
-		Quantity float64
-	}{
-		"foo bar",
-		123.456
-	}
-	godump.Dump(strct)
+	var anything any = "this can be anything"
+	godump.Dump(anything)
 }
 
 ```
