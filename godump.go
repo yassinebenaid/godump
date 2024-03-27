@@ -26,3 +26,20 @@ func DumpNC(v any) error {
 	}
 	return nil
 }
+
+// Sdump is just like Dump but returns the result instead of prining to STDOUT
+func Sdump(v any) string {
+	d := dumper{}
+	d.dump(v)
+	d.buf.WriteByte(0xa)
+	return d.buf.String()
+}
+
+// Sdump is just like DumpNC but returns the result instead of prining to STDOUT
+func DumpNC(v any) string {
+	d := dumper{}
+	d.c.disabled = true
+	d.dump(v)
+	d.buf.WriteByte(0xa)
+	return d.buf.String()
+}
