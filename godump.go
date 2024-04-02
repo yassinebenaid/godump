@@ -27,7 +27,7 @@ func DumpNC(v any) error {
 	return nil
 }
 
-// Sdump is just like Dump but returns the result instead of prining to STDOUT
+// Sdump is just like Dump but returns the result instead of printing to STDOUT
 func Sdump(v any) string {
 	d := dumper{}
 	d.dump(v)
@@ -35,7 +35,7 @@ func Sdump(v any) string {
 	return d.buf.String()
 }
 
-// Sdump is just like DumpNC but returns the result instead of prining to STDOUT
+// Sdump is just like DumpNC but returns the result instead of printing to STDOUT
 func SdumpNC(v any) string {
 	d := dumper{}
 	d.c.disabled = true
