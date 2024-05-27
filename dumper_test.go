@@ -83,6 +83,102 @@ func TestDumper(t *testing.T) {
    -3,
 }`,
 		},
+		{
+			[]uint{1, 2, 3},
+			`[]uint:3:3 {
+   1,
+   2,
+   3,
+}`,
+		},
+		{
+			[]uint8{1, 2, 3},
+			`[]uint8:3:3 {
+   1,
+   2,
+   3,
+}`,
+		},
+		{
+			[]uint16{1, 2, 3},
+			`[]uint16:3:3 {
+   1,
+   2,
+   3,
+}`,
+		},
+		{
+			[]uint32{1, 2, 3},
+			`[]uint32:3:3 {
+   1,
+   2,
+   3,
+}`,
+		},
+		{
+			[]uint64{1, 2, 3},
+			`[]uint64:3:3 {
+   1,
+   2,
+   3,
+}`,
+		},
+		{
+			[]float32{1.2, 3.4, 5.6},
+			`[]float32:3:3 {
+   1.2000000476837158,
+   3.4000000953674316,
+   5.599999904632568,
+}`,
+		},
+		{
+			[]float64{1.2, 3.4, 5.6},
+			`[]float64:3:3 {
+   1.2,
+   3.4,
+   5.6,
+}`,
+		},
+		{
+			[]complex64{1, 2.3, -4},
+			`[]complex64:3:3 {
+   (1+0i),
+   (2.299999952316284+0i),
+   (-4+0i),
+}`,
+		},
+		{
+			[]complex128{1, 2.3, -4},
+			`[]complex128:3:3 {
+   (1+0i),
+   (2.3+0i),
+   (-4+0i),
+}`,
+		},
+		{
+			[]bool{true, false},
+			`[]bool:2:2 {
+   true,
+   false,
+}`,
+		},
+		{
+			[]any{
+				func(i int) int { return i },
+				func(int) {},
+				func() int { return 123 },
+			},
+			`[]interface {}:3:3 {
+   func(int) int,
+   func(int),
+   func() int,
+}`,
+		},
+		{make(map[any]any), "map[interface {}]interface {}:0 {\n}"},
+		{map[string]int{"x": 123, "y": 456}, `map[string]int:2 {
+   "x": 123,
+   "y": 456,
+}`},
 	}
 
 	for i, tc := range testCases {
@@ -90,7 +186,8 @@ func TestDumper(t *testing.T) {
 		d.dump(tc.inputVar)
 
 		if returned := d.buf.String(); returned != tc.expected {
-			t.Fatalf(`Case#%d failed, dumper returned unuexpected results : "%s", expected "%s"`, i, returned, tc.expected)
+			t.Fatalf(`Case#%d failed, dumper returned unuexpected results : "%s" (%d), expected "%s" (%d)`, i, returned, len(returned), tc.expected,
+				len(tc.expected))
 		}
 	}
 
