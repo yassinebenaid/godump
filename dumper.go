@@ -24,18 +24,18 @@ func (d *dumper) dump(v any, ignore_depth ...bool) {
 	case var_kind == reflect.String:
 		d.dumpString(fmt.Sprint(v))
 	case var_kind == reflect.Bool:
-		d.dumpBool(v)
+		d.buf.WriteString(d.c.bool(fmt.Sprintf("%t", v)))
 	case strings.HasPrefix(var_kind.String(), "int") ||
 		strings.HasPrefix(var_kind.String(), "uint") ||
 		strings.HasPrefix(var_kind.String(), "float") ||
 		strings.HasPrefix(var_kind.String(), "complex"):
-		d.dumpNum(v)
+		d.buf.WriteString(d.c.num(fmt.Sprint(v)))
 	case var_kind == reflect.Slice || var_kind == reflect.Array:
 		d.dumpSlice(v)
 	case var_kind == reflect.Map:
 		d.dumpMap(v)
 	case var_kind == reflect.Func:
-		d.dumpFunc(fmt.Sprintf("%T", v))
+		d.buf.WriteString(d.c.fn(fmt.Sprintf("%T", v)))
 	case var_kind == reflect.Struct:
 		d.dumpStruct(v)
 	case var_kind == reflect.Pointer:
@@ -47,14 +47,6 @@ func (d *dumper) dumpString(v string) {
 	d.buf.WriteString(d.c.quote(`"`))
 	d.buf.WriteString(d.c.str(v))
 	d.buf.WriteString(d.c.quote(`"`))
-}
-
-func (d *dumper) dumpBool(v any) {
-	d.buf.WriteString(d.c.bool(fmt.Sprintf("%t", v)))
-}
-
-func (d *dumper) dumpNum(v any) {
-	d.buf.WriteString(d.c.num(fmt.Sprint(v)))
 }
 
 func (d *dumper) dumpSlice(v any) {
@@ -97,10 +89,6 @@ func (d *dumper) dumpPointer(v any) {
 	d.buf.WriteString(d.c.ptr(fmt.Sprintf("%T:%p", v, v)))
 }
 
-func (d *dumper) dumpFunc(fn string) {
-	d.buf.WriteString(d.c.fn(fn))
-}
-
 func (d *dumper) dumpStruct(v any) {
 	typ := fmt.Sprintf("%T", v)
 	if strings.HasPrefix(typ, "struct") {
@@ -129,16 +117,6 @@ func (d *dumper) dumpStruct(v any) {
 	}
 	d.depth--
 
-	d.buf.WriteString("\n" + strings.Repeat("   ", d.depth) + d.c.vtype("}"))
-}
-
-func (d *dumper) dumpErr(err error) {
-	d.buf.WriteString(d.c.vtype(fmt.Sprintf("%T {", err)))
-	d.buf.WriteString("\n")
-	d.buf.WriteString(strings.Repeat("   ", d.depth+1))
-	d.buf.WriteString(d.c.quote(`"`))
-	d.buf.WriteString(d.c.str(err.Error()))
-	d.buf.WriteString(d.c.quote(`"`))
 	d.buf.WriteString("\n" + strings.Repeat("   ", d.depth) + d.c.vtype("}"))
 }
 
