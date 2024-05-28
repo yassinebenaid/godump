@@ -18,28 +18,34 @@ func (d *dumper) dump(v any, ignore_depth ...bool) {
 		d.buf.WriteString(strings.Repeat("   ", d.depth))
 	}
 
-	var_kind := reflect.ValueOf(v).Kind()
-
-	switch {
-	case var_kind == reflect.String:
+	switch reflect.ValueOf(v).Kind() {
+	case reflect.String:
 		d.dumpString(fmt.Sprint(v))
-	case var_kind == reflect.Bool:
+	case reflect.Bool:
 		d.buf.WriteString(d.theme.Bool.apply(fmt.Sprintf("%t", v)))
-	case strings.HasPrefix(var_kind.String(), "int") ||
-		strings.HasPrefix(var_kind.String(), "uint") ||
-		strings.HasPrefix(var_kind.String(), "float") ||
-		strings.HasPrefix(var_kind.String(), "complex"):
-		d.buf.WriteString(d.theme.Number.apply(fmt.Sprint(v)))
-	case var_kind == reflect.Slice || var_kind == reflect.Array:
+	case reflect.Slice, reflect.Array:
 		d.dumpSlice(v)
-	case var_kind == reflect.Map:
+	case reflect.Map:
 		d.dumpMap(v)
-	case var_kind == reflect.Func:
+	case reflect.Func:
 		d.buf.WriteString(d.theme.Func.apply(fmt.Sprintf("%T", v)))
-	case var_kind == reflect.Struct:
+	case reflect.Struct:
 		d.dumpStruct(v)
-	case var_kind == reflect.Pointer:
+	case reflect.Pointer:
 		d.dumpPointer(v)
+	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
+		v = fmt.Sprint(reflect.ValueOf(v).Int())
+		d.buf.WriteString(d.theme.Number.apply(v.(string)))
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		v = fmt.Sprint(reflect.ValueOf(v).Uint())
+		d.buf.WriteString(d.theme.Number.apply(v.(string)))
+	case reflect.Float32, reflect.Float64:
+		v = fmt.Sprint(reflect.ValueOf(v).Float())
+		d.buf.WriteString(d.theme.Number.apply(v.(string)))
+	case reflect.Complex64, reflect.Complex128:
+		v = fmt.Sprint(reflect.ValueOf(v).Complex())
+		d.buf.WriteString(d.theme.Number.apply(v.(string)))
+
 	}
 }
 
