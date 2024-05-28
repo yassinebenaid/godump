@@ -45,8 +45,11 @@ func (d *dumper) dump(v any, ignore_depth ...bool) {
 	case reflect.Complex64, reflect.Complex128:
 		v = fmt.Sprint(reflect.ValueOf(v).Complex())
 		d.buf.WriteString(d.theme.Number.apply(v.(string)))
+	case reflect.Invalid:
+		d.buf.WriteString(d.theme.Bool.apply("uninitialized"))
 
 	}
+
 }
 
 func (d *dumper) dumpString(v string) {
