@@ -18,51 +18,28 @@ func (d *dumper) dump(v any, ignore_depth ...bool) {
 		d.buf.WriteString(strings.Repeat("   ", d.depth))
 	}
 
-	if s, ok := v.(string); ok {
-		d.dumpString(s)
-		return
-	}
+	var_kind := reflect.ValueOf(v).Kind()
 
-	if b, ok := v.(bool); ok {
-		d.dumpBool(b)
-		return
-	}
-
-	if b, ok := v.(error); ok {
-		d.dumpErr(b)
-		return
-	}
-
-	var_t := fmt.Sprintf("%T", v)
-
-	if strings.HasPrefix(var_t, "int") || strings.HasPrefix(var_t, "float") || strings.HasPrefix(var_t, "complex") {
+	switch {
+	case var_kind == reflect.String:
+		d.dumpString(fmt.Sprint(v))
+	case var_kind == reflect.Bool:
+		d.dumpBool(v)
+	case strings.HasPrefix(var_kind.String(), "int") ||
+		strings.HasPrefix(var_kind.String(), "uint") ||
+		strings.HasPrefix(var_kind.String(), "float") ||
+		strings.HasPrefix(var_kind.String(), "complex"):
 		d.dumpNum(v)
-		return
-	}
-
-	if strings.HasPrefix(var_t, "[]") {
+	case var_kind == reflect.Slice || var_kind == reflect.Array:
 		d.dumpSlice(v)
-		return
-	}
-
-	if strings.HasPrefix(var_t, "map") {
+	case var_kind == reflect.Map:
 		d.dumpMap(v)
-		return
-	}
-
-	if strings.HasPrefix(var_t, "*") {
-		d.dumpPointer(v)
-		return
-	}
-
-	if strings.HasPrefix(var_t, "func") {
-		d.dumpFunc(var_t)
-		return
-	}
-
-	if reflect.TypeOf(v).Kind() == reflect.Struct {
+	case var_kind == reflect.Func:
+		d.dumpFunc(fmt.Sprintf("%T", v))
+	case var_kind == reflect.Struct:
 		d.dumpStruct(v)
-		return
+	case var_kind == reflect.Pointer:
+		d.dumpPointer(v)
 	}
 }
 
@@ -72,12 +49,8 @@ func (d *dumper) dumpString(v string) {
 	d.buf.WriteString(d.c.quote(`"`))
 }
 
-func (d *dumper) dumpBool(v bool) {
-	if v {
-		d.buf.WriteString(d.c.bool(`true`))
-	} else {
-		d.buf.WriteString(d.c.bool(`false`))
-	}
+func (d *dumper) dumpBool(v any) {
+	d.buf.WriteString(d.c.bool(fmt.Sprintf("%t", v)))
 }
 
 func (d *dumper) dumpNum(v any) {
