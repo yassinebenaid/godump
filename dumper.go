@@ -9,7 +9,7 @@ import (
 
 type dumper struct {
 	buf   bytes.Buffer
-	c     colorizer
+	theme theme
 	depth int
 }
 
@@ -24,18 +24,18 @@ func (d *dumper) dump(v any, ignore_depth ...bool) {
 	case var_kind == reflect.String:
 		d.dumpString(fmt.Sprint(v))
 	case var_kind == reflect.Bool:
-		d.buf.WriteString(d.c.bool(fmt.Sprintf("%t", v)))
+		d.buf.WriteString(d.theme.Bool.apply(fmt.Sprintf("%t", v)))
 	case strings.HasPrefix(var_kind.String(), "int") ||
 		strings.HasPrefix(var_kind.String(), "uint") ||
 		strings.HasPrefix(var_kind.String(), "float") ||
 		strings.HasPrefix(var_kind.String(), "complex"):
-		d.buf.WriteString(d.c.num(fmt.Sprint(v)))
+		d.buf.WriteString(d.theme.Number.apply(fmt.Sprint(v)))
 	case var_kind == reflect.Slice || var_kind == reflect.Array:
 		d.dumpSlice(v)
 	case var_kind == reflect.Map:
 		d.dumpMap(v)
 	case var_kind == reflect.Func:
-		d.buf.WriteString(d.c.fn(fmt.Sprintf("%T", v)))
+		d.buf.WriteString(d.theme.Func.apply(fmt.Sprintf("%T", v)))
 	case var_kind == reflect.Struct:
 		d.dumpStruct(v)
 	case var_kind == reflect.Pointer:
@@ -44,9 +44,9 @@ func (d *dumper) dump(v any, ignore_depth ...bool) {
 }
 
 func (d *dumper) dumpString(v string) {
-	d.buf.WriteString(d.c.quote(`"`))
-	d.buf.WriteString(d.c.str(v))
-	d.buf.WriteString(d.c.quote(`"`))
+	d.buf.WriteString(d.theme.Quotes.apply(`"`))
+	d.buf.WriteString(d.theme.String.apply(v))
+	d.buf.WriteString(d.theme.Quotes.apply(`"`))
 }
 
 func (d *dumper) dumpSlice(v any) {
@@ -54,7 +54,7 @@ func (d *dumper) dumpSlice(v any) {
 	length := value.Len()
 	capacity := value.Cap()
 
-	d.buf.WriteString(d.c.vtype(fmt.Sprintf("%T:%d:%d {", v, length, capacity)))
+	d.buf.WriteString(d.theme.VarType.apply(fmt.Sprintf("%T:%d:%d {", v, length, capacity)))
 
 	d.depth++
 	for i := 0; i < length; i++ {
@@ -63,14 +63,14 @@ func (d *dumper) dumpSlice(v any) {
 		d.buf.WriteString((","))
 	}
 	d.depth--
-	d.buf.WriteString("\n" + strings.Repeat("   ", d.depth) + d.c.vtype("}"))
+	d.buf.WriteString("\n" + strings.Repeat("   ", d.depth) + d.theme.VarType.apply("}"))
 }
 
 func (d *dumper) dumpMap(v any) {
 	value := reflect.ValueOf(v)
 	keys := value.MapKeys()
 
-	d.buf.WriteString(d.c.vtype(fmt.Sprintf("%T:%d {", v, len(keys))))
+	d.buf.WriteString(d.theme.VarType.apply(fmt.Sprintf("%T:%d {", v, len(keys))))
 
 	d.depth++
 	for _, key := range keys {
@@ -82,11 +82,11 @@ func (d *dumper) dumpMap(v any) {
 	}
 	d.depth--
 
-	d.buf.WriteString("\n" + strings.Repeat("   ", d.depth) + d.c.vtype("}"))
+	d.buf.WriteString("\n" + strings.Repeat("   ", d.depth) + d.theme.VarType.apply("}"))
 }
 
 func (d *dumper) dumpPointer(v any) {
-	d.buf.WriteString(d.c.ptr(fmt.Sprintf("%T:%p", v, v)))
+	d.buf.WriteString(d.theme.Pointer.apply(fmt.Sprintf("%T:%p", v, v)))
 }
 
 func (d *dumper) dumpStruct(v any) {
@@ -94,7 +94,7 @@ func (d *dumper) dumpStruct(v any) {
 	if strings.HasPrefix(typ, "struct") {
 		typ = "struct"
 	}
-	d.buf.WriteString(d.c.vtype(typ + " {"))
+	d.buf.WriteString(d.theme.VarType.apply(typ + " {"))
 
 	def := reflect.TypeOf(v)
 	value := reflect.ValueOf(v)
@@ -107,7 +107,7 @@ func (d *dumper) dumpStruct(v any) {
 		d.buf.WriteString((": "))
 
 		if !k.IsExported() {
-			d.buf.WriteString(d.c.vtype(fmt.Sprintf("%v", k.Type)))
+			d.buf.WriteString(d.theme.VarType.apply(fmt.Sprintf("%v", k.Type)))
 			continue
 		}
 
@@ -117,13 +117,13 @@ func (d *dumper) dumpStruct(v any) {
 	}
 	d.depth--
 
-	d.buf.WriteString("\n" + strings.Repeat("   ", d.depth) + d.c.vtype("}"))
+	d.buf.WriteString("\n" + strings.Repeat("   ", d.depth) + d.theme.VarType.apply("}"))
 }
 
 func (d *dumper) dumpStructKey(key reflect.StructField) {
 	d.buf.WriteString(strings.Repeat("   ", d.depth))
 	if !key.IsExported() {
-		d.buf.WriteString(d.c.strct_prv("#"))
+		d.buf.WriteString(d.theme.StructFieldHash.apply("#"))
 	}
-	d.buf.WriteString(d.c.strct(key.Name))
+	d.buf.WriteString(d.theme.StructField.apply(key.Name))
 }
