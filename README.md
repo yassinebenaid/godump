@@ -59,16 +59,23 @@ type DefinedType struct {
 	Field4 float64
 }
 
+type Slice []int
+type Array [3]int
+
 func main() {
 
 	var a int = 55644133
 
 	godump.Dump(map[any]any{
+		"uint":         uint(100),
 		"int":          1234,
 		"signed-int":   -1234,
 		"float":        1234.5678,
 		"signed-float": -1234.5678,
 		"slice":        []int{1, 2, 3},
+		"typed-slice":  Slice{1, 2, 3},
+		"array":        [3]int{1, 2, 3},
+		"typed-array":  Array{1, 2, 3},
 		"map": map[complex64]bool{
 			0xf4a5c5d: true,
 			0xa0bff6e: false,
