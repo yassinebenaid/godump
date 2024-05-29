@@ -19,7 +19,9 @@ type theme struct {
 	Bool            *rgb
 	Number          *rgb
 	VarType         *rgb
-	Pointer         *rgb
+	Nil             *rgb
+	PointerSign     *rgb
+	PointerCounter  *rgb
 	Func            *rgb
 	StructField     *rgb
 	StructFieldHash *rgb
@@ -31,7 +33,9 @@ var defaultTheme = theme{
 	Bool:            &rgb{249, 87, 56},
 	Number:          &rgb{0, 168, 232},
 	VarType:         &rgb{0, 150, 199},
-	Pointer:         &rgb{78, 205, 196}, // TODO: get rid of this
+	PointerSign:     &rgb{249, 87, 56},
+	PointerCounter:  &rgb{110, 110, 110},
+	Nil:             &rgb{249, 87, 56},
 	Func:            &rgb{160, 90, 220},
 	StructField:     &rgb{211, 211, 211},
 	StructFieldHash: &rgb{255, 123, 0},
