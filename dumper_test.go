@@ -39,9 +39,9 @@ func TestDumper(t *testing.T) {
 		{func() {}, "func()"},
 		{make([]any, 0, 5), "[]interface {}:0:5 {\n}"},
 		{make([]any, 3, 5), `[]interface {}:3:5 {
-   uninitialized,
-   uninitialized,
-   uninitialized,
+   nil,
+   nil,
+   nil,
 }`},
 		{
 			[]int{1, 2, -3},
