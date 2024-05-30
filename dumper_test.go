@@ -175,11 +175,40 @@ func TestDumper(t *testing.T) {
 }`,
 		},
 		{make(map[any]any), "map[interface {}]interface {}:0 {\n}"},
-		{map[string]int{"x": 123, "y": 456}, `map[string]int:2 {
+		{map[string]int{"x": 123}, `map[string]int:1 {
    "x": 123,
-   "y": 456,
 }`},
 	}
+
+	type User struct {
+		Name   string
+		Friend *User
+	}
+
+	person1 := User{"test", nil}
+	person2 := User{"test 2", &person1}
+	person3 := User{"test 3", &person2}
+	person1.Friend = &person3
+
+	testCases = append(testCases, struct {
+		inputVar any
+		expected string
+	}{
+		person3,
+		`godump.User {
+   Name: "test 3",
+   Friend: #1 &godump.User {
+      Name: "test 2",
+      Friend: #2 &godump.User {
+         Name: "test",
+         Friend: #3 &godump.User {
+            Name: "test 3",
+            Friend: &#1,
+         },
+      },
+   },
+}`,
+	})
 
 	for i, tc := range testCases {
 		var d dumper
