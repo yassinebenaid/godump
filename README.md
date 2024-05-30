@@ -61,10 +61,17 @@ type DefinedType struct {
 
 type Slice []int
 type Array [3]int
+type User struct {
+	Name   string
+	Friend *User
+}
 
 func main() {
 
-	var a int = 55644133
+	person1 := User{"test", nil}
+	person2 := User{"test 2", &person1}
+	person3 := User{"test 3", &person2}
+	person1.Friend = &person3
 
 	godump.Dump(map[any]any{
 		"uint":         uint(100),
@@ -81,12 +88,12 @@ func main() {
 			0xa0bff6e: false,
 		},
 		"inline-struct": struct {
-			Pointer      *int
+			Pointer      *User
 			privateField string
 			Err          SomeError
 			SomeType     DefinedType
 		}{
-			Pointer:      &a,
+			Pointer:      &person3,
 			privateField: "private",
 			Err:          SomeError{"some random error"},
 			SomeType: DefinedType{
