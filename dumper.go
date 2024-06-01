@@ -30,6 +30,12 @@ func (d *dumper) dump(v any, ignore_depth ...bool) {
 		d.dumpMap(v)
 	case reflect.Func:
 		d.buf.WriteString(d.theme.Func.apply(fmt.Sprintf("%T", v)))
+	case reflect.Chan:
+		d.buf.WriteString(d.theme.VarType.apply(fmt.Sprintf("%T", v)))
+		cap := reflect.ValueOf(v).Cap()
+		if cap > 0 {
+			d.buf.WriteString(d.theme.VarType.apply(fmt.Sprintf("<%d>", cap)))
+		}
 	case reflect.Struct:
 		d.dumpStruct(v)
 	case reflect.Pointer:
