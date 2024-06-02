@@ -219,7 +219,7 @@ func TestDumper(t *testing.T) {
 		var d dumper
 		d.dump(tc.inputVar)
 
-		if returned := d.buf.String(); returned != tc.expected {
+		if returned := string(d.buf); returned != tc.expected {
 			t.Fatalf(`Case#%d failed, dumper returned unuexpected results : "%s" (%d), expected "%s" (%d)`, i, returned, len(returned), tc.expected,
 				len(tc.expected))
 		}
@@ -565,7 +565,7 @@ func TestDumperWithComplexDataStructure(t *testing.T) {
 
 	var d dumper
 	d.dump(root)
-	returned := d.buf.Bytes()
+	returned := d.buf
 
 	r_lines := bytes.Split(returned, []byte("\n"))
 	e_lines := bytes.Split(expectedOutput, []byte("\n"))
