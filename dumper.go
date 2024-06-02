@@ -11,8 +11,8 @@ type dumper struct {
 	theme theme
 	depth int
 	ptrs  map[uintptr]struct {
-		id  uint
-		pos uint
+		id  int
+		pos int
 	}
 }
 
@@ -105,8 +105,8 @@ func (d *dumper) dumpMap(v any) {
 func (d *dumper) dumpPointer(v any) {
 	if d.ptrs == nil {
 		d.ptrs = make(map[uintptr]struct {
-			id  uint
-			pos uint
+			id  int
+			pos int
 		})
 	}
 
@@ -114,18 +114,19 @@ func (d *dumper) dumpPointer(v any) {
 
 	if p, ok := d.ptrs[ptr]; ok {
 		d.write(d.theme.PointerSign.apply("&"))
-		d.write(d.theme.PointerCounter.apply(fmt.Sprintf("#%d", p.id)))
+		d.write(d.theme.PointerCounter.apply(fmt.Sprintf("@%d", p.id)))
+		d.writeAt(p.pos, d.theme.PointerCounter.apply(fmt.Sprintf("#%d", p.id)))
 		return
 	}
 
 	d.ptrs[ptr] = struct {
-		id  uint
-		pos uint
+		id  int
+		pos int
 	}{
-		id: uint(len(d.ptrs) + 1),
+		id:  len(d.ptrs) + 1,
+		pos: len(d.buf),
 	}
 
-	d.write(d.theme.PointerCounter.apply(fmt.Sprintf("#%d ", d.ptrs[ptr].id)))
 	d.write(d.theme.PointerSign.apply("&"))
 
 	actual := reflect.ValueOf(v).Elem()
@@ -178,4 +179,11 @@ func (d *dumper) dumpStructKey(key reflect.StructField) {
 
 func (d *dumper) write(s string) {
 	d.buf = append(d.buf, []byte(s)...)
+}
+
+func (d *dumper) writeAt(pos int, s string) {
+	nbuf := append([]byte{}, d.buf[:pos]...)
+	nbuf = append(nbuf, []byte(s)...)
+	nbuf = append(nbuf, d.buf[pos:]...)
+	d.buf = nbuf
 }
