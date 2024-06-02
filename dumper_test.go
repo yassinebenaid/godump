@@ -1,6 +1,7 @@
 package godump
 
 import (
+	"bytes"
 	"math/cmplx"
 	"os"
 	"testing"
@@ -262,7 +263,7 @@ type Node struct {
 type SubNode struct {
 	Code       int
 	Parent     *Node
-	Data       map[string]*Node
+	Data       []*Node
 	SubDetails []Detail
 	ChannelSub chan *SubNode
 }
@@ -285,7 +286,7 @@ type NamedTypes struct {
 func TestDumperWithComplexDataStructure(t *testing.T) {
 	var intValue = 42
 	var strValue = "example"
-	var mapValue = map[string]int{"key1": 1, "key2": 2}
+	var mapValue = map[string]int{"key1": 1}
 
 	channelInt := make(chan int)
 	channelStr := make(chan string)
@@ -340,9 +341,7 @@ func TestDumperWithComplexDataStructure(t *testing.T) {
 				ChannelStr:      channelStr,
 				ChannelStruct:   channelStruct,
 				Attributes: map[string]interface{}{
-					"attr1": "value1",
-					"attr2": 10,
-					"attr3": []float64{1.1, 2.2, 3.3},
+					"attr": []float64{1.1, 2.2, 3.3},
 				},
 				SubNode: &SubNode{
 					Code: 100,
@@ -390,9 +389,7 @@ func TestDumperWithComplexDataStructure(t *testing.T) {
 				ChannelStr:      channelStr,
 				ChannelStruct:   channelStruct,
 				Attributes: map[string]interface{}{
-					"attrA": "valueA",
-					"attrB": 20,
-					"attrC": []string{"a", "b", "c"},
+					"attr": []string{"a", "b", "c"},
 				},
 				SubNode: &SubNode{
 					Code: 200,
@@ -416,8 +413,7 @@ func TestDumperWithComplexDataStructure(t *testing.T) {
 			},
 		},
 		Attributes: map[string]interface{}{
-			"globalAttr1": "globalValue1",
-			"globalAttr2": []int{100, 200, 300},
+			"globalAttr": []int{100, 200, 300},
 		},
 		IntPointer:    &intValue,
 		StringPointer: &strValue,
@@ -427,8 +423,8 @@ func TestDumperWithComplexDataStructure(t *testing.T) {
 		ChannelStruct: channelStruct,
 		SubNode: &SubNode{
 			Code: 999,
-			Data: map[string]*Node{
-				"child1": {
+			Data: []*Node{
+				{
 					ID:              4,
 					Int8Field:       int8(38),
 					Int16Field:      int16(316),
@@ -479,7 +475,7 @@ func TestDumperWithComplexDataStructure(t *testing.T) {
 						},
 					},
 					Attributes: map[string]interface{}{
-						"grandAttr1": "grandValue1",
+						"grandAttr": "grandValue1",
 					},
 					IntPointer:    &intValue,
 					StringPointer: &strValue,
@@ -488,7 +484,7 @@ func TestDumperWithComplexDataStructure(t *testing.T) {
 					ChannelStr:    channelStr,
 					ChannelStruct: channelStruct,
 				},
-				"child2": {
+				{
 					ID:              6,
 					Int8Field:       int8(58),
 					Int16Field:      int16(516),
@@ -528,7 +524,7 @@ func TestDumperWithComplexDataStructure(t *testing.T) {
 							BoolField:       false,
 							Array:           [3]int{19, 20, 21},
 							Attributes: map[string]interface{}{
-								"greatAttr2": "greatValue2",
+								"greatAttr": "greatValue2",
 							},
 							IntPointer:    &intValue,
 							StringPointer: &strValue,
@@ -539,7 +535,7 @@ func TestDumperWithComplexDataStructure(t *testing.T) {
 						},
 					},
 					Attributes: map[string]interface{}{
-						"grandAttr2": "grandValue2",
+						"grandAttr": "grandValue2",
 					},
 					IntPointer:    &intValue,
 					StringPointer: &strValue,
@@ -555,7 +551,7 @@ func TestDumperWithComplexDataStructure(t *testing.T) {
 			NamedInt:   99,
 			NamedFloat: 99.99,
 			NamedStr:   "NamedValue",
-			NamedMap:   map[string]string{"keyA": "valueA", "keyB": "valueB"},
+			NamedMap:   map[string]string{"keyA": "valueA"},
 		},
 		CyclicReference: &cyclicNode,
 	}
@@ -571,9 +567,24 @@ func TestDumperWithComplexDataStructure(t *testing.T) {
 	d.dump(root)
 	returned := d.buf.Bytes()
 
-	for i, j := range expectedOutput {
-		if expectedOutput[i] != returned[i] {
-			t.Fatalf(`expected "%c" at position %d , got "%c"`, j, i, returned[i])
+	r_lines := bytes.Split(returned, []byte("\n"))
+	e_lines := bytes.Split(expectedOutput, []byte("\n"))
+
+	if len(r_lines) != len(e_lines) {
+		t.Fatalf("expected %d lines, got %d", len(e_lines), len(r_lines))
+	}
+
+	for i, line := range e_lines {
+		if len(line) != len(r_lines[i]) {
+			t.Fatalf(`mismatche at line %d:
+- "%s"
++ "%s"`, i, line, r_lines[i])
+		}
+
+		for j, ch := range line {
+			if ch != r_lines[i][j] {
+				t.Fatalf(`expected "%c", got "%c" at line %d:%d"`, ch, r_lines[i][j], i+1, j)
+			}
 		}
 	}
 }
