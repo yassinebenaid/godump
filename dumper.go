@@ -6,14 +6,16 @@ import (
 	"strings"
 )
 
+type pointer struct {
+	id     int
+	pos    int
+	marked bool
+}
 type dumper struct {
 	buf   []byte
 	theme theme
 	depth int
-	ptrs  map[uintptr]struct {
-		id  int
-		pos int
-	}
+	ptrs  map[uintptr]*pointer
 }
 
 func (d *dumper) dump(v any, ignore_depth ...bool) {
@@ -104,10 +106,7 @@ func (d *dumper) dumpMap(v any) {
 
 func (d *dumper) dumpPointer(v any) {
 	if d.ptrs == nil {
-		d.ptrs = make(map[uintptr]struct {
-			id  int
-			pos int
-		})
+		d.ptrs = make(map[uintptr]*pointer)
 	}
 
 	ptr := uintptr(reflect.ValueOf(v).UnsafePointer())
@@ -115,14 +114,15 @@ func (d *dumper) dumpPointer(v any) {
 	if p, ok := d.ptrs[ptr]; ok {
 		d.write(d.theme.PointerSign.apply("&"))
 		d.write(d.theme.PointerCounter.apply(fmt.Sprintf("@%d", p.id)))
-		d.writeAt(p.pos, d.theme.PointerCounter.apply(fmt.Sprintf("#%d", p.id)))
+
+		if !p.marked {
+			d.writeAt(p.pos, d.theme.PointerCounter.apply(fmt.Sprintf("#%d", p.id)))
+			p.marked = true
+		}
 		return
 	}
 
-	d.ptrs[ptr] = struct {
-		id  int
-		pos int
-	}{
+	d.ptrs[ptr] = &pointer{
 		id:  len(d.ptrs) + 1,
 		pos: len(d.buf),
 	}
