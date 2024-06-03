@@ -9,7 +9,7 @@ import (
 type pointer struct {
 	id     int
 	pos    int
-	marked bool
+	tagged bool
 }
 type dumper struct {
 	buf   []byte
@@ -115,9 +115,9 @@ func (d *dumper) dumpPointer(v any) {
 		d.write(d.theme.PointerSign.apply("&"))
 		d.write(d.theme.PointerCounter.apply(fmt.Sprintf("@%d", p.id)))
 
-		if !p.marked {
-			d.writeAt(p.pos, d.theme.PointerCounter.apply(fmt.Sprintf("#%d", p.id)))
-			p.marked = true
+		if !p.tagged {
+			d.tagPtr(p.pos, d.theme.PointerCounter.apply(fmt.Sprintf("#%d", p.id)))
+			p.tagged = true
 		}
 		return
 	}
@@ -181,9 +181,17 @@ func (d *dumper) write(s string) {
 	d.buf = append(d.buf, []byte(s)...)
 }
 
-func (d *dumper) writeAt(pos int, s string) {
-	nbuf := append([]byte{}, d.buf[:pos]...)
+func (d *dumper) tagPtr(pos int, s string) {
+	var shifted int
+
+	for _, p := range d.ptrs {
+		if p.tagged {
+			shifted += len(d.theme.PointerCounter.apply(fmt.Sprintf("#%d", p.id)))
+		}
+	}
+
+	nbuf := append([]byte{}, d.buf[:pos+shifted]...)
 	nbuf = append(nbuf, []byte(s)...)
-	nbuf = append(nbuf, d.buf[pos:]...)
+	nbuf = append(nbuf, d.buf[pos+shifted:]...)
 	d.buf = nbuf
 }
