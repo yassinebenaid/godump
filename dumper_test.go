@@ -202,13 +202,13 @@ func TestDumper(t *testing.T) {
 		person3,
 		`godump.User {
    Name: "test 3",
-   Friend: #1 &godump.User {
+   Friend: #1&godump.User {
       Name: "test 2",
-      Friend: #2 &godump.User {
+      Friend: &godump.User {
          Name: "test",
-         Friend: #3 &godump.User {
+         Friend: &godump.User {
             Name: "test 3",
-            Friend: &#1,
+            Friend: &@1,
          },
       },
    },

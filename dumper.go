@@ -116,7 +116,7 @@ func (d *dumper) dumpPointer(v any) {
 		d.write(d.theme.PointerCounter.apply(fmt.Sprintf("@%d", p.id)))
 
 		if !p.tagged {
-			d.tagPtr(p.pos, d.theme.PointerCounter.apply(fmt.Sprintf("#%d", p.id)))
+			d.tagPtr(p)
 			p.tagged = true
 		}
 		return
@@ -181,17 +181,17 @@ func (d *dumper) write(s string) {
 	d.buf = append(d.buf, []byte(s)...)
 }
 
-func (d *dumper) tagPtr(pos int, s string) {
+func (d *dumper) tagPtr(ptr *pointer) {
 	var shifted int
 
 	for _, p := range d.ptrs {
-		if p.tagged {
+		if ptr.pos > p.pos && p.tagged {
 			shifted += len(d.theme.PointerCounter.apply(fmt.Sprintf("#%d", p.id)))
 		}
 	}
 
-	nbuf := append([]byte{}, d.buf[:pos+shifted]...)
-	nbuf = append(nbuf, []byte(s)...)
-	nbuf = append(nbuf, d.buf[pos+shifted:]...)
+	nbuf := append([]byte{}, d.buf[:ptr.pos+shifted]...)
+	nbuf = append(nbuf, []byte(d.theme.PointerCounter.apply(fmt.Sprintf("#%d", ptr.id)))...)
+	nbuf = append(nbuf, d.buf[ptr.pos+shifted:]...)
 	d.buf = nbuf
 }
