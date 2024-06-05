@@ -60,7 +60,6 @@ type DefinedType struct {
 }
 
 type Slice []int
-type Array [3]int
 type User struct {
 	Name   string
 	Friend *User
@@ -81,8 +80,7 @@ func main() {
 		"signed-float": -1234.5678,
 		"slice":        []int{1, 2, 3},
 		"typed-slice":  Slice{1, 2, 3},
-		"array":        [3]int{1, 2, 3},
-		"typed-array":  Array{1, 2, 3},
+		"channel":      make(chan string, 10),
 		"map": map[complex64]bool{
 			0xf4a5c5d: true,
 			0xa0bff6e: false,

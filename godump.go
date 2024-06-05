@@ -1,14 +1,16 @@
 package godump
 
-import "os"
+import (
+	"fmt"
+	"os"
+)
 
 // Dump the given variable
 func Dump(v any) error {
 	d := dumper{}
 	d.theme = defaultTheme
 	d.dump(v)
-	d.buf.WriteByte(0xa)
-	_, err := d.buf.WriteTo(os.Stdout)
+	_, err := fmt.Fprintln(os.Stdout, string(d.buf))
 	if err != nil {
 		return err
 	}
@@ -19,8 +21,7 @@ func Dump(v any) error {
 func DumpNC(v any) error {
 	d := dumper{}
 	d.dump(v)
-	d.buf.WriteByte(0xa)
-	_, err := d.buf.WriteTo(os.Stdout)
+	_, err := fmt.Fprintln(os.Stdout, string(d.buf))
 	if err != nil {
 		return err
 	}
@@ -32,14 +33,12 @@ func Sdump(v any) string {
 	d := dumper{}
 	d.theme = defaultTheme
 	d.dump(v)
-	d.buf.WriteByte(0xa)
-	return d.buf.String()
+	return string(d.buf)
 }
 
 // SdumpNC is just like DumpNC but returns the result instead of printing to STDOUT
 func SdumpNC(v any) string {
 	d := dumper{}
 	d.dump(v)
-	d.buf.WriteByte(0xa)
-	return d.buf.String()
+	return string(d.buf)
 }
