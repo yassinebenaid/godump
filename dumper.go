@@ -11,6 +11,7 @@ type dumper struct {
 	buf   bytes.Buffer
 	theme theme
 	depth int
+	ptrs  map[uintptr]uint
 }
 
 func (d *dumper) dump(v any, ignore_depth ...bool) {
@@ -46,10 +47,9 @@ func (d *dumper) dump(v any, ignore_depth ...bool) {
 		v = fmt.Sprint(reflect.ValueOf(v).Complex())
 		d.buf.WriteString(d.theme.Number.apply(v.(string)))
 	case reflect.Invalid:
-		d.buf.WriteString(d.theme.Bool.apply("uninitialized"))
+		d.buf.WriteString(d.theme.Nil.apply("nil"))
 
 	}
-
 }
 
 func (d *dumper) dumpString(v string) {
@@ -95,7 +95,29 @@ func (d *dumper) dumpMap(v any) {
 }
 
 func (d *dumper) dumpPointer(v any) {
-	d.buf.WriteString(d.theme.Pointer.apply(fmt.Sprintf("%T:%p", v, v)))
+	if d.ptrs == nil {
+		d.ptrs = make(map[uintptr]uint)
+	}
+
+	ptr := uintptr(reflect.ValueOf(v).UnsafePointer())
+
+	if ctr, ok := d.ptrs[ptr]; ok {
+		d.buf.WriteString(d.theme.PointerSign.apply("&"))
+		d.buf.WriteString(d.theme.PointerCounter.apply(fmt.Sprintf("#%d", ctr)))
+		return
+	}
+
+	d.ptrs[ptr] = uint(len(d.ptrs) + 1)
+	d.buf.WriteString(d.theme.PointerCounter.apply(fmt.Sprintf("#%d ", d.ptrs[ptr])))
+	d.buf.WriteString(d.theme.PointerSign.apply("&"))
+
+	actual := reflect.ValueOf(v).Elem()
+	if actual.IsValid() {
+		d.dump(actual.Interface(), true)
+	} else {
+		d.buf.WriteString(d.theme.Nil.apply("nil"))
+	}
+
 }
 
 func (d *dumper) dumpStruct(v any) {
