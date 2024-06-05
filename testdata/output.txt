@@ -37,10 +37,8 @@
          BoolField: false,
          Children: []*godump.Node:0:0 {
          },
-         Attributes: map[string]interface {}:3 {
-            "attr1": "value1",
-            "attr2": 10,
-            "attr3": []float64:3:3 {
+         Attributes: map[string]interface {}:1 {
+            "attr": []float64:3:3 {
                1.1,
                2.2,
                3.3,
@@ -48,13 +46,12 @@
          },
          IntPointer: #3 &42,
          StringPointer: #4 &"example",
-         MapPointer: #5 &map[string]int:2 {
+         MapPointer: #5 &map[string]int:1 {
             "key1": 1,
-            "key2": 2,
          },
-         ChannelInt: ,
-         ChannelStr: ,
-         ChannelStruct: ,
+         ChannelInt: chan int,
+         ChannelStr: chan string,
+         ChannelStruct: chan godump.Detail,
          Array: [3]int:3:3 {
             4,
             5,
@@ -63,7 +60,7 @@
          SubNode: #6 &godump.SubNode {
             Code: 100,
             Parent: #7 &nil,
-            Data: map[string]*godump.Node:0 {
+            Data: []*godump.Node:0:0 {
             },
             SubDetails: []godump.Detail:1:1 {
                godump.Detail {
@@ -90,7 +87,7 @@
                   },
                },
             },
-            ChannelSub: ,
+            ChannelSub: chan *godump.SubNode,
          },
          CyclicReference: &#7,
          NamedTypes: godump.NamedTypes {
@@ -121,10 +118,8 @@
          BoolField: true,
          Children: []*godump.Node:0:0 {
          },
-         Attributes: map[string]interface {}:3 {
-            "attrA": "valueA",
-            "attrB": 20,
-            "attrC": []string:3:3 {
+         Attributes: map[string]interface {}:1 {
+            "attr": []string:3:3 {
                "a",
                "b",
                "c",
@@ -133,9 +128,9 @@
          IntPointer: &#3,
          StringPointer: &#4,
          MapPointer: &#5,
-         ChannelInt: ,
-         ChannelStr: ,
-         ChannelStruct: ,
+         ChannelInt: chan int,
+         ChannelStr: chan string,
+         ChannelStruct: chan godump.Detail,
          Array: [3]int:3:3 {
             7,
             8,
@@ -144,7 +139,7 @@
          SubNode: #10 &godump.SubNode {
             Code: 200,
             Parent: &#7,
-            Data: map[string]*godump.Node:0 {
+            Data: []*godump.Node:0:0 {
             },
             SubDetails: []godump.Detail:1:1 {
                godump.Detail {
@@ -171,7 +166,7 @@
                   },
                },
             },
-            ChannelSub: ,
+            ChannelSub: chan *godump.SubNode,
          },
          CyclicReference: &#7,
          NamedTypes: godump.NamedTypes {
@@ -183,9 +178,8 @@
          },
       },
    },
-   Attributes: map[string]interface {}:2 {
-      "globalAttr1": "globalValue1",
-      "globalAttr2": []int:3:3 {
+   Attributes: map[string]interface {}:1 {
+      "globalAttr": []int:3:3 {
          100,
          200,
          300,
@@ -194,9 +188,9 @@
    IntPointer: &#3,
    StringPointer: &#4,
    MapPointer: &#5,
-   ChannelInt: ,
-   ChannelStr: ,
-   ChannelStruct: ,
+   ChannelInt: chan int,
+   ChannelStr: chan string,
+   ChannelStruct: chan godump.Detail,
    Array: [3]int:3:3 {
       1,
       2,
@@ -205,8 +199,8 @@
    SubNode: #12 &godump.SubNode {
       Code: 999,
       Parent: &#7,
-      Data: map[string]*godump.Node:2 {
-         "child1": #13 &godump.Node {
+      Data: []*godump.Node:2:2 {
+         #13 &godump.Node {
             ID: 4,
             Int8Field: 38,
             Int16Field: 316,
@@ -251,9 +245,9 @@
                   IntPointer: &#3,
                   StringPointer: &#4,
                   MapPointer: &#5,
-                  ChannelInt: ,
-                  ChannelStr: ,
-                  ChannelStruct: ,
+                  ChannelInt: chan int,
+                  ChannelStr: chan string,
+                  ChannelStruct: chan godump.Detail,
                   Array: [3]int:3:3 {
                      13,
                      14,
@@ -271,14 +265,14 @@
                },
             },
             Attributes: map[string]interface {}:1 {
-               "grandAttr1": "grandValue1",
+               "grandAttr": "grandValue1",
             },
             IntPointer: &#3,
             StringPointer: &#4,
             MapPointer: &#5,
-            ChannelInt: ,
-            ChannelStr: ,
-            ChannelStruct: ,
+            ChannelInt: chan int,
+            ChannelStr: chan string,
+            ChannelStruct: chan godump.Detail,
             Array: [3]int:3:3 {
                10,
                11,
@@ -294,7 +288,7 @@
                },
             },
          },
-         "child2": #15 &godump.Node {
+         #15 &godump.Node {
             ID: 6,
             Int8Field: 58,
             Int16Field: 516,
@@ -334,14 +328,14 @@
                   Children: []*godump.Node:0:0 {
                   },
                   Attributes: map[string]interface {}:1 {
-                     "greatAttr2": "greatValue2",
+                     "greatAttr": "greatValue2",
                   },
                   IntPointer: &#3,
                   StringPointer: &#4,
                   MapPointer: &#5,
-                  ChannelInt: ,
-                  ChannelStr: ,
-                  ChannelStruct: ,
+                  ChannelInt: chan int,
+                  ChannelStr: chan string,
+                  ChannelStruct: chan godump.Detail,
                   Array: [3]int:3:3 {
                      19,
                      20,
@@ -359,14 +353,14 @@
                },
             },
             Attributes: map[string]interface {}:1 {
-               "grandAttr2": "grandValue2",
+               "grandAttr": "grandValue2",
             },
             IntPointer: &#3,
             StringPointer: &#4,
             MapPointer: &#5,
-            ChannelInt: ,
-            ChannelStr: ,
-            ChannelStruct: ,
+            ChannelInt: chan int,
+            ChannelStr: chan string,
+            ChannelStruct: chan godump.Detail,
             Array: [3]int:3:3 {
                16,
                17,
@@ -385,16 +379,15 @@
       },
       SubDetails: []godump.Detail:0:0 {
       },
-      ChannelSub: ,
+      ChannelSub: chan *godump.SubNode,
    },
    CyclicReference: #17 &&#1,
    NamedTypes: godump.NamedTypes {
       NamedInt: 99,
       NamedFloat: 99.99,
       NamedStr: "NamedValue",
-      NamedMap: map[string]string:2 {
+      NamedMap: map[string]string:1 {
          "keyA": "valueA",
-         "keyB": "valueB",
       },
    },
 }
