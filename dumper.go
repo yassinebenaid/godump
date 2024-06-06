@@ -11,6 +11,7 @@ type pointer struct {
 	pos    int
 	tagged bool
 }
+
 type dumper struct {
 	buf   []byte
 	theme theme
@@ -58,7 +59,9 @@ func (d *dumper) dump(v any, ignore_depth ...bool) {
 		d.write(d.theme.Number.apply(v.(string)))
 	case reflect.Invalid:
 		d.write(d.theme.Nil.apply("nil"))
-
+	case reflect.Uintptr:
+		v = fmt.Sprint(reflect.ValueOf(v).Uint())
+		d.write(d.theme.Number.apply(v.(string)))
 	}
 }
 
