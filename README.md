@@ -4,6 +4,8 @@
 
 <div align="center">
 
+
+[![Tests](https://github.com/yassinebenaid/godump/actions/workflows/test.yml/badge.svg)](https://github.com/yassinebenaid/godump/actions/workflows/test.yml)
 [![Version](https://badge.fury.io/gh/yassinebenaid%2Fgodump.svg)](https://badge.fury.io/gh/yassinebenaid%2Fgodump)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENCE)
 
