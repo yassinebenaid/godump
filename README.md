@@ -1,4 +1,11 @@
 <div align="center"> 
+
+<div width="50px" height="50px">
+
+![binoculars (3)](https://github.com/yassinebenaid/godump/assets/101285507/f2d40c7a-6f5c-4dd9-9580-3accc74efeb4)
+
+</div>
+
 <h1> godump </h1>
 </div>
 
@@ -11,9 +18,9 @@
 
 </div>
 
-A simple GO library to dump any GO variable in a structured and colored way.
+A versatile Go library designed to output any Go variable in a structured and colored format.
 
-Useful during development when the standard `fmt` library doesn't help you extract arbitrary data.
+This library is especially useful for debugging and testing when the standard fmt library falls short in displaying arbitrary data effectively. It can also serve as a powerful logging adapter, providing clear and readable logs for both development and production environments.
 
 ## Get Started
 
