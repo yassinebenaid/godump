@@ -27,12 +27,12 @@ func TestDumper(t *testing.T) {
 		{uint16(123), "123"},
 		{uint32(123), "123"},
 		{uint64(123), "123"},
-		{float32(12.3), "12.300000190734863"},   // due to float64 casting caused by the `reflect` package
-		{float32(-12.3), "-12.300000190734863"}, // due to float64 casting caused by the `reflect` package
+		{float32(12.3), "12.3"},
+		{float32(-12.3), "-12.3"},
 		{float64(12.3), "12.3"},
 		{float64(-12.3), "-12.3"},
-		{complex64(12.3), "(12.300000190734863+0i)"},
-		{complex64(-12.3), "(-12.300000190734863+0i)"},
+		{complex64(12.3), "(12.3+0i)"},
+		{complex64(-12.3), "(-12.3+0i)"},
 		{complex128(12.3), "(12.3+0i)"},
 		{complex128(-12.3), "(-12.3+0i)"},
 		{true, "true"},
@@ -131,9 +131,9 @@ func TestDumper(t *testing.T) {
 		{
 			[]float32{1.2, 3.4, 5.6},
 			`[]float32:3:3 {
-   1.2000000476837158,
-   3.4000000953674316,
-   5.599999904632568,
+   1.2,
+   3.4,
+   5.6,
 }`,
 		},
 		{
@@ -148,7 +148,7 @@ func TestDumper(t *testing.T) {
 			[]complex64{1, 2.3, -4},
 			`[]complex64:3:3 {
    (1+0i),
-   (2.299999952316284+0i),
+   (2.3+0i),
    (-4+0i),
 }`,
 		},

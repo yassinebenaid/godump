@@ -51,22 +51,15 @@ func (d *dumper) dump(v any, ignore_depth ...bool) {
 	case reflect.Pointer:
 		d.dumpPointer(v)
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		v = fmt.Sprint(reflect.ValueOf(v).Int())
-		d.write(d.theme.Number.apply(v.(string)))
-	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-		v = fmt.Sprint(reflect.ValueOf(v).Uint())
-		d.write(d.theme.Number.apply(v.(string)))
+		d.write(d.theme.Number.apply(fmt.Sprint(v)))
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
+		d.write(d.theme.Number.apply(fmt.Sprint(v)))
 	case reflect.Float32, reflect.Float64:
-		v = fmt.Sprint(reflect.ValueOf(v).Float())
-		d.write(d.theme.Number.apply(v.(string)))
+		d.write(d.theme.Number.apply(fmt.Sprint(v)))
 	case reflect.Complex64, reflect.Complex128:
-		v = fmt.Sprint(reflect.ValueOf(v).Complex())
-		d.write(d.theme.Number.apply(v.(string)))
+		d.write(d.theme.Number.apply(fmt.Sprint(v)))
 	case reflect.Invalid:
 		d.write(d.theme.Nil.apply("nil"))
-	case reflect.Uintptr:
-		v = fmt.Sprint(reflect.ValueOf(v).Uint())
-		d.write(d.theme.Number.apply(v.(string)))
 	}
 }
 
