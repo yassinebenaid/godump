@@ -151,7 +151,7 @@ func (d *dumper) tagPtr(ptr *pointer) {
 func (d *dumper) dumpStruct(v reflect.Value) {
 	vtype, numFields := v.Type(), v.NumField()
 
-	if t := vtype.String(); t == "" {
+	if t := vtype.String(); strings.HasPrefix(t, "struct") {
 		d.write(d.theme.VarType.apply("struct {"))
 	} else {
 		d.write(d.theme.VarType.apply(t + " {"))

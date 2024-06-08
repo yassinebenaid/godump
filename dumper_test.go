@@ -183,6 +183,8 @@ func TestDumper(t *testing.T) {
 		{make(map[any]any), "map[interface {}]interface {}:0 {}"},
 		{map[string]int{"x": 123}, `map[string]int:1 {
    "x": 123,
+}`}, {struct{ Name string }{"yassinebenaid"}, `struct {
+   Name: "yassinebenaid",
 }`},
 	}
 
