@@ -37,7 +37,7 @@ func (d *dumper) dump(v any, ignore_depth ...bool) {
 	case reflect.Slice, reflect.Array:
 		d.dumpSlice(val)
 	case reflect.Map:
-		d.dumpMap(v)
+		d.dumpMap(val)
 	case reflect.Func:
 		d.write(d.theme.Func.apply(val.Type().String()))
 	case reflect.Chan:
@@ -83,18 +83,16 @@ func (d *dumper) dumpSlice(v reflect.Value) {
 	d.write(d.theme.VarType.apply("}"))
 }
 
-func (d *dumper) dumpMap(v any) {
-	value := reflect.ValueOf(v)
-	keys := value.MapKeys()
-
-	d.write(d.theme.VarType.apply(fmt.Sprintf("%T:%d {", v, len(keys))))
+func (d *dumper) dumpMap(v reflect.Value) {
+	keys := v.MapKeys()
+	d.write(d.theme.VarType.apply(fmt.Sprintf("%s:%d {", v.Type(), len(keys))))
 
 	d.depth++
 	for _, key := range keys {
 		d.write("\n")
 		d.dump(key.Interface())
 		d.write((": "))
-		d.dump(value.MapIndex(key).Interface(), true)
+		d.dump(v.MapIndex(key).Interface(), true)
 		d.write((","))
 	}
 	d.depth--
