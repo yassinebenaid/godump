@@ -188,10 +188,6 @@ func (d *dumper) dumpStructKey(key reflect.StructField) {
 	d.write(d.theme.StructField.apply(key.Name))
 }
 
-func (d *dumper) write(s string) {
-	d.buf = append(d.buf, []byte(s)...)
-}
-
 func (d *dumper) tagPtr(ptr *pointer) {
 	var shifted int
 
@@ -205,6 +201,10 @@ func (d *dumper) tagPtr(ptr *pointer) {
 	nbuf = append(nbuf, []byte(d.theme.PointerCounter.apply(fmt.Sprintf("#%d", ptr.id)))...)
 	nbuf = append(nbuf, d.buf[ptr.pos+shifted:]...)
 	d.buf = nbuf
+}
+
+func (d *dumper) write(s string) {
+	d.buf = append(d.buf, []byte(s)...)
 }
 
 func (d *dumper) indent() {
