@@ -129,9 +129,7 @@ func (d *dumper) dumpPointer(v reflect.Value) {
 	}
 
 	d.write(d.theme.PointerSign.apply("&"))
-
 	d.dump(v.Elem(), true)
-
 }
 
 func (d *dumper) tagPtr(ptr *pointer) {
