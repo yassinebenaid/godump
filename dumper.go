@@ -25,19 +25,23 @@ func (d *dumper) dump(v any, ignore_depth ...bool) {
 		d.indent()
 	}
 
-	switch reflect.ValueOf(v).Kind() {
+	val := reflect.ValueOf(v)
+
+	switch val.Kind() {
 	case reflect.String:
-		d.dumpString(fmt.Sprint(v))
+		d.write(d.theme.Quotes.apply(`"`) +
+			d.theme.String.apply(val.String()) +
+			d.theme.Quotes.apply(`"`))
 	case reflect.Bool:
-		d.write(d.theme.Bool.apply(fmt.Sprintf("%t", v)))
+		d.write(d.theme.Bool.apply(fmt.Sprintf("%t", val.Bool())))
 	case reflect.Slice, reflect.Array:
 		d.dumpSlice(v)
 	case reflect.Map:
 		d.dumpMap(v)
 	case reflect.Func:
-		d.write(d.theme.Func.apply(fmt.Sprintf("%T", v)))
+		d.write(d.theme.Func.apply(val.Type().String()))
 	case reflect.Chan:
-		d.write(d.theme.VarType.apply(fmt.Sprintf("%T", v)))
+		d.write(d.theme.VarType.apply(val.Type().String()))
 		cap := reflect.ValueOf(v).Cap()
 		if cap > 0 {
 			d.write(d.theme.VarType.apply(fmt.Sprintf("<%d>", cap)))
@@ -64,12 +68,6 @@ func (d *dumper) dump(v any, ignore_depth ...bool) {
 		v = fmt.Sprint(reflect.ValueOf(v).Uint())
 		d.write(d.theme.Number.apply(v.(string)))
 	}
-}
-
-func (d *dumper) dumpString(v string) {
-	d.write(d.theme.Quotes.apply(`"`))
-	d.write(d.theme.String.apply(v))
-	d.write(d.theme.Quotes.apply(`"`))
 }
 
 func (d *dumper) dumpSlice(v any) {
