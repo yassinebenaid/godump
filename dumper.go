@@ -20,12 +20,10 @@ type dumper struct {
 	ptrs        map[uintptr]*pointer
 }
 
-func (d *dumper) dump(v any, ignore_depth ...bool) {
+func (d *dumper) dump(val reflect.Value, ignore_depth ...bool) {
 	if len(ignore_depth) <= 0 || !ignore_depth[0] {
 		d.indent()
 	}
-
-	val := reflect.ValueOf(v)
 
 	switch val.Kind() {
 	case reflect.String:
@@ -50,15 +48,17 @@ func (d *dumper) dump(v any, ignore_depth ...bool) {
 	case reflect.Pointer:
 		d.dumpPointer(val)
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		d.write(d.theme.Number.apply(fmt.Sprint(v)))
+		d.write(d.theme.Number.apply(fmt.Sprint(val)))
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
-		d.write(d.theme.Number.apply(fmt.Sprint(v)))
+		d.write(d.theme.Number.apply(fmt.Sprint(val)))
 	case reflect.Float32, reflect.Float64:
-		d.write(d.theme.Number.apply(fmt.Sprint(v)))
+		d.write(d.theme.Number.apply(fmt.Sprint(val)))
 	case reflect.Complex64, reflect.Complex128:
-		d.write(d.theme.Number.apply(fmt.Sprint(v)))
+		d.write(d.theme.Number.apply(fmt.Sprint(val)))
 	case reflect.Invalid:
 		d.write(d.theme.Nil.apply("nil"))
+	case reflect.Interface:
+		d.dump(val.Elem(), true)
 	}
 }
 
@@ -70,7 +70,7 @@ func (d *dumper) dumpSlice(v reflect.Value) {
 	d.depth++
 	for i := 0; i < length; i++ {
 		d.write("\n")
-		d.dump(v.Index(i).Interface())
+		d.dump(v.Index(i))
 		d.write(",")
 	}
 	d.depth--
@@ -90,9 +90,9 @@ func (d *dumper) dumpMap(v reflect.Value) {
 	d.depth++
 	for _, key := range keys {
 		d.write("\n")
-		d.dump(key.Interface())
+		d.dump(key)
 		d.write((": "))
-		d.dump(v.MapIndex(key).Interface(), true)
+		d.dump(v.MapIndex(key), true)
 		d.write((","))
 	}
 	d.depth--
@@ -130,12 +130,7 @@ func (d *dumper) dumpPointer(v reflect.Value) {
 
 	d.write(d.theme.PointerSign.apply("&"))
 
-	actual := v.Elem()
-	if actual.IsValid() {
-		d.dump(actual.Interface(), true)
-	} else {
-		d.write(d.theme.Nil.apply("nil"))
-	}
+	d.dump(v.Elem(), true)
 
 }
 
@@ -175,7 +170,7 @@ func (d *dumper) dumpStruct(v reflect.Value) {
 		if !key.IsExported() {
 			d.write(d.theme.VarType.apply(key.Type.String()))
 		} else {
-			d.dump(v.Field(i).Interface(), true)
+			d.dump(v.Field(i), true)
 		}
 
 		d.write((","))

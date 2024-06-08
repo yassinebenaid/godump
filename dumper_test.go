@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"math/cmplx"
 	"os"
+	"reflect"
 	"testing"
 )
 
@@ -217,7 +218,7 @@ func TestDumper(t *testing.T) {
 
 	for i, tc := range testCases {
 		var d dumper
-		d.dump(tc.inputVar)
+		d.dump(reflect.ValueOf(tc.inputVar))
 
 		if returned := string(d.buf); returned != tc.expected {
 			t.Fatalf(`Case#%d failed, dumper returned unuexpected results : "%s" (%d), expected "%s" (%d)`, i, returned, len(returned), tc.expected,
@@ -584,7 +585,7 @@ func TestDumperWithComplexDataStructure(t *testing.T) {
 	}
 
 	var d dumper
-	d.dump(root)
+	d.dump(reflect.ValueOf(root))
 	returned := d.buf
 
 	r_lines := bytes.Split(returned, []byte("\n"))
