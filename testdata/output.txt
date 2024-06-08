@@ -35,8 +35,7 @@
          Complex128Field: (-7.315110094901103+1.0427436562359045i),
          StringField: "ChildNode1",
          BoolField: false,
-         Children: []*godump.Node:0:0 {
-         },
+         Children: []*godump.Node:0:0 {},
          Attributes: map[string]interface {}:1 {
             "attr": []float64:3:3 {
                1.1,
@@ -60,8 +59,7 @@
          SubNode: &godump.SubNode {
             Code: 100,
             Parent: #7&nil,
-            Data: []*godump.Node:0:0 {
-            },
+            Data: []*godump.Node:0:0 {},
             SubDetails: []godump.Detail:1:1 {
                godump.Detail {
                   Info: "Detail1",
@@ -94,8 +92,7 @@
             NamedInt: 0,
             NamedFloat: 0,
             NamedStr: "",
-            NamedMap: map[string]string:0 {
-            },
+            NamedMap: map[string]string:0 {},
          },
       },
       &godump.Node {
@@ -116,8 +113,7 @@
          Complex128Field: (-13.128783081462158-15.200784463067954i),
          StringField: "ChildNode2",
          BoolField: true,
-         Children: []*godump.Node:0:0 {
-         },
+         Children: []*godump.Node:0:0 {},
          Attributes: map[string]interface {}:1 {
             "attr": []string:3:3 {
                "a",
@@ -139,8 +135,7 @@
          SubNode: &godump.SubNode {
             Code: 200,
             Parent: &@7,
-            Data: []*godump.Node:0:0 {
-            },
+            Data: []*godump.Node:0:0 {},
             SubDetails: []godump.Detail:1:1 {
                godump.Detail {
                   Info: "DetailA",
@@ -173,8 +168,7 @@
             NamedInt: 0,
             NamedFloat: 0,
             NamedStr: "",
-            NamedMap: map[string]string:0 {
-            },
+            NamedMap: map[string]string:0 {},
          },
       },
    },
@@ -237,8 +231,7 @@
                   Complex128Field: (142.50190551820737-41.468936789922886i),
                   StringField: "GreatGrandChildNode1",
                   BoolField: true,
-                  Children: []*godump.Node:0:0 {
-                  },
+                  Children: []*godump.Node:0:0 {},
                   Attributes: map[string]interface {}:1 {
                      "greatAttr": "greatValue",
                   },
@@ -259,8 +252,7 @@
                      NamedInt: 0,
                      NamedFloat: 0,
                      NamedStr: "",
-                     NamedMap: map[string]string:0 {
-                     },
+                     NamedMap: map[string]string:0 {},
                   },
                },
             },
@@ -284,8 +276,7 @@
                NamedInt: 0,
                NamedFloat: 0,
                NamedStr: "",
-               NamedMap: map[string]string:0 {
-               },
+               NamedMap: map[string]string:0 {},
             },
          },
          &godump.Node {
@@ -325,8 +316,7 @@
                   Complex128Field: (-159.56016162698737+1084.963058811841i),
                   StringField: "GreatGrandChildNode2",
                   BoolField: false,
-                  Children: []*godump.Node:0:0 {
-                  },
+                  Children: []*godump.Node:0:0 {},
                   Attributes: map[string]interface {}:1 {
                      "greatAttr": "greatValue2",
                   },
@@ -347,8 +337,7 @@
                      NamedInt: 0,
                      NamedFloat: 0,
                      NamedStr: "",
-                     NamedMap: map[string]string:0 {
-                     },
+                     NamedMap: map[string]string:0 {},
                   },
                },
             },
@@ -372,13 +361,11 @@
                NamedInt: 0,
                NamedFloat: 0,
                NamedStr: "",
-               NamedMap: map[string]string:0 {
-               },
+               NamedMap: map[string]string:0 {},
             },
          },
       },
-      SubDetails: []godump.Detail:0:0 {
-      },
+      SubDetails: []godump.Detail:0:0 {},
       ChannelSub: chan *godump.SubNode,
    },
    CyclicReference: &&@1,

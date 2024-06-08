@@ -82,10 +82,16 @@ func (d *dumper) dumpSlice(v any) {
 	for i := 0; i < length; i++ {
 		d.write("\n")
 		d.dump(value.Index(i).Interface())
-		d.write((","))
+		d.write(",")
 	}
 	d.depth--
-	d.write("\n" + strings.Repeat("   ", d.depth) + d.theme.VarType.apply("}"))
+
+	if length > 0 {
+		d.write("\n")
+		d.write(strings.Repeat("   ", d.depth))
+	}
+
+	d.write(d.theme.VarType.apply("}"))
 }
 
 func (d *dumper) dumpMap(v any) {
@@ -104,7 +110,12 @@ func (d *dumper) dumpMap(v any) {
 	}
 	d.depth--
 
-	d.write("\n" + strings.Repeat("   ", d.depth) + d.theme.VarType.apply("}"))
+	if len(keys) > 0 {
+		d.write("\n")
+		d.write(strings.Repeat("   ", d.depth))
+	}
+
+	d.write(d.theme.VarType.apply("}"))
 }
 
 func (d *dumper) dumpPointer(v any) {
@@ -169,7 +180,12 @@ func (d *dumper) dumpStruct(v any) {
 	}
 	d.depth--
 
-	d.write("\n" + strings.Repeat("   ", d.depth) + d.theme.VarType.apply("}"))
+	if def.NumField() > 0 {
+		d.write("\n")
+		d.write(strings.Repeat("   ", d.depth))
+	}
+
+	d.write(d.theme.VarType.apply("}"))
 }
 
 func (d *dumper) dumpStructKey(key reflect.StructField) {

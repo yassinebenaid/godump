@@ -42,7 +42,7 @@ func TestDumper(t *testing.T) {
 		{func(int) {}, "func(int)"},
 		{func() int { return 123 }, "func() int"},
 		{func() {}, "func()"},
-		{make([]any, 0, 5), "[]interface {}:0:5 {\n}"},
+		{make([]any, 0, 5), "[]interface {}:0:5 {}"},
 		{make([]any, 3, 5), `[]interface {}:3:5 {
    nil,
    nil,
@@ -179,7 +179,7 @@ func TestDumper(t *testing.T) {
    func() int,
 }`,
 		},
-		{make(map[any]any), "map[interface {}]interface {}:0 {\n}"},
+		{make(map[any]any), "map[interface {}]interface {}:0 {}"},
 		{map[string]int{"x": 123}, `map[string]int:1 {
    "x": 123,
 }`},
