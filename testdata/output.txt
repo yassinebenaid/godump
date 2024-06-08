@@ -87,6 +87,7 @@
             },
             ChannelSub: chan *godump.SubNode,
          },
+         #privateSubNode: *godump.SubNode,
          CyclicReference: &@7,
          NamedTypes: godump.NamedTypes {
             NamedInt: 0,
@@ -163,6 +164,7 @@
             },
             ChannelSub: chan *godump.SubNode,
          },
+         #privateSubNode: *godump.SubNode,
          CyclicReference: &@7,
          NamedTypes: godump.NamedTypes {
             NamedInt: 0,
@@ -247,6 +249,7 @@
                      15,
                   },
                   SubNode: &@7,
+                  #privateSubNode: *godump.SubNode,
                   CyclicReference: &@7,
                   NamedTypes: godump.NamedTypes {
                      NamedInt: 0,
@@ -271,6 +274,7 @@
                12,
             },
             SubNode: &@7,
+            #privateSubNode: *godump.SubNode,
             CyclicReference: &@7,
             NamedTypes: godump.NamedTypes {
                NamedInt: 0,
@@ -332,6 +336,7 @@
                      21,
                   },
                   SubNode: &@7,
+                  #privateSubNode: *godump.SubNode,
                   CyclicReference: &@7,
                   NamedTypes: godump.NamedTypes {
                      NamedInt: 0,
@@ -356,6 +361,7 @@
                18,
             },
             SubNode: &@7,
+            #privateSubNode: *godump.SubNode,
             CyclicReference: &@7,
             NamedTypes: godump.NamedTypes {
                NamedInt: 0,
@@ -368,6 +374,7 @@
       SubDetails: []godump.Detail:0:0 {},
       ChannelSub: chan *godump.SubNode,
    },
+   #privateSubNode: *godump.SubNode,
    CyclicReference: &&@1,
    NamedTypes: godump.NamedTypes {
       NamedInt: 99,

@@ -46,7 +46,7 @@ func (d *dumper) dump(v any, ignore_depth ...bool) {
 			d.write(d.theme.VarType.apply(fmt.Sprintf("<%d>", cap)))
 		}
 	case reflect.Struct:
-		d.dumpStruct(v)
+		d.dumpStruct(val)
 	case reflect.Pointer:
 		d.dumpPointer(val)
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
@@ -139,50 +139,6 @@ func (d *dumper) dumpPointer(v reflect.Value) {
 
 }
 
-func (d *dumper) dumpStruct(v any) {
-	typ := fmt.Sprintf("%T", v)
-	if strings.HasPrefix(typ, "struct") {
-		typ = "struct"
-	}
-	d.write(d.theme.VarType.apply(typ + " {"))
-
-	def := reflect.TypeOf(v)
-	value := reflect.ValueOf(v)
-
-	d.depth++
-	for i := 0; i < def.NumField(); i++ {
-		d.write("\n")
-		k := def.Field(i)
-		d.dumpStructKey(k)
-		d.write((": "))
-
-		if !k.IsExported() {
-			d.write(d.theme.VarType.apply(fmt.Sprintf("%v", k.Type)))
-			continue
-		}
-
-		d.dump(value.Field(i).Interface(), true)
-
-		d.write((","))
-	}
-	d.depth--
-
-	if def.NumField() > 0 {
-		d.write("\n")
-		d.indent()
-	}
-
-	d.write(d.theme.VarType.apply("}"))
-}
-
-func (d *dumper) dumpStructKey(key reflect.StructField) {
-	d.indent()
-	if !key.IsExported() {
-		d.write(d.theme.StructFieldHash.apply("#"))
-	}
-	d.write(d.theme.StructField.apply(key.Name))
-}
-
 func (d *dumper) tagPtr(ptr *pointer) {
 	var shifted int
 
@@ -196,6 +152,45 @@ func (d *dumper) tagPtr(ptr *pointer) {
 	nbuf = append(nbuf, []byte(d.theme.PointerCounter.apply(fmt.Sprintf("#%d", ptr.id)))...)
 	nbuf = append(nbuf, d.buf[ptr.pos+shifted:]...)
 	d.buf = nbuf
+}
+
+func (d *dumper) dumpStruct(v reflect.Value) {
+	if t := v.Type().String(); t == "" {
+		d.write(d.theme.VarType.apply("struct {"))
+	} else {
+		d.write(d.theme.VarType.apply(t + " {"))
+	}
+
+	vtype := v.Type()
+
+	d.depth++
+	for i := 0; i < v.NumField(); i++ {
+		d.write("\n")
+		d.indent()
+
+		key := vtype.Field(i)
+		if !key.IsExported() {
+			d.write(d.theme.StructFieldHash.apply("#"))
+		}
+		d.write(d.theme.StructField.apply(key.Name))
+		d.write((": "))
+
+		if !key.IsExported() {
+			d.write(d.theme.VarType.apply(key.Type.String()))
+		} else {
+			d.dump(v.Field(i).Interface(), true)
+		}
+
+		d.write((","))
+	}
+	d.depth--
+
+	if v.NumField() > 0 {
+		d.write("\n")
+		d.indent()
+	}
+
+	d.write(d.theme.VarType.apply("}"))
 }
 
 func (d *dumper) write(s string) {

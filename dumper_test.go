@@ -256,6 +256,7 @@ type Node struct {
 	ChannelStruct   chan Detail
 	Array           [3]int
 	SubNode         *SubNode
+	privateSubNode  *SubNode
 	CyclicReference **Node
 	NamedTypes      NamedTypes
 }
@@ -344,6 +345,25 @@ func TestDumperWithComplexDataStructure(t *testing.T) {
 					"attr": []float64{1.1, 2.2, 3.3},
 				},
 				SubNode: &SubNode{
+					Code: 100,
+					SubDetails: []Detail{
+						{
+							Info:  "Detail1",
+							Count: 1,
+							Next: &Detail{
+								Info:        "Detail2",
+								Count:       2,
+								Next:        nil,
+								DetailMap:   map[string]bool{"key1": true},
+								DetailSlice: []complex64{1 + 1i, 2 + 2i},
+							},
+							DetailMap:   map[string]bool{"key2": false},
+							DetailSlice: []complex64{3 + 3i, 4 + 4i},
+						},
+					},
+					ChannelSub: channelSub,
+				},
+				privateSubNode: &SubNode{
 					Code: 100,
 					SubDetails: []Detail{
 						{
