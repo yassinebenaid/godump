@@ -169,9 +169,6 @@ func (d *dumper) dumpStruct(v reflect.Value) {
 		d.indent()
 
 		key := vtype.Field(i)
-		if !key.IsExported() {
-			d.write(d.theme.StructFieldHash.apply("#"))
-		}
 		d.write(d.theme.StructField.apply(key.Name))
 		d.write((": "))
 
