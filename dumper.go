@@ -48,7 +48,7 @@ func (d *dumper) dump(v any, ignore_depth ...bool) {
 	case reflect.Struct:
 		d.dumpStruct(v)
 	case reflect.Pointer:
-		d.dumpPointer(v)
+		d.dumpPointer(val)
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		d.write(d.theme.Number.apply(fmt.Sprint(v)))
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
@@ -105,14 +105,14 @@ func (d *dumper) dumpMap(v reflect.Value) {
 	d.write(d.theme.VarType.apply("}"))
 }
 
-func (d *dumper) dumpPointer(v any) {
+func (d *dumper) dumpPointer(v reflect.Value) {
 	if d.ptrs == nil {
 		d.ptrs = make(map[uintptr]*pointer)
 	}
 
-	ptr := uintptr(reflect.ValueOf(v).UnsafePointer())
+	addr := uintptr(v.UnsafePointer())
 
-	if p, ok := d.ptrs[ptr]; ok {
+	if p, ok := d.ptrs[addr]; ok {
 		d.write(d.theme.PointerSign.apply("&"))
 		d.write(d.theme.PointerCounter.apply(fmt.Sprintf("@%d", p.id)))
 
@@ -123,14 +123,14 @@ func (d *dumper) dumpPointer(v any) {
 		return
 	}
 
-	d.ptrs[ptr] = &pointer{
+	d.ptrs[addr] = &pointer{
 		id:  len(d.ptrs) + 1,
 		pos: len(d.buf),
 	}
 
 	d.write(d.theme.PointerSign.apply("&"))
 
-	actual := reflect.ValueOf(v).Elem()
+	actual := v.Elem()
 	if actual.IsValid() {
 		d.dump(actual.Interface(), true)
 	} else {
