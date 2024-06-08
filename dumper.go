@@ -155,13 +155,13 @@ func (d *dumper) tagPtr(ptr *pointer) {
 }
 
 func (d *dumper) dumpStruct(v reflect.Value) {
-	if t := v.Type().String(); t == "" {
+	vtype := v.Type()
+
+	if t := vtype.String(); t == "" {
 		d.write(d.theme.VarType.apply("struct {"))
 	} else {
 		d.write(d.theme.VarType.apply(t + " {"))
 	}
-
-	vtype := v.Type()
 
 	d.depth++
 	for i := 0; i < v.NumField(); i++ {
