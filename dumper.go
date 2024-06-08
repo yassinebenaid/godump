@@ -35,15 +35,14 @@ func (d *dumper) dump(v any, ignore_depth ...bool) {
 	case reflect.Bool:
 		d.write(d.theme.Bool.apply(fmt.Sprintf("%t", val.Bool())))
 	case reflect.Slice, reflect.Array:
-		d.dumpSlice(v)
+		d.dumpSlice(val)
 	case reflect.Map:
 		d.dumpMap(v)
 	case reflect.Func:
 		d.write(d.theme.Func.apply(val.Type().String()))
 	case reflect.Chan:
 		d.write(d.theme.VarType.apply(val.Type().String()))
-		cap := reflect.ValueOf(v).Cap()
-		if cap > 0 {
+		if cap := val.Cap(); cap > 0 {
 			d.write(d.theme.VarType.apply(fmt.Sprintf("<%d>", cap)))
 		}
 	case reflect.Struct:
@@ -63,17 +62,15 @@ func (d *dumper) dump(v any, ignore_depth ...bool) {
 	}
 }
 
-func (d *dumper) dumpSlice(v any) {
-	value := reflect.ValueOf(v)
-	length := value.Len()
-	capacity := value.Cap()
+func (d *dumper) dumpSlice(v reflect.Value) {
+	length := v.Len()
 
-	d.write(d.theme.VarType.apply(fmt.Sprintf("%T:%d:%d {", v, length, capacity)))
+	d.write(d.theme.VarType.apply(fmt.Sprintf("%s:%d:%d {", v.Type(), length, v.Cap())))
 
 	d.depth++
 	for i := 0; i < length; i++ {
 		d.write("\n")
-		d.dump(value.Index(i).Interface())
+		d.dump(v.Index(i).Interface())
 		d.write(",")
 	}
 	d.depth--
