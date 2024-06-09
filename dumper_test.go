@@ -304,36 +304,10 @@ func TestCanDumpPrimitives(t *testing.T) {
 	node.PtrTypedChan1 = &tch1
 	node.PtrTypedChan2 = &tch2
 
-	expectedOutput, err := os.ReadFile("./testdata/primitives.txt")
-	if err != nil {
-		t.Fatal(err)
-	}
-
 	var d dumper
 	d.dump(reflect.ValueOf(node))
 
-	returned := d.buf
-
-	r_lines := bytes.Split(returned, []byte("\n"))
-	e_lines := bytes.Split(expectedOutput, []byte("\n"))
-
-	if len(r_lines) != len(e_lines) {
-		t.Fatalf("expected %d lines, got %d", len(e_lines), len(r_lines))
-	}
-
-	for i, line := range e_lines {
-		if len(line) != len(r_lines[i]) {
-			t.Fatalf(`mismatche at line %d:
---- "%s"
-+++ "%s"`, i+1, line, r_lines[i])
-		}
-
-		for j, ch := range line {
-			if ch != r_lines[i][j] {
-				t.Fatalf(`expected "%c", got "%c" at line %d:%d"`, ch, r_lines[i][j], i+1, j)
-			}
-		}
-	}
+	checkFromFeed(t, d.buf, "./testdata/primitives.txt")
 }
 
 func TestCanDumpStructes(t *testing.T) {
@@ -409,17 +383,180 @@ func TestCanDumpStructes(t *testing.T) {
 	node.Typed.Field2 = &node.Inline.Field2
 	node.Ref = &node
 
-	expectedOutput, err := os.ReadFile("./testdata/structs.txt")
+	var d dumper
+	d.dump(reflect.ValueOf(node))
+
+	checkFromFeed(t, d.buf, "./testdata/structs.txt")
+}
+
+func TestCanDumpPrivateStructes(t *testing.T) {
+
+	type number int
+
+	type child1 struct {
+		x int
+		y float64
+		z number
+	}
+
+	type child struct {
+		field1 child1
+
+		field2 *child
+	}
+
+	type node struct {
+		inline struct {
+			field1 struct {
+				x int
+				y float64
+				z number
+			}
+
+			field2 child
+		}
+
+		typed child
+
+		Ref *node
+	}
+
+	n := node{
+		inline: struct {
+			field1 struct {
+				x int
+				y float64
+				z number
+			}
+			field2 child
+		}{
+			field1: struct {
+				x int
+				y float64
+				z number
+			}{
+				x: 123,
+				y: 123.456,
+				z: number(987),
+			},
+
+			field2: child{
+				field1: child1{
+					x: 12344,
+					y: 578,
+					z: number(9876543),
+				},
+				field2: &child{
+					field1: child1{
+						x: 12344,
+						y: 578,
+						z: number(9876543),
+					},
+				},
+			},
+		},
+	}
+
+	n.inline.field2.field2.field2 = n.inline.field2.field2
+
+	n.typed.field2 = &n.inline.field2
+	n.Ref = &n
+
+	var d dumper
+	d.dump(reflect.ValueOf(n))
+
+	checkFromFeed(t, d.buf, "./testdata/private-structs.txt")
+}
+
+func TestCanDumpPrivateStructesWhenPrivateFieldsDumpingIsEnabled(t *testing.T) {
+
+	type number int
+
+	type child1 struct {
+		x int
+		y float64
+		z number
+	}
+
+	type child struct {
+		field1 child1
+
+		field2 *child
+	}
+
+	type node struct {
+		inline struct {
+			field1 struct {
+				x int
+				y float64
+				z number
+			}
+
+			field2 child
+		}
+
+		typed child
+
+		Ref *node
+	}
+
+	n := node{
+		inline: struct {
+			field1 struct {
+				x int
+				y float64
+				z number
+			}
+			field2 child
+		}{
+			field1: struct {
+				x int
+				y float64
+				z number
+			}{
+				x: 123,
+				y: 123.456,
+				z: number(987),
+			},
+
+			field2: child{
+				field1: child1{
+					x: 12344,
+					y: 578,
+					z: number(9876543),
+				},
+				field2: &child{
+					field1: child1{
+						x: 12344,
+						y: 578,
+						z: number(9876543),
+					},
+				},
+			},
+		},
+	}
+
+	n.inline.field2.field2.field2 = n.inline.field2.field2
+
+	n.typed.field2 = &n.inline.field2
+	n.Ref = &n
+
+	var d dumper
+	d.dumpPrivateFields = true
+	d.dump(reflect.ValueOf(n))
+
+	checkFromFeed(t, d.buf, "./testdata/private-structs-dumped.txt")
+}
+
+func checkFromFeed(t *testing.T, result []byte, feed_path string) {
+	t.Helper()
+
+	expectedOutput, err := os.ReadFile(feed_path)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var d dumper
-	d.dump(reflect.ValueOf(node))
-
-	returned := d.buf
-
-	r_lines := bytes.Split(returned, []byte("\n"))
+	r_lines := bytes.Split(result, []byte("\n"))
 	e_lines := bytes.Split(expectedOutput, []byte("\n"))
 
 	if len(r_lines) != len(e_lines) {
