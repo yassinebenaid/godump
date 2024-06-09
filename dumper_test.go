@@ -49,6 +49,10 @@ func TestCanDumpPrimitives(t *testing.T) {
 	type Func3Type func(...*any) any
 	type Func4Type func(byte, ...[]*complex128) bool
 
+	type ChanType chan struct{}
+	type Chan1Type <-chan struct{}
+	type Chan2Type chan<- struct{}
+
 	type Node struct {
 		Int        int
 		Int8       int8
@@ -161,6 +165,22 @@ func TestCanDumpPrimitives(t *testing.T) {
 		PtrTypedFunc2 *Func2Type
 		PtrTypedFunc3 *Func3Type
 		PtrTypedFunc4 *Func4Type
+
+		Chan  chan struct{}
+		Chan1 <-chan struct{}
+		Chan2 chan<- struct{}
+
+		ChanPtr  *chan struct{}
+		Chan1Ptr *<-chan struct{}
+		Chan2Ptr *chan<- struct{}
+
+		TypedChan  ChanType
+		TypedChan1 Chan1Type
+		TypedChan2 Chan2Type
+
+		PtrTypedChan  *ChanType
+		PtrTypedChan1 *Chan1Type
+		PtrTypedChan2 *Chan2Type
 	}
 
 	node := Node{
@@ -265,6 +285,24 @@ func TestCanDumpPrimitives(t *testing.T) {
 	node.PtrTypedFunc2 = &node.TypedFunc2
 	node.PtrTypedFunc3 = &node.TypedFunc3
 	node.PtrTypedFunc4 = &node.TypedFunc4
+
+	ch := make(chan struct{})
+	var ch2 <-chan struct{} = ch
+	var ch3 chan<- struct{} = ch
+
+	tch := ChanType(ch)
+	tch1 := Chan1Type(ch2)
+	tch2 := Chan2Type(ch3)
+
+	node.ChanPtr = &ch
+	node.Chan1Ptr = &ch2
+	node.Chan2Ptr = &ch3
+	node.TypedChan = ch
+	node.TypedChan1 = ch2
+	node.TypedChan2 = ch3
+	node.PtrTypedChan = &tch
+	node.PtrTypedChan1 = &tch1
+	node.PtrTypedChan2 = &tch2
 
 	expectedOutput, err := os.ReadFile("./testdata/primitives.default.txt")
 	if err != nil {
