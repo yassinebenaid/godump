@@ -40,9 +40,9 @@ func (d *dumper) dump(val reflect.Value, ignore_depth ...bool) {
 	case reflect.Func:
 		d.write(d.theme.Func.apply(val.Type().String()))
 	case reflect.Chan:
-		d.write(d.theme.VarType.apply(val.Type().String()))
+		d.write(d.theme.Chan.apply(val.Type().String()))
 		if cap := val.Cap(); cap > 0 {
-			d.write(d.theme.VarType.apply(fmt.Sprintf("<%d>", cap)))
+			d.write(d.theme.Chan.apply(fmt.Sprintf("<%d>", cap)))
 		}
 	case reflect.Struct:
 		d.dumpStruct(val)

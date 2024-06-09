@@ -24,6 +24,7 @@ type theme struct {
 	PointerCounter *rgb
 	Func           *rgb
 	StructField    *rgb
+	Chan           *rgb
 }
 
 var defaultTheme = theme{
@@ -37,6 +38,7 @@ var defaultTheme = theme{
 	Nil:            &rgb{249, 87, 56},
 	Func:           &rgb{160, 90, 220},
 	StructField:    &rgb{211, 211, 211},
+	Chan:           &rgb{255, 123, 0},
 }
 
 // DisableColors disables the colors globally.
