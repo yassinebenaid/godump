@@ -304,7 +304,7 @@ func TestCanDumpPrimitives(t *testing.T) {
 	node.PtrTypedChan1 = &tch1
 	node.PtrTypedChan2 = &tch2
 
-	expectedOutput, err := os.ReadFile("./testdata/primitives.default.txt")
+	expectedOutput, err := os.ReadFile("./testdata/primitives.txt")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -409,7 +409,7 @@ func TestCanDumpStructes(t *testing.T) {
 	node.Typed.Field2 = &node.Inline.Field2
 	node.Ref = &node
 
-	expectedOutput, err := os.ReadFile("./testdata/structs.default.txt")
+	expectedOutput, err := os.ReadFile("./testdata/structs.txt")
 	if err != nil {
 		t.Fatal(err)
 	}
