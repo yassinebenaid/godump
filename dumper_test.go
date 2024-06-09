@@ -335,3 +335,108 @@ func TestCanDumpPrimitives(t *testing.T) {
 		}
 	}
 }
+
+func TestCanDumpStructes(t *testing.T) {
+
+	type Number int
+
+	type Child1 struct {
+		X int
+		Y float64
+		Z Number
+	}
+
+	type Child struct {
+		Field1 Child1
+
+		Field2 *Child
+	}
+
+	type Node struct {
+		Inline struct {
+			Field1 struct {
+				X int
+				Y float64
+				Z Number
+			}
+
+			Field2 Child
+		}
+
+		Typed Child
+
+		Ref *Node
+	}
+
+	node := Node{
+		Inline: struct {
+			Field1 struct {
+				X int
+				Y float64
+				Z Number
+			}
+			Field2 Child
+		}{
+			Field1: struct {
+				X int
+				Y float64
+				Z Number
+			}{
+				X: 123,
+				Y: 123.456,
+				Z: Number(987),
+			},
+
+			Field2: Child{
+				Field1: Child1{
+					X: 12344,
+					Y: 578,
+					Z: Number(9876543),
+				},
+				Field2: &Child{
+					Field1: Child1{
+						X: 12344,
+						Y: 578,
+						Z: Number(9876543),
+					},
+				},
+			},
+		},
+	}
+
+	node.Inline.Field2.Field2.Field2 = node.Inline.Field2.Field2
+
+	node.Typed.Field2 = &node.Inline.Field2
+	node.Ref = &node
+
+	expectedOutput, err := os.ReadFile("./testdata/structs.default.txt")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	var d dumper
+	d.dump(reflect.ValueOf(node))
+
+	returned := d.buf
+
+	r_lines := bytes.Split(returned, []byte("\n"))
+	e_lines := bytes.Split(expectedOutput, []byte("\n"))
+
+	if len(r_lines) != len(e_lines) {
+		t.Fatalf("expected %d lines, got %d", len(e_lines), len(r_lines))
+	}
+
+	for i, line := range e_lines {
+		if len(line) != len(r_lines[i]) {
+			t.Fatalf(`mismatche at line %d:
+--- "%s"
++++ "%s"`, i+1, line, r_lines[i])
+		}
+
+		for j, ch := range line {
+			if ch != r_lines[i][j] {
+				t.Fatalf(`expected "%c", got "%c" at line %d:%d"`, ch, r_lines[i][j], i+1, j)
+			}
+		}
+	}
+}
