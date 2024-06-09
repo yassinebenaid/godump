@@ -44,6 +44,11 @@ func TestCanDumpPrimitives(t *testing.T) {
 	type Bool2PtrType *bool
 	type StringPtrType *string
 
+	type FuncType func()
+	type Func2Type func(int) float64
+	type Func3Type func(...*any) any
+	type Func4Type func(byte, ...[]*complex128) bool
+
 	type Node struct {
 		Int        int
 		Int8       int8
@@ -136,6 +141,26 @@ func TestCanDumpPrimitives(t *testing.T) {
 		PtrTypedString     *StringType
 
 		Nil *any
+
+		Func  func()
+		Func2 func(int) float64
+		Func3 func(...*any) any
+		Func4 func(byte, ...[]*complex128) bool
+
+		FuncPtr  *func()
+		Func2Ptr *func(int) float64
+		Func3Ptr *func(...*any) any
+		Func4Ptr *func(byte, ...[]*complex128) bool
+
+		TypedFunc  FuncType
+		TypedFunc2 Func2Type
+		TypedFunc3 Func3Type
+		TypedFunc4 Func4Type
+
+		PtrTypedFunc  *FuncType
+		PtrTypedFunc2 *Func2Type
+		PtrTypedFunc3 *Func3Type
+		PtrTypedFunc4 *Func4Type
 	}
 
 	node := Node{
@@ -231,6 +256,15 @@ func TestCanDumpPrimitives(t *testing.T) {
 	node.PtrTypedBool1 = &node.TypedBool1
 	node.PtrTypedBool2 = &node.TypedBool2
 	node.PtrTypedString = &node.TypedString
+
+	node.FuncPtr = &node.Func
+	node.Func2Ptr = &node.Func2
+	node.Func3Ptr = &node.Func3
+	node.Func4Ptr = &node.Func4
+	node.PtrTypedFunc = &node.TypedFunc
+	node.PtrTypedFunc2 = &node.TypedFunc2
+	node.PtrTypedFunc3 = &node.TypedFunc3
+	node.PtrTypedFunc4 = &node.TypedFunc4
 
 	expectedOutput, err := os.ReadFile("./testdata/primitives.default.txt")
 	if err != nil {
