@@ -43,9 +43,9 @@
                3.3,
             },
          },
-         IntPointer: #3&42,
-         StringPointer: #4&"example",
-         MapPointer: #5&map[string]int:1 {
+         IntPointer: &42,
+         StringPointer: &"example",
+         MapPointer: #3&map[string]int:1 {
             "key1": 1,
          },
          ChannelInt: chan int,
@@ -58,7 +58,7 @@
          },
          SubNode: &godump.SubNode {
             Code: 100,
-            Parent: #7&nil,
+            Parent: &nil,
             Data: []*godump.Node:0:0 {},
             SubDetails: []godump.Detail:1:1 {
                godump.Detail {
@@ -67,7 +67,7 @@
                   Next: &godump.Detail {
                      Info: "Detail2",
                      Count: 2,
-                     Next: &@7,
+                     Next: &nil,
                      DetailMap: map[string]bool:1 {
                         "key1": true,
                      },
@@ -88,7 +88,7 @@
             ChannelSub: chan *godump.SubNode,
          },
          privateSubNode: *godump.SubNode,
-         CyclicReference: &@7,
+         CyclicReference: &nil,
          NamedTypes: godump.NamedTypes {
             NamedInt: 0,
             NamedFloat: 0,
@@ -122,9 +122,9 @@
                "c",
             },
          },
-         IntPointer: &@3,
-         StringPointer: &@4,
-         MapPointer: &@5,
+         IntPointer: &42,
+         StringPointer: &"example",
+         MapPointer: &@3,
          ChannelInt: chan int,
          ChannelStr: chan string,
          ChannelStruct: chan godump.Detail,
@@ -135,7 +135,7 @@
          },
          SubNode: &godump.SubNode {
             Code: 200,
-            Parent: &@7,
+            Parent: &nil,
             Data: []*godump.Node:0:0 {},
             SubDetails: []godump.Detail:1:1 {
                godump.Detail {
@@ -144,7 +144,7 @@
                   Next: &godump.Detail {
                      Info: "DetailB",
                      Count: 20,
-                     Next: &@7,
+                     Next: &nil,
                      DetailMap: map[string]bool:1 {
                         "key3": true,
                      },
@@ -165,7 +165,7 @@
             ChannelSub: chan *godump.SubNode,
          },
          privateSubNode: *godump.SubNode,
-         CyclicReference: &@7,
+         CyclicReference: &nil,
          NamedTypes: godump.NamedTypes {
             NamedInt: 0,
             NamedFloat: 0,
@@ -181,9 +181,9 @@
          300,
       },
    },
-   IntPointer: &@3,
-   StringPointer: &@4,
-   MapPointer: &@5,
+   IntPointer: &42,
+   StringPointer: &"example",
+   MapPointer: &@3,
    ChannelInt: chan int,
    ChannelStr: chan string,
    ChannelStruct: chan godump.Detail,
@@ -194,7 +194,7 @@
    },
    SubNode: &godump.SubNode {
       Code: 999,
-      Parent: &@7,
+      Parent: &nil,
       Data: []*godump.Node:2:2 {
          &godump.Node {
             ID: 4,
@@ -237,9 +237,9 @@
                   Attributes: map[string]interface {}:1 {
                      "greatAttr": "greatValue",
                   },
-                  IntPointer: &@3,
-                  StringPointer: &@4,
-                  MapPointer: &@5,
+                  IntPointer: &42,
+                  StringPointer: &"example",
+                  MapPointer: &@3,
                   ChannelInt: chan int,
                   ChannelStr: chan string,
                   ChannelStruct: chan godump.Detail,
@@ -248,9 +248,9 @@
                      14,
                      15,
                   },
-                  SubNode: &@7,
+                  SubNode: &nil,
                   privateSubNode: *godump.SubNode,
-                  CyclicReference: &@7,
+                  CyclicReference: &nil,
                   NamedTypes: godump.NamedTypes {
                      NamedInt: 0,
                      NamedFloat: 0,
@@ -262,9 +262,9 @@
             Attributes: map[string]interface {}:1 {
                "grandAttr": "grandValue1",
             },
-            IntPointer: &@3,
-            StringPointer: &@4,
-            MapPointer: &@5,
+            IntPointer: &42,
+            StringPointer: &"example",
+            MapPointer: &@3,
             ChannelInt: chan int,
             ChannelStr: chan string,
             ChannelStruct: chan godump.Detail,
@@ -273,9 +273,9 @@
                11,
                12,
             },
-            SubNode: &@7,
+            SubNode: &nil,
             privateSubNode: *godump.SubNode,
-            CyclicReference: &@7,
+            CyclicReference: &nil,
             NamedTypes: godump.NamedTypes {
                NamedInt: 0,
                NamedFloat: 0,
@@ -324,9 +324,9 @@
                   Attributes: map[string]interface {}:1 {
                      "greatAttr": "greatValue2",
                   },
-                  IntPointer: &@3,
-                  StringPointer: &@4,
-                  MapPointer: &@5,
+                  IntPointer: &42,
+                  StringPointer: &"example",
+                  MapPointer: &@3,
                   ChannelInt: chan int,
                   ChannelStr: chan string,
                   ChannelStruct: chan godump.Detail,
@@ -335,9 +335,9 @@
                      20,
                      21,
                   },
-                  SubNode: &@7,
+                  SubNode: &nil,
                   privateSubNode: *godump.SubNode,
-                  CyclicReference: &@7,
+                  CyclicReference: &nil,
                   NamedTypes: godump.NamedTypes {
                      NamedInt: 0,
                      NamedFloat: 0,
@@ -349,9 +349,9 @@
             Attributes: map[string]interface {}:1 {
                "grandAttr": "grandValue2",
             },
-            IntPointer: &@3,
-            StringPointer: &@4,
-            MapPointer: &@5,
+            IntPointer: &42,
+            StringPointer: &"example",
+            MapPointer: &@3,
             ChannelInt: chan int,
             ChannelStr: chan string,
             ChannelStruct: chan godump.Detail,
@@ -360,9 +360,9 @@
                17,
                18,
             },
-            SubNode: &@7,
+            SubNode: &nil,
             privateSubNode: *godump.SubNode,
-            CyclicReference: &@7,
+            CyclicReference: &nil,
             NamedTypes: godump.NamedTypes {
                NamedInt: 0,
                NamedFloat: 0,

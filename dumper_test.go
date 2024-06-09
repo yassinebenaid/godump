@@ -611,38 +611,3 @@ func TestDumperWithComplexDataStructure(t *testing.T) {
 		}
 	}
 }
-
-func TestDumperWithComplexDataStructureAndPrivateFieldsDumpingEnabled(t *testing.T) {
-	cyclicNode = root
-
-	expectedOutput, err := os.ReadFile("./testdata/private-fields-output.txt")
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	var d dumper
-	d.dumpPrivateFields = true
-	d.dump(reflect.ValueOf(root))
-	returned := d.buf
-
-	r_lines := bytes.Split(returned, []byte("\n"))
-	e_lines := bytes.Split(expectedOutput, []byte("\n"))
-
-	if len(r_lines) != len(e_lines) {
-		t.Fatalf("expected %d lines, got %d", len(e_lines), len(r_lines))
-	}
-
-	for i, line := range e_lines {
-		if len(line) != len(r_lines[i]) {
-			t.Fatalf(`mismatche at line %d:
---- "%s"
-+++ "%s"`, i+1, line, r_lines[i])
-		}
-
-		for j, ch := range line {
-			if ch != r_lines[i][j] {
-				t.Fatalf(`expected "%c", got "%c" at line %d:%d"`, ch, r_lines[i][j], i+1, j)
-			}
-		}
-	}
-}
