@@ -1,9 +1,6 @@
 godump.node {
    inline: struct { field1 struct { x int; y float64; z godump.number }; field2 godump.child },
    typed: godump.child,
-   Ref: &godump.node {#1
-      inline: struct { field1 struct { x int; y float64; z godump.number }; field2 godump.child },
-      typed: godump.child,
-      Ref: &@1,
-   },
+   empty: struct {},
+   ref: *godump.node,
 }

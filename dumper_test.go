@@ -339,6 +339,8 @@ func TestCanDumpStructes(t *testing.T) {
 
 		Typed Child
 
+		Empty struct{}
+
 		Ref *Node
 	}
 
@@ -418,7 +420,9 @@ func TestCanDumpPrivateStructes(t *testing.T) {
 
 		typed child
 
-		Ref *node
+		empty struct{}
+
+		ref *node
 	}
 
 	n := node{
@@ -455,12 +459,13 @@ func TestCanDumpPrivateStructes(t *testing.T) {
 				},
 			},
 		},
+		empty: struct{}{},
 	}
 
 	n.inline.field2.field2.field2 = n.inline.field2.field2
 
 	n.typed.field2 = &n.inline.field2
-	n.Ref = &n
+	n.ref = &n
 
 	var d dumper
 	d.dump(reflect.ValueOf(n))
@@ -497,7 +502,9 @@ func TestCanDumpPrivateStructesWhenPrivateFieldsDumpingIsEnabled(t *testing.T) {
 
 		typed child
 
-		Ref *node
+		empty struct{}
+
+		ref *node
 	}
 
 	n := node{
@@ -534,12 +541,13 @@ func TestCanDumpPrivateStructesWhenPrivateFieldsDumpingIsEnabled(t *testing.T) {
 				},
 			},
 		},
+		empty: struct{}{},
 	}
 
 	n.inline.field2.field2.field2 = n.inline.field2.field2
 
 	n.typed.field2 = &n.inline.field2
-	n.Ref = &n
+	n.ref = &n
 
 	var d dumper
 	d.dumpPrivateFields = true
@@ -598,16 +606,10 @@ func checkFromFeed(t *testing.T, result []byte, feed_path string) {
 	}
 
 	for i, line := range e_lines {
-		if len(line) != len(r_lines[i]) {
+		if string(line) != string(r_lines[i]) {
 			t.Fatalf(`mismatche at line %d:
 --- "%s"
 +++ "%s"`, i+1, line, r_lines[i])
-		}
-
-		for j, ch := range line {
-			if ch != r_lines[i][j] {
-				t.Fatalf(`expected "%c", got "%c" at line %d:%d"`, ch, r_lines[i][j], i+1, j)
-			}
 		}
 	}
 }
