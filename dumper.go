@@ -61,7 +61,13 @@ func (d *dumper) dump(val reflect.Value, ignore_depth ...bool) {
 func (d *dumper) dumpSlice(v reflect.Value) {
 	length := v.Len()
 
-	d.write(d.theme.VarType.apply(fmt.Sprintf("%s:%d:%d {", v.Type(), length, v.Cap())))
+	var tag string
+	if d.ptrTag != 0 {
+		tag = d.theme.PointerCounter.apply(fmt.Sprintf("#%d", d.ptrTag))
+		d.ptrTag = 0
+	}
+
+	d.write(d.theme.VarType.apply(fmt.Sprintf("%s:%d:%d {%s", v.Type(), length, v.Cap(), tag)))
 
 	d.depth++
 	for i := 0; i < length; i++ {
@@ -139,11 +145,10 @@ func (d *dumper) dumpStruct(v reflect.Value) {
 	}
 
 	if t := vtype.String(); strings.HasPrefix(t, "struct") {
-		d.write(d.theme.VarType.apply("struct"))
+		d.write(d.theme.VarType.apply("struct {"))
 	} else {
-		d.write(d.theme.VarType.apply(t))
+		d.write(d.theme.VarType.apply(t + " {"))
 	}
-	d.write(d.theme.VarType.apply(" {"))
 	d.write(d.theme.PointerCounter.apply(tag))
 
 	d.depth++

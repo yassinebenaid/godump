@@ -1,0 +1,42 @@
+godump.Slice:10:18 {
+   1,
+   2.3,
+   true,
+   false,
+   nil,
+   []*string:3:3 {
+      &"foo",
+      &"bar",
+      &"baz",
+   },
+   []interface {}:0:0 {},
+   &[]bool:2:2 {#1
+      true,
+      false,
+   },
+   []interface {}:3:8 {
+      nil,
+      nil,
+      nil,
+   },
+   &godump.Slice:10:18 {#2
+      1,
+      2.3,
+      true,
+      false,
+      nil,
+      []*string:3:3 {
+         &"foo",
+         &"bar",
+         &"baz",
+      },
+      []interface {}:0:0 {},
+      &@1,
+      []interface {}:3:8 {
+         nil,
+         nil,
+         nil,
+      },
+      &@2,
+   },
+}

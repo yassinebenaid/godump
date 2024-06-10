@@ -548,6 +548,40 @@ func TestCanDumpPrivateStructesWhenPrivateFieldsDumpingIsEnabled(t *testing.T) {
 	checkFromFeed(t, d.buf, "./testdata/private-structs-dumped.txt")
 }
 
+func TestCanDumpSlices(t *testing.T) {
+
+	type Slice []any
+
+	var foo = "foo"
+	var bar = "bar"
+	var baz = "baz"
+
+	s := Slice{
+		1,
+		2.3,
+		true,
+		false,
+		nil,
+		[]*string{
+			&foo,
+			&bar,
+			&baz,
+		},
+		[]any{},
+		&[]bool{
+			true,
+			false,
+		},
+		make([]any, 3, 8),
+	}
+	s = append(s, &s)
+
+	var d dumper
+	d.dump(reflect.ValueOf(s))
+
+	checkFromFeed(t, d.buf, "./testdata/slices.txt")
+}
+
 func checkFromFeed(t *testing.T, result []byte, feed_path string) {
 	t.Helper()
 
