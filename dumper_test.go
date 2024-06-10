@@ -590,6 +590,31 @@ func TestCanDumpSlices(t *testing.T) {
 	checkFromFeed(t, d.buf, "./testdata/slices.txt")
 }
 
+func TestCanDumpMaps(t *testing.T) {
+
+	type SomeMap map[*SomeMap]*SomeMap
+	var sm = &SomeMap{}
+
+	var m = map[any]any{12: 34}
+	maps := []any{
+		make(map[string]string),
+		map[any]int{
+			&m: 123,
+		},
+		map[string]any{
+			"cyclic": &m,
+		},
+		SomeMap{
+			&SomeMap{}: &SomeMap{sm: sm},
+		},
+	}
+
+	var d dumper
+	d.dump(reflect.ValueOf(maps))
+
+	checkFromFeed(t, d.buf, "./testdata/maps.txt")
+}
+
 func checkFromFeed(t *testing.T, result []byte, feed_path string) {
 	t.Helper()
 

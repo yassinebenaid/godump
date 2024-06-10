@@ -87,7 +87,14 @@ func (d *dumper) dumpSlice(v reflect.Value) {
 
 func (d *dumper) dumpMap(v reflect.Value) {
 	keys := v.MapKeys()
-	d.write(d.theme.VarType.apply(fmt.Sprintf("%s:%d {", v.Type(), len(keys))))
+
+	var tag string
+	if d.ptrTag != 0 {
+		tag = d.theme.PointerCounter.apply(fmt.Sprintf("#%d", d.ptrTag))
+		d.ptrTag = 0
+	}
+
+	d.write(d.theme.VarType.apply(fmt.Sprintf("%s:%d {%s", v.Type(), len(keys), tag)))
 
 	d.depth++
 	for _, key := range keys {
