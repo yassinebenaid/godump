@@ -11,7 +11,7 @@ godump.node {
             y: 578,
             z: 9876543,
          },
-         field2: &godump.child { #1
+         field2: &godump.child {#1
             field1: godump.child1 {
                x: 12344,
                y: 578,
@@ -27,7 +27,7 @@ godump.node {
          y: 0,
          z: 0,
       },
-      field2: &godump.child { #2
+      field2: &godump.child {#2
          field1: godump.child1 {
             x: 12344,
             y: 578,
@@ -36,7 +36,7 @@ godump.node {
          field2: &@1,
       },
    },
-   Ref: &godump.node { #3
+   Ref: &godump.node {#3
       inline: struct {
          field1: struct {
             x: 123,

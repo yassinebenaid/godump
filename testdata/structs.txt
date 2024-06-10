@@ -11,7 +11,7 @@ godump.Node {
             Y: 578,
             Z: 9876543,
          },
-         Field2: &godump.Child { #1
+         Field2: &godump.Child {#1
             Field1: godump.Child1 {
                X: 12344,
                Y: 578,
@@ -27,7 +27,7 @@ godump.Node {
          Y: 0,
          Z: 0,
       },
-      Field2: &godump.Child { #2
+      Field2: &godump.Child {#2
          Field1: godump.Child1 {
             X: 12344,
             Y: 578,
@@ -36,7 +36,7 @@ godump.Node {
          Field2: &@1,
       },
    },
-   Ref: &godump.Node { #3
+   Ref: &godump.Node {#3
       Inline: struct {
          Field1: struct {
             X: 123,

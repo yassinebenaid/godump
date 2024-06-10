@@ -134,7 +134,7 @@ func (d *dumper) dumpStruct(v reflect.Value) {
 
 	var tag string
 	if d.ptrTag != 0 {
-		tag = fmt.Sprintf(" #%d", d.ptrTag)
+		tag = fmt.Sprintf("#%d", d.ptrTag)
 		d.ptrTag = 0
 	}
 
