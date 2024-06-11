@@ -144,6 +144,7 @@ func (d *dumper) dumpPointer(v reflect.Value) {
 	d.ptrTag = uint(len(d.ptrs))
 	d.write(d.theme.PointerSign.apply("&"))
 	d.dump(elem, true)
+	d.ptrTag = 0
 }
 
 func (d *dumper) dumpStruct(v reflect.Value) {
@@ -202,13 +203,20 @@ func (d *dumper) indent() {
 }
 
 func isPrimitive(val reflect.Value) bool {
-	switch val.Kind() {
-	case reflect.String, reflect.Bool, reflect.Func, reflect.Chan,
-		reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
-		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr,
-		reflect.Float32, reflect.Float64, reflect.Complex64, reflect.Complex128, reflect.Invalid, reflect.UnsafePointer:
-		return true
-	default:
-		return false
+	v := val
+	for {
+		switch v.Kind() {
+		case reflect.String, reflect.Bool, reflect.Func, reflect.Chan,
+			reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
+			reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr,
+			reflect.Float32, reflect.Float64, reflect.Complex64, reflect.Complex128, reflect.Invalid, reflect.UnsafePointer:
+			return true
+		case reflect.Pointer:
+			v = v.Elem()
+		default:
+			fmt.Println(v.Kind())
+
+			return false
+		}
 	}
 }

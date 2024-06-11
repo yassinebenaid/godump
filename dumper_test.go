@@ -341,7 +341,7 @@ func TestCanDumpPrimitives(t *testing.T) {
 	checkFromFeed(t, d.buf, "./testdata/primitives.txt")
 }
 
-func TestCanDumpStructes(t *testing.T) {
+func TestCanDumpStructs(t *testing.T) {
 
 	type Number int
 
@@ -370,11 +370,14 @@ func TestCanDumpStructes(t *testing.T) {
 
 		Typed Child
 
+		Ptr   **int
 		Empty struct{}
 
 		Ref *Node
 	}
 
+	var num = 123
+	var numaddr = &num
 	node := Node{
 		Inline: struct {
 			Field1 struct {
@@ -409,6 +412,7 @@ func TestCanDumpStructes(t *testing.T) {
 				},
 			},
 		},
+		Ptr: &numaddr,
 	}
 
 	node.Inline.Field2.Field2.Field2 = node.Inline.Field2.Field2
@@ -422,7 +426,7 @@ func TestCanDumpStructes(t *testing.T) {
 	checkFromFeed(t, d.buf, "./testdata/structs.txt")
 }
 
-func TestCanDumpPrivateStructes(t *testing.T) {
+func TestCanDumpPrivateStructs(t *testing.T) {
 
 	type number int
 
@@ -504,7 +508,7 @@ func TestCanDumpPrivateStructes(t *testing.T) {
 	checkFromFeed(t, d.buf, "./testdata/private-structs.txt")
 }
 
-func TestCanDumpPrivateStructesWhenPrivateFieldsDumpingIsEnabled(t *testing.T) {
+func TestCanDumpPrivateStructsWhenPrivateFieldsDumpingIsEnabled(t *testing.T) {
 
 	type number int
 
