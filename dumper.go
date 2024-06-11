@@ -111,6 +111,14 @@ func (d *dumper) dumpPointer(v reflect.Value) {
 		d.ptrs = make(map[uintptr]*pointer)
 	}
 
+	elem := v.Elem()
+
+	if isPrimitive(elem) {
+		d.write(d.theme.PointerSign.apply("&"))
+		d.dump(elem, true)
+		return
+	}
+
 	addr := uintptr(v.UnsafePointer())
 
 	if p, ok := d.ptrs[addr]; ok {
@@ -130,7 +138,7 @@ func (d *dumper) dumpPointer(v reflect.Value) {
 	}
 
 	d.write(d.theme.PointerSign.apply("&"))
-	d.dump(v.Elem(), true)
+	d.dump(elem, true)
 }
 
 func (d *dumper) tagPtr(ptr *pointer) {
@@ -194,4 +202,16 @@ func (d *dumper) indent() {
 	}
 
 	d.write(strings.Repeat(d.indentation, d.depth))
+}
+
+func isPrimitive(val reflect.Value) bool {
+	switch val.Kind() {
+	case reflect.String, reflect.Bool, reflect.Func, reflect.Chan,
+		reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
+		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr,
+		reflect.Float32, reflect.Float64, reflect.Complex64, reflect.Complex128, reflect.Invalid:
+		return true
+	default:
+		return false
+	}
 }
