@@ -6,19 +6,14 @@ import (
 	"strings"
 )
 
-type pointer struct {
-	id     int
-	pos    int
-	tagged bool
-}
-
 type dumper struct {
 	buf               []byte
 	indentation       string
 	dumpPrivateFields bool
 	theme             theme
-	depth             int
-	ptrs              map[uintptr]*pointer
+	depth             uint
+	ptrs              map[uintptr]uint
+	ptrTag            uint
 }
 
 func (d *dumper) dump(val reflect.Value, ignore_depth ...bool) {
@@ -40,9 +35,9 @@ func (d *dumper) dump(val reflect.Value, ignore_depth ...bool) {
 	case reflect.Func:
 		d.write(d.theme.Func.apply(val.Type().String()))
 	case reflect.Chan:
-		d.write(d.theme.VarType.apply(val.Type().String()))
+		d.write(d.theme.Chan.apply(val.Type().String()))
 		if cap := val.Cap(); cap > 0 {
-			d.write(d.theme.VarType.apply(fmt.Sprintf("<%d>", cap)))
+			d.write(d.theme.Chan.apply(fmt.Sprintf("<%d>", cap)))
 		}
 	case reflect.Struct:
 		d.dumpStruct(val)
@@ -66,7 +61,13 @@ func (d *dumper) dump(val reflect.Value, ignore_depth ...bool) {
 func (d *dumper) dumpSlice(v reflect.Value) {
 	length := v.Len()
 
-	d.write(d.theme.VarType.apply(fmt.Sprintf("%s:%d:%d {", v.Type(), length, v.Cap())))
+	var tag string
+	if d.ptrTag != 0 {
+		tag = d.theme.PointerCounter.apply(fmt.Sprintf("#%d", d.ptrTag))
+		d.ptrTag = 0
+	}
+
+	d.write(d.theme.VarType.apply(fmt.Sprintf("%s:%d:%d {%s", v.Type(), length, v.Cap(), tag)))
 
 	d.depth++
 	for i := 0; i < length; i++ {
@@ -86,7 +87,14 @@ func (d *dumper) dumpSlice(v reflect.Value) {
 
 func (d *dumper) dumpMap(v reflect.Value) {
 	keys := v.MapKeys()
-	d.write(d.theme.VarType.apply(fmt.Sprintf("%s:%d {", v.Type(), len(keys))))
+
+	var tag string
+	if d.ptrTag != 0 {
+		tag = d.theme.PointerCounter.apply(fmt.Sprintf("#%d", d.ptrTag))
+		d.ptrTag = 0
+	}
+
+	d.write(d.theme.VarType.apply(fmt.Sprintf("%s:%d {%s", v.Type(), len(keys), tag)))
 
 	d.depth++
 	for _, key := range keys {
@@ -108,7 +116,7 @@ func (d *dumper) dumpMap(v reflect.Value) {
 
 func (d *dumper) dumpPointer(v reflect.Value) {
 	if d.ptrs == nil {
-		d.ptrs = make(map[uintptr]*pointer)
+		d.ptrs = make(map[uintptr]uint)
 	}
 
 	elem := v.Elem()
@@ -121,49 +129,34 @@ func (d *dumper) dumpPointer(v reflect.Value) {
 
 	addr := uintptr(v.UnsafePointer())
 
-	if p, ok := d.ptrs[addr]; ok {
+	if id, ok := d.ptrs[addr]; ok {
 		d.write(d.theme.PointerSign.apply("&"))
-		d.write(d.theme.PointerCounter.apply(fmt.Sprintf("@%d", p.id)))
-
-		if !p.tagged {
-			d.tagPtr(p)
-			p.tagged = true
-		}
+		d.write(d.theme.PointerCounter.apply(fmt.Sprintf("@%d", id)))
 		return
 	}
 
-	d.ptrs[addr] = &pointer{
-		id:  len(d.ptrs) + 1,
-		pos: len(d.buf),
-	}
+	d.ptrs[addr] = uint(len(d.ptrs) + 1)
 
+	d.ptrTag = uint(len(d.ptrs))
 	d.write(d.theme.PointerSign.apply("&"))
 	d.dump(elem, true)
 }
 
-func (d *dumper) tagPtr(ptr *pointer) {
-	var shifted int
-
-	for _, p := range d.ptrs {
-		if ptr.pos > p.pos && p.tagged {
-			shifted += len(d.theme.PointerCounter.apply(fmt.Sprintf("#%d", p.id)))
-		}
-	}
-
-	nbuf := append([]byte{}, d.buf[:ptr.pos+shifted]...)
-	nbuf = append(nbuf, []byte(d.theme.PointerCounter.apply(fmt.Sprintf("#%d", ptr.id)))...)
-	nbuf = append(nbuf, d.buf[ptr.pos+shifted:]...)
-	d.buf = nbuf
-}
-
 func (d *dumper) dumpStruct(v reflect.Value) {
 	vtype, numFields := v.Type(), v.NumField()
+
+	var tag string
+	if d.ptrTag != 0 {
+		tag = fmt.Sprintf("#%d", d.ptrTag)
+		d.ptrTag = 0
+	}
 
 	if t := vtype.String(); strings.HasPrefix(t, "struct") {
 		d.write(d.theme.VarType.apply("struct {"))
 	} else {
 		d.write(d.theme.VarType.apply(t + " {"))
 	}
+	d.write(d.theme.PointerCounter.apply(tag))
 
 	d.depth++
 	for i := 0; i < numFields; i++ {
@@ -201,7 +194,7 @@ func (d *dumper) indent() {
 		d.indentation = "   "
 	}
 
-	d.write(strings.Repeat(d.indentation, d.depth))
+	d.write(strings.Repeat(d.indentation, int(d.depth)))
 }
 
 func isPrimitive(val reflect.Value) bool {

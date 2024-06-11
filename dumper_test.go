@@ -2,595 +2,628 @@ package godump
 
 import (
 	"bytes"
-	"math/cmplx"
 	"os"
 	"reflect"
 	"testing"
 )
 
-func TestDumper(t *testing.T) {
-	testCases := []struct {
-		inputVar any
-		expected string
-	}{
-		{int(123), "123"},
-		{int8(123), "123"},
-		{int16(123), "123"},
-		{int32(123), "123"},
-		{int64(123), "123"},
-		{int(-123), "-123"},
-		{int8(-123), "-123"},
-		{int16(-123), "-123"},
-		{int32(-123), "-123"},
-		{int64(-123), "-123"},
-		{uint(123), "123"},
-		{uint8(123), "123"},
-		{uint16(123), "123"},
-		{uint32(123), "123"},
-		{uint64(123), "123"},
-		{float32(12.3), "12.3"},
-		{float32(-12.3), "-12.3"},
-		{float64(12.3), "12.3"},
-		{float64(-12.3), "-12.3"},
-		{complex64(12.3), "(12.3+0i)"},
-		{complex64(-12.3), "(-12.3+0i)"},
-		{complex128(12.3), "(12.3+0i)"},
-		{complex128(-12.3), "(-12.3+0i)"},
-		{true, "true"},
-		{false, "false"},
-		{"hello world", `"hello world"`},
-		{func(i int) int { return i }, "func(int) int"},
-		{func(int) {}, "func(int)"},
-		{func() int { return 123 }, "func() int"},
-		{func() {}, "func()"},
-		{make([]any, 0, 5), "[]interface {}:0:5 {}"},
-		{make([]any, 3, 5), `[]interface {}:3:5 {
-   nil,
-   nil,
-   nil,
-}`},
-		{
-			[]int{1, 2, -3},
-			`[]int:3:3 {
-   1,
-   2,
-   -3,
-}`,
-		},
-		{
-			[]int8{1, 2, -3},
-			`[]int8:3:3 {
-   1,
-   2,
-   -3,
-}`,
-		},
-		{
-			[]int16{1, 2, -3},
-			`[]int16:3:3 {
-   1,
-   2,
-   -3,
-}`,
-		},
-		{
-			[]int32{1, 2, -3},
-			`[]int32:3:3 {
-   1,
-   2,
-   -3,
-}`,
-		},
-		{
-			[]int64{1, 2, -3},
-			`[]int64:3:3 {
-   1,
-   2,
-   -3,
-}`,
-		},
-		{
-			[]uint{1, 2, 3},
-			`[]uint:3:3 {
-   1,
-   2,
-   3,
-}`,
-		},
-		{
-			[]uint8{1, 2, 3},
-			`[]uint8:3:3 {
-   1,
-   2,
-   3,
-}`,
-		},
-		{
-			[]uint16{1, 2, 3},
-			`[]uint16:3:3 {
-   1,
-   2,
-   3,
-}`,
-		},
-		{
-			[]uint32{1, 2, 3},
-			`[]uint32:3:3 {
-   1,
-   2,
-   3,
-}`,
-		},
-		{
-			[]uint64{1, 2, 3},
-			`[]uint64:3:3 {
-   1,
-   2,
-   3,
-}`,
-		},
-		{
-			[]float32{1.2, 3.4, 5.6},
-			`[]float32:3:3 {
-   1.2,
-   3.4,
-   5.6,
-}`,
-		},
-		{
-			[]float64{1.2, 3.4, 5.6},
-			`[]float64:3:3 {
-   1.2,
-   3.4,
-   5.6,
-}`,
-		},
-		{
-			[]complex64{1, 2.3, -4},
-			`[]complex64:3:3 {
-   (1+0i),
-   (2.3+0i),
-   (-4+0i),
-}`,
-		},
-		{
-			[]complex128{1, 2.3, -4},
-			`[]complex128:3:3 {
-   (1+0i),
-   (2.3+0i),
-   (-4+0i),
-}`,
-		},
-		{
-			[]bool{true, false},
-			`[]bool:2:2 {
-   true,
-   false,
-}`,
-		},
-		{
-			[]any{
-				func(i int) int { return i },
-				func(int) {},
-				func() int { return 123 },
-			},
-			`[]interface {}:3:3 {
-   func(int) int,
-   func(int),
-   func() int,
-}`,
-		},
-		{make(map[any]any), "map[interface {}]interface {}:0 {}"},
-		{map[string]int{"x": 123}, `map[string]int:1 {
-   "x": 123,
-}`}, {struct{ Name string }{"yassinebenaid"}, `struct {
-   Name: "yassinebenaid",
-}`},
+func TestCanDumpPrimitives(t *testing.T) {
+	type IntType int
+	type Int8Type int8
+	type Int16Type int16
+	type Int32Type int32
+	type Int64Type int64
+	type UintType uint
+	type Uint8Type uint8
+	type Uint16Type uint16
+	type Uint32Type uint32
+	type Uint64Type uint64
+	type Float32Type float32
+	type Float64Type float64
+	type Complex64Type complex64
+	type Complex128Type complex128
+	type Bool1Type bool
+	type Bool2Type bool
+	type StringType string
+
+	type IntPtrType *int
+	type Int8PtrType *int8
+	type Int16PtrType *int16
+	type Int32PtrType *int32
+	type Int64PtrType *int64
+	type UintPtrType *uint
+	type Uint8PtrType *uint8
+	type Uint16PtrType *uint16
+	type Uint32PtrType *uint32
+	type Uint64PtrType *uint64
+	type Float32PtrType *float32
+	type Float64PtrType *float64
+	type Complex64PtrType *complex64
+	type Complex128PtrType *complex128
+	type Bool1PtrType *bool
+	type Bool2PtrType *bool
+	type StringPtrType *string
+
+	type FuncType func()
+	type Func2Type func(int) float64
+	type Func3Type func(...*any) any
+	type Func4Type func(byte, ...[]*complex128) bool
+
+	type ChanType chan struct{}
+	type Chan1Type <-chan struct{}
+	type Chan2Type chan<- struct{}
+
+	type Node struct {
+		Int        int
+		Int8       int8
+		Int16      int16
+		Int32      int32
+		Int64      int64
+		Uint       uint
+		Uint8      uint8
+		Uint16     uint16
+		Uint32     uint32
+		Uint64     uint64
+		Float32    float32
+		Float64    float64
+		Complex64  complex64
+		Complex128 complex128
+		Bool1      bool
+		Bool2      bool
+		String     string
+
+		IntPtr        *int
+		Int8Ptr       *int8
+		Int16Ptr      *int16
+		Int32Ptr      *int32
+		Int64Ptr      *int64
+		UintPtr       *uint
+		Uint8Ptr      *uint8
+		Uint16Ptr     *uint16
+		Uint32Ptr     *uint32
+		Uint64Ptr     *uint64
+		Float32Ptr    *float32
+		Float64Ptr    *float64
+		Complex64Ptr  *complex64
+		Complex128Ptr *complex128
+		Bool1Ptr      *bool
+		Bool2Ptr      *bool
+		StringPtr     *string
+
+		TypedInt        IntType
+		TypedInt8       Int8Type
+		TypedInt16      Int16Type
+		TypedInt32      Int32Type
+		TypedInt64      Int64Type
+		TypedUint       UintType
+		TypedUint8      Uint8Type
+		TypedUint16     Uint16Type
+		TypedUint32     Uint32Type
+		TypedUint64     Uint64Type
+		TypedFloat32    Float32Type
+		TypedFloat64    Float64Type
+		TypedComplex64  Complex64Type
+		TypedComplex128 Complex128Type
+		TypedBool1      Bool1Type
+		TypedBool2      Bool2Type
+		TypedString     StringType
+
+		TypedIntPtr        IntPtrType
+		TypedInt8Ptr       Int8PtrType
+		TypedInt16Ptr      Int16PtrType
+		TypedInt32Ptr      Int32PtrType
+		TypedInt64Ptr      Int64PtrType
+		TypedUintPtr       UintPtrType
+		TypedUint8Ptr      Uint8PtrType
+		TypedUint16Ptr     Uint16PtrType
+		TypedUint32Ptr     Uint32PtrType
+		TypedUint64Ptr     Uint64PtrType
+		TypedFloat32Ptr    Float32PtrType
+		TypedFloat64Ptr    Float64PtrType
+		TypedComplex64Ptr  Complex64PtrType
+		TypedComplex128Ptr Complex128PtrType
+		TypedBool1Ptr      Bool1PtrType
+		TypedBool2Ptr      Bool2PtrType
+		TypedStringPtr     StringPtrType
+
+		PtrTypedInt        *IntType
+		PtrTypedInt8       *Int8Type
+		PtrTypedInt16      *Int16Type
+		PtrTypedInt32      *Int32Type
+		PtrTypedInt64      *Int64Type
+		PtrTypedUint       *UintType
+		PtrTypedUint8      *Uint8Type
+		PtrTypedUint16     *Uint16Type
+		PtrTypedUint32     *Uint32Type
+		PtrTypedUint64     *Uint64Type
+		PtrTypedFloat32    *Float32Type
+		PtrTypedFloat64    *Float64Type
+		PtrTypedComplex64  *Complex64Type
+		PtrTypedComplex128 *Complex128Type
+		PtrTypedBool1      *Bool1Type
+		PtrTypedBool2      *Bool2Type
+		PtrTypedString     *StringType
+
+		Nil *any
+
+		Func  func()
+		Func2 func(int) float64
+		Func3 func(...*any) any
+		Func4 func(byte, ...[]*complex128) bool
+
+		FuncPtr  *func()
+		Func2Ptr *func(int) float64
+		Func3Ptr *func(...*any) any
+		Func4Ptr *func(byte, ...[]*complex128) bool
+
+		TypedFunc  FuncType
+		TypedFunc2 Func2Type
+		TypedFunc3 Func3Type
+		TypedFunc4 Func4Type
+
+		PtrTypedFunc  *FuncType
+		PtrTypedFunc2 *Func2Type
+		PtrTypedFunc3 *Func3Type
+		PtrTypedFunc4 *Func4Type
+
+		Chan  chan struct{}
+		Chan1 <-chan struct{}
+		Chan2 chan<- struct{}
+
+		ChanPtr  *chan struct{}
+		Chan1Ptr *<-chan struct{}
+		Chan2Ptr *chan<- struct{}
+
+		TypedChan  ChanType
+		TypedChan1 Chan1Type
+		TypedChan2 Chan2Type
+
+		PtrTypedChan  *ChanType
+		PtrTypedChan1 *Chan1Type
+		PtrTypedChan2 *Chan2Type
 	}
 
-	type User struct {
-		Name   string
-		Friend *User
+	node := Node{
+		Int:        123,
+		Int8:       -45,
+		Int16:      6789,
+		Int32:      -987,
+		Int64:      3849876543247876432,
+		Uint:       837,
+		Uint8:      38,
+		Uint16:     3847,
+		Uint32:     9843,
+		Uint64:     2834,
+		Float32:    123.475,
+		Float64:    -12345.09876,
+		Complex64:  12.987i,
+		Complex128: -473i,
+		Bool1:      true,
+		Bool2:      false,
+		String:     "foo bar",
+
+		TypedInt:        IntType(123),
+		TypedInt8:       Int8Type(-45),
+		TypedInt16:      Int16Type(6789),
+		TypedInt32:      Int32Type(-987),
+		TypedInt64:      Int64Type(3849876543247876432),
+		TypedUint:       UintType(837),
+		TypedUint8:      Uint8Type(38),
+		TypedUint16:     Uint16Type(3847),
+		TypedUint32:     Uint32Type(9843),
+		TypedUint64:     Uint64Type(2834),
+		TypedFloat32:    Float32Type(123.475),
+		TypedFloat64:    Float64Type(-12345.09876),
+		TypedComplex64:  Complex64Type(12.987i),
+		TypedComplex128: Complex128Type(-473i),
+		TypedBool1:      Bool1Type(true),
+		TypedBool2:      Bool2Type(false),
+		TypedString:     StringType("foo bar"),
+
+		Nil: nil,
 	}
 
-	person1 := User{"test", nil}
-	person2 := User{"test 2", &person1}
-	person3 := User{"test 3", &person2}
-	person1.Friend = &person3
+	node.IntPtr = &node.Int
+	node.Int8Ptr = &node.Int8
+	node.Int16Ptr = &node.Int16
+	node.Int32Ptr = &node.Int32
+	node.Int64Ptr = &node.Int64
+	node.UintPtr = &node.Uint
+	node.Uint8Ptr = &node.Uint8
+	node.Uint16Ptr = &node.Uint16
+	node.Uint32Ptr = &node.Uint32
+	node.Uint64Ptr = &node.Uint64
+	node.Float32Ptr = &node.Float32
+	node.Float64Ptr = &node.Float64
+	node.Complex64Ptr = &node.Complex64
+	node.Complex128Ptr = &node.Complex128
+	node.Bool1Ptr = &node.Bool1
+	node.Bool2Ptr = &node.Bool2
+	node.StringPtr = &node.String
 
-	testCases = append(testCases, struct {
-		inputVar any
-		expected string
-	}{
-		person3,
-		`godump.User {
-   Name: "test 3",
-   Friend: #1&godump.User {
-      Name: "test 2",
-      Friend: &godump.User {
-         Name: "test",
-         Friend: &godump.User {
-            Name: "test 3",
-            Friend: &@1,
-         },
-      },
-   },
-}`,
-	})
+	node.TypedIntPtr = node.IntPtr
+	node.TypedInt8Ptr = node.Int8Ptr
+	node.TypedInt16Ptr = node.Int16Ptr
+	node.TypedInt32Ptr = node.Int32Ptr
+	node.TypedInt64Ptr = node.Int64Ptr
+	node.TypedUintPtr = node.UintPtr
+	node.TypedUint8Ptr = node.Uint8Ptr
+	node.TypedUint16Ptr = node.Uint16Ptr
+	node.TypedUint32Ptr = node.Uint32Ptr
+	node.TypedUint64Ptr = node.Uint64Ptr
+	node.TypedFloat32Ptr = node.Float32Ptr
+	node.TypedFloat64Ptr = node.Float64Ptr
+	node.TypedComplex64Ptr = node.Complex64Ptr
+	node.TypedComplex128Ptr = node.Complex128Ptr
+	node.TypedBool1Ptr = node.Bool1Ptr
+	node.TypedBool2Ptr = node.Bool2Ptr
+	node.TypedStringPtr = node.StringPtr
 
-	for i, tc := range testCases {
-		var d dumper
-		d.dump(reflect.ValueOf(tc.inputVar))
+	node.PtrTypedInt = &node.TypedInt
+	node.PtrTypedInt8 = &node.TypedInt8
+	node.PtrTypedInt16 = &node.TypedInt16
+	node.PtrTypedInt32 = &node.TypedInt32
+	node.PtrTypedInt64 = &node.TypedInt64
+	node.PtrTypedUint = &node.TypedUint
+	node.PtrTypedUint8 = &node.TypedUint8
+	node.PtrTypedUint16 = &node.TypedUint16
+	node.PtrTypedUint32 = &node.TypedUint32
+	node.PtrTypedUint64 = &node.TypedUint64
+	node.PtrTypedFloat32 = &node.TypedFloat32
+	node.PtrTypedFloat64 = &node.TypedFloat64
+	node.PtrTypedComplex64 = &node.TypedComplex64
+	node.PtrTypedComplex128 = &node.TypedComplex128
+	node.PtrTypedBool1 = &node.TypedBool1
+	node.PtrTypedBool2 = &node.TypedBool2
+	node.PtrTypedString = &node.TypedString
 
-		if returned := string(d.buf); returned != tc.expected {
-			t.Fatalf(`Case#%d failed, dumper returned unuexpected results : "%s" (%d), expected "%s" (%d)`, i, returned, len(returned), tc.expected,
-				len(tc.expected))
+	node.FuncPtr = &node.Func
+	node.Func2Ptr = &node.Func2
+	node.Func3Ptr = &node.Func3
+	node.Func4Ptr = &node.Func4
+	node.PtrTypedFunc = &node.TypedFunc
+	node.PtrTypedFunc2 = &node.TypedFunc2
+	node.PtrTypedFunc3 = &node.TypedFunc3
+	node.PtrTypedFunc4 = &node.TypedFunc4
+
+	ch := make(chan struct{})
+	var ch2 <-chan struct{} = ch
+	var ch3 chan<- struct{} = ch
+
+	tch := ChanType(ch)
+	tch1 := Chan1Type(ch2)
+	tch2 := Chan2Type(ch3)
+
+	node.ChanPtr = &ch
+	node.Chan1Ptr = &ch2
+	node.Chan2Ptr = &ch3
+	node.TypedChan = ch
+	node.TypedChan1 = ch2
+	node.TypedChan2 = ch3
+	node.PtrTypedChan = &tch
+	node.PtrTypedChan1 = &tch1
+	node.PtrTypedChan2 = &tch2
+
+	var d dumper
+	d.dump(reflect.ValueOf(node))
+
+	checkFromFeed(t, d.buf, "./testdata/primitives.txt")
+}
+
+func TestCanDumpStructes(t *testing.T) {
+
+	type Number int
+
+	type Child1 struct {
+		X int
+		Y float64
+		Z Number
+	}
+
+	type Child struct {
+		Field1 Child1
+
+		Field2 *Child
+	}
+
+	type Node struct {
+		Inline struct {
+			Field1 struct {
+				X int
+				Y float64
+				Z Number
+			}
+
+			Field2 Child
 		}
+
+		Typed Child
+
+		Empty struct{}
+
+		Ref *Node
 	}
 
-}
-
-// Define the complex nested structure
-type Node struct {
-	ID              int
-	Int8Field       int8
-	Int16Field      int16
-	Int32Field      int32
-	Int64Field      int64
-	UintField       uint
-	Uint8Field      uint8
-	Uint16Field     uint16
-	Uint32Field     uint32
-	Uint64Field     uint64
-	UintptrField    uintptr
-	Float32Field    float32
-	Float64Field    float64
-	Complex64Field  complex64
-	Complex128Field complex128
-	StringField     string
-	BoolField       bool
-	Children        []*Node
-	Attributes      map[string]interface{}
-	IntPointer      *int
-	StringPointer   *string
-	MapPointer      *map[string]int
-	ChannelInt      chan int
-	ChannelStr      chan string
-	ChannelStruct   chan Detail
-	Array           [3]int
-	SubNode         *SubNode
-	privateSubNode  *SubNode
-	CyclicReference **Node
-	NamedTypes      NamedTypes
-}
-
-type SubNode struct {
-	Code       int
-	Parent     *Node
-	Data       []*Node
-	SubDetails []Detail
-	ChannelSub chan *SubNode
-}
-
-type Detail struct {
-	Info        string
-	Count       int
-	Next        *Detail
-	DetailMap   map[string]bool
-	DetailSlice []complex64
-}
-
-type NamedTypes struct {
-	NamedInt   int
-	NamedFloat float64
-	NamedStr   string
-	NamedMap   map[string]string
-}
-
-var intValue = 42
-var strValue = "example"
-var mapValue = map[string]int{"key1": 1}
-
-var channelInt = make(chan int)
-var channelStr = make(chan string)
-var channelStruct = make(chan Detail)
-var channelSub = make(chan *SubNode)
-
-var cyclicNode *Node
-
-var root = &Node{
-	ID:              1,
-	Int8Field:       int8(8),
-	Int16Field:      int16(16),
-	Int32Field:      int32(32),
-	Int64Field:      int64(64),
-	UintField:       uint(100),
-	Uint8Field:      uint8(200),
-	Uint16Field:     uint16(300),
-	Uint32Field:     uint32(400),
-	Uint64Field:     uint64(500),
-	UintptrField:    uintptr(600),
-	Float32Field:    float32(123.456),
-	Float64Field:    789.012,
-	Complex64Field:  complex64(1 + 2i),
-	Complex128Field: complex128(cmplx.Exp(1 + 2i)),
-	StringField:     "RootNode",
-	BoolField:       true,
-	Array:           [3]int{1, 2, 3},
-	Children: []*Node{
-		{
-			ID:              2,
-			Int8Field:       int8(18),
-			Int16Field:      int16(116),
-			Int32Field:      int32(132),
-			Int64Field:      int64(164),
-			UintField:       uint(1100),
-			Uint8Field:      uint8(100),
-			Uint16Field:     uint16(1300),
-			Uint32Field:     uint32(1400),
-			Uint64Field:     uint64(1500),
-			UintptrField:    uintptr(1600),
-			Float32Field:    float32(223.456),
-			Float64Field:    1789.012,
-			Complex64Field:  complex64(2 + 3i),
-			Complex128Field: complex128(cmplx.Exp(2 + 3i)),
-			StringField:     "ChildNode1",
-			BoolField:       false,
-			Array:           [3]int{4, 5, 6},
-			IntPointer:      &intValue,
-			StringPointer:   &strValue,
-			MapPointer:      &mapValue,
-			ChannelInt:      channelInt,
-			ChannelStr:      channelStr,
-			ChannelStruct:   channelStruct,
-			Attributes: map[string]interface{}{
-				"attr": []float64{1.1, 2.2, 3.3},
+	node := Node{
+		Inline: struct {
+			Field1 struct {
+				X int
+				Y float64
+				Z Number
+			}
+			Field2 Child
+		}{
+			Field1: struct {
+				X int
+				Y float64
+				Z Number
+			}{
+				X: 123,
+				Y: 123.456,
+				Z: Number(987),
 			},
-			SubNode: &SubNode{
-				Code: 100,
-				SubDetails: []Detail{
-					{
-						Info:  "Detail1",
-						Count: 1,
-						Next: &Detail{
-							Info:        "Detail2",
-							Count:       2,
-							Next:        nil,
-							DetailMap:   map[string]bool{"key1": true},
-							DetailSlice: []complex64{1 + 1i, 2 + 2i},
-						},
-						DetailMap:   map[string]bool{"key2": false},
-						DetailSlice: []complex64{3 + 3i, 4 + 4i},
+
+			Field2: Child{
+				Field1: Child1{
+					X: 12344,
+					Y: 578,
+					Z: Number(9876543),
+				},
+				Field2: &Child{
+					Field1: Child1{
+						X: 12344,
+						Y: 578,
+						Z: Number(9876543),
 					},
 				},
-				ChannelSub: channelSub,
-			},
-			privateSubNode: &SubNode{
-				Code: 100,
-				SubDetails: []Detail{
-					{
-						Info:  "Detail1",
-						Count: 1,
-						Next: &Detail{
-							Info:        "Detail2",
-							Count:       2,
-							Next:        nil,
-							DetailMap:   map[string]bool{"key1": true},
-							DetailSlice: []complex64{1 + 1i, 2 + 2i},
-						},
-						DetailMap:   map[string]bool{"key2": false},
-						DetailSlice: []complex64{3 + 3i, 4 + 4i},
-					},
-				},
-				ChannelSub: channelSub,
 			},
 		},
-		{
-			ID:              3,
-			Int8Field:       int8(28),
-			Int16Field:      int16(216),
-			Int32Field:      int32(232),
-			Int64Field:      int64(264),
-			UintField:       uint(2100),
-			Uint8Field:      uint8(220),
-			Uint16Field:     uint16(2300),
-			Uint32Field:     uint32(2400),
-			Uint64Field:     uint64(2500),
-			UintptrField:    uintptr(2600),
-			Float32Field:    float32(323.456),
-			Float64Field:    2789.012,
-			Complex64Field:  complex64(3 + 4i),
-			Complex128Field: complex128(cmplx.Exp(3 + 4i)),
-			StringField:     "ChildNode2",
-			BoolField:       true,
-			Array:           [3]int{7, 8, 9},
-			IntPointer:      &intValue,
-			StringPointer:   &strValue,
-			MapPointer:      &mapValue,
-			ChannelInt:      channelInt,
-			ChannelStr:      channelStr,
-			ChannelStruct:   channelStruct,
-			Attributes: map[string]interface{}{
-				"attr": []string{"a", "b", "c"},
-			},
-			SubNode: &SubNode{
-				Code: 200,
-				SubDetails: []Detail{
-					{
-						Info:  "DetailA",
-						Count: 10,
-						Next: &Detail{
-							Info:        "DetailB",
-							Count:       20,
-							Next:        nil,
-							DetailMap:   map[string]bool{"key3": true},
-							DetailSlice: []complex64{5 + 5i, 6 + 6i},
-						},
-						DetailMap:   map[string]bool{"key4": false},
-						DetailSlice: []complex64{7 + 7i, 8 + 8i},
-					},
-				},
-				ChannelSub: channelSub,
-			},
-		},
-	},
-	Attributes: map[string]interface{}{
-		"globalAttr": []int{100, 200, 300},
-	},
-	IntPointer:    &intValue,
-	StringPointer: &strValue,
-	MapPointer:    &mapValue,
-	ChannelInt:    channelInt,
-	ChannelStr:    channelStr,
-	ChannelStruct: channelStruct,
-	SubNode: &SubNode{
-		Code: 999,
-		Data: []*Node{
-			{
-				ID:              4,
-				Int8Field:       int8(38),
-				Int16Field:      int16(316),
-				Int32Field:      int32(332),
-				Int64Field:      int64(364),
-				UintField:       uint(3100),
-				Uint8Field:      uint8(200),
-				Uint16Field:     uint16(3300),
-				Uint32Field:     uint32(3400),
-				Uint64Field:     uint64(3500),
-				UintptrField:    uintptr(3600),
-				Float32Field:    float32(423.456),
-				Float64Field:    3789.012,
-				Complex64Field:  complex64(4 + 5i),
-				Complex128Field: complex128(cmplx.Exp(4 + 5i)),
-				StringField:     "GrandChildNode1",
-				BoolField:       false,
-				Array:           [3]int{10, 11, 12},
-				Children: []*Node{
-					{
-						ID:              5,
-						Int8Field:       int8(48),
-						Int16Field:      int16(416),
-						Int32Field:      int32(432),
-						Int64Field:      int64(464),
-						UintField:       uint(4100),
-						Uint8Field:      uint8(200),
-						Uint16Field:     uint16(4300),
-						Uint32Field:     uint32(4400),
-						Uint64Field:     uint64(4500),
-						UintptrField:    uintptr(4600),
-						Float32Field:    float32(523.456),
-						Float64Field:    4789.012,
-						Complex64Field:  complex64(5 + 6i),
-						Complex128Field: complex128(cmplx.Exp(5 + 6i)),
-						StringField:     "GreatGrandChildNode1",
-						BoolField:       true,
-						Array:           [3]int{13, 14, 15},
-						Attributes: map[string]interface{}{
-							"greatAttr": "greatValue",
-						},
-						IntPointer:    &intValue,
-						StringPointer: &strValue,
-						MapPointer:    &mapValue,
-						ChannelInt:    channelInt,
-						ChannelStr:    channelStr,
-						ChannelStruct: channelStruct,
-					},
-				},
-				Attributes: map[string]interface{}{
-					"grandAttr": "grandValue1",
-				},
-				IntPointer:    &intValue,
-				StringPointer: &strValue,
-				MapPointer:    &mapValue,
-				ChannelInt:    channelInt,
-				ChannelStr:    channelStr,
-				ChannelStruct: channelStruct,
-			},
-			{
-				ID:              6,
-				Int8Field:       int8(58),
-				Int16Field:      int16(516),
-				Int32Field:      int32(532),
-				Int64Field:      int64(564),
-				UintField:       uint(5100),
-				Uint8Field:      uint8(200),
-				Uint16Field:     uint16(5300),
-				Uint32Field:     uint32(5400),
-				Uint64Field:     uint64(5500),
-				UintptrField:    uintptr(5600),
-				Float32Field:    float32(623.456),
-				Float64Field:    5789.012,
-				Complex64Field:  complex64(6 + 7i),
-				Complex128Field: complex128(cmplx.Exp(6 + 7i)),
-				StringField:     "GrandChildNode2",
-				BoolField:       true,
-				Array:           [3]int{16, 17, 18},
-				Children: []*Node{
-					{
-						ID:              7,
-						Int8Field:       int8(68),
-						Int16Field:      int16(616),
-						Int32Field:      int32(632),
-						Int64Field:      int64(664),
-						UintField:       uint(6100),
-						Uint8Field:      uint8(200),
-						Uint16Field:     uint16(6300),
-						Uint32Field:     uint32(6400),
-						Uint64Field:     uint64(6500),
-						UintptrField:    uintptr(6600),
-						Float32Field:    float32(723.456),
-						Float64Field:    6789.012,
-						Complex64Field:  complex64(7 + 8i),
-						Complex128Field: complex128(cmplx.Exp(7 + 8i)),
-						StringField:     "GreatGrandChildNode2",
-						BoolField:       false,
-						Array:           [3]int{19, 20, 21},
-						Attributes: map[string]interface{}{
-							"greatAttr": "greatValue2",
-						},
-						IntPointer:    &intValue,
-						StringPointer: &strValue,
-						MapPointer:    &mapValue,
-						ChannelInt:    channelInt,
-						ChannelStr:    channelStr,
-						ChannelStruct: channelStruct,
-					},
-				},
-				Attributes: map[string]interface{}{
-					"grandAttr": "grandValue2",
-				},
-				IntPointer:    &intValue,
-				StringPointer: &strValue,
-				MapPointer:    &mapValue,
-				ChannelInt:    channelInt,
-				ChannelStr:    channelStr,
-				ChannelStruct: channelStruct,
-			},
-		},
-		ChannelSub: channelSub,
-	},
-	NamedTypes: NamedTypes{
-		NamedInt:   99,
-		NamedFloat: 99.99,
-		NamedStr:   "NamedValue",
-		NamedMap:   map[string]string{"keyA": "valueA"},
-	},
-	CyclicReference: &cyclicNode,
+	}
+
+	node.Inline.Field2.Field2.Field2 = node.Inline.Field2.Field2
+
+	node.Typed.Field2 = &node.Inline.Field2
+	node.Ref = &node
+
+	var d dumper
+	d.dump(reflect.ValueOf(node))
+
+	checkFromFeed(t, d.buf, "./testdata/structs.txt")
 }
 
-func TestDumperWithComplexDataStructure(t *testing.T) {
-	cyclicNode = root
+func TestCanDumpPrivateStructes(t *testing.T) {
 
-	expectedOutput, err := os.ReadFile("./testdata/output.txt")
+	type number int
+
+	type child1 struct {
+		x int
+		y float64
+		z number
+	}
+
+	type child struct {
+		field1 child1
+
+		field2 *child
+	}
+
+	type node struct {
+		inline struct {
+			field1 struct {
+				x int
+				y float64
+				z number
+			}
+
+			field2 child
+		}
+
+		typed child
+
+		empty struct{}
+
+		ref *node
+	}
+
+	n := node{
+		inline: struct {
+			field1 struct {
+				x int
+				y float64
+				z number
+			}
+			field2 child
+		}{
+			field1: struct {
+				x int
+				y float64
+				z number
+			}{
+				x: 123,
+				y: 123.456,
+				z: number(987),
+			},
+
+			field2: child{
+				field1: child1{
+					x: 12344,
+					y: 578,
+					z: number(9876543),
+				},
+				field2: &child{
+					field1: child1{
+						x: 12344,
+						y: 578,
+						z: number(9876543),
+					},
+				},
+			},
+		},
+		empty: struct{}{},
+	}
+
+	n.inline.field2.field2.field2 = n.inline.field2.field2
+
+	n.typed.field2 = &n.inline.field2
+	n.ref = &n
+
+	var d dumper
+	d.dump(reflect.ValueOf(n))
+
+	checkFromFeed(t, d.buf, "./testdata/private-structs.txt")
+}
+
+func TestCanDumpPrivateStructesWhenPrivateFieldsDumpingIsEnabled(t *testing.T) {
+
+	type number int
+
+	type child1 struct {
+		x int
+		y float64
+		z number
+	}
+
+	type child struct {
+		field1 child1
+
+		field2 *child
+	}
+
+	type node struct {
+		inline struct {
+			field1 struct {
+				x int
+				y float64
+				z number
+			}
+
+			field2 child
+		}
+
+		typed child
+
+		empty struct{}
+
+		ref *node
+	}
+
+	n := node{
+		inline: struct {
+			field1 struct {
+				x int
+				y float64
+				z number
+			}
+			field2 child
+		}{
+			field1: struct {
+				x int
+				y float64
+				z number
+			}{
+				x: 123,
+				y: 123.456,
+				z: number(987),
+			},
+
+			field2: child{
+				field1: child1{
+					x: 12344,
+					y: 578,
+					z: number(9876543),
+				},
+				field2: &child{
+					field1: child1{
+						x: 12344,
+						y: 578,
+						z: number(9876543),
+					},
+				},
+			},
+		},
+		empty: struct{}{},
+	}
+
+	n.inline.field2.field2.field2 = n.inline.field2.field2
+
+	n.typed.field2 = &n.inline.field2
+	n.ref = &n
+
+	var d dumper
+	d.dumpPrivateFields = true
+	d.dump(reflect.ValueOf(n))
+
+	checkFromFeed(t, d.buf, "./testdata/private-structs-dumped.txt")
+}
+
+func TestCanDumpSlices(t *testing.T) {
+
+	type Slice []any
+
+	var foo = "foo"
+	var bar = "bar"
+	var baz = "baz"
+
+	s := Slice{
+		1,
+		2.3,
+		true,
+		false,
+		nil,
+		[]*string{
+			&foo,
+			&bar,
+			&baz,
+		},
+		[]any{},
+		&[]bool{
+			true,
+			false,
+		},
+		make([]any, 3, 8),
+	}
+	s = append(s, &s)
+
+	var d dumper
+	d.dump(reflect.ValueOf(s))
+
+	checkFromFeed(t, d.buf, "./testdata/slices.txt")
+}
+
+func TestCanDumpMaps(t *testing.T) {
+
+	type SomeMap map[*SomeMap]*SomeMap
+	var sm = &SomeMap{}
+
+	var m = map[any]any{12: 34}
+	maps := []any{
+		make(map[string]string),
+		map[any]int{
+			&m: 123,
+		},
+		map[string]any{
+			"cyclic": &m,
+		},
+		SomeMap{
+			&SomeMap{}: &SomeMap{sm: sm},
+		},
+	}
+
+	var d dumper
+	d.dump(reflect.ValueOf(maps))
+
+	checkFromFeed(t, d.buf, "./testdata/maps.txt")
+}
+
+func checkFromFeed(t *testing.T, result []byte, feed_path string) {
+	t.Helper()
+
+	expectedOutput, err := os.ReadFile(feed_path)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	var d dumper
-	d.dump(reflect.ValueOf(root))
-	returned := d.buf
-
-	r_lines := bytes.Split(returned, []byte("\n"))
+	r_lines := bytes.Split(result, []byte("\n"))
 	e_lines := bytes.Split(expectedOutput, []byte("\n"))
 
 	if len(r_lines) != len(e_lines) {
@@ -598,16 +631,10 @@ func TestDumperWithComplexDataStructure(t *testing.T) {
 	}
 
 	for i, line := range e_lines {
-		if len(line) != len(r_lines[i]) {
+		if string(line) != string(r_lines[i]) {
 			t.Fatalf(`mismatche at line %d:
 --- "%s"
 +++ "%s"`, i+1, line, r_lines[i])
-		}
-
-		for j, ch := range line {
-			if ch != r_lines[i][j] {
-				t.Fatalf(`expected "%c", got "%c" at line %d:%d"`, ch, r_lines[i][j], i+1, j)
-			}
 		}
 	}
 }
