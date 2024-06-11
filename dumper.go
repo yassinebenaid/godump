@@ -13,15 +13,16 @@ type pointer struct {
 }
 
 type dumper struct {
-	buf   []byte
-	theme theme
-	depth int
-	ptrs  map[uintptr]*pointer
+	buf         []byte
+	indentation string
+	theme       theme
+	depth       int
+	ptrs        map[uintptr]*pointer
 }
 
 func (d *dumper) dump(v any, ignore_depth ...bool) {
 	if len(ignore_depth) <= 0 || !ignore_depth[0] {
-		d.write(strings.Repeat("   ", d.depth))
+		d.indent()
 	}
 
 	switch reflect.ValueOf(v).Kind() {
@@ -88,7 +89,7 @@ func (d *dumper) dumpSlice(v any) {
 
 	if length > 0 {
 		d.write("\n")
-		d.write(strings.Repeat("   ", d.depth))
+		d.indent()
 	}
 
 	d.write(d.theme.VarType.apply("}"))
@@ -112,7 +113,7 @@ func (d *dumper) dumpMap(v any) {
 
 	if len(keys) > 0 {
 		d.write("\n")
-		d.write(strings.Repeat("   ", d.depth))
+		d.indent()
 	}
 
 	d.write(d.theme.VarType.apply("}"))
@@ -182,14 +183,14 @@ func (d *dumper) dumpStruct(v any) {
 
 	if def.NumField() > 0 {
 		d.write("\n")
-		d.write(strings.Repeat("   ", d.depth))
+		d.indent()
 	}
 
 	d.write(d.theme.VarType.apply("}"))
 }
 
 func (d *dumper) dumpStructKey(key reflect.StructField) {
-	d.write(strings.Repeat("   ", d.depth))
+	d.indent()
 	if !key.IsExported() {
 		d.write(d.theme.StructFieldHash.apply("#"))
 	}
@@ -213,4 +214,12 @@ func (d *dumper) tagPtr(ptr *pointer) {
 	nbuf = append(nbuf, []byte(d.theme.PointerCounter.apply(fmt.Sprintf("#%d", ptr.id)))...)
 	nbuf = append(nbuf, d.buf[ptr.pos+shifted:]...)
 	d.buf = nbuf
+}
+
+func (d *dumper) indent() {
+	if d.indentation == "" {
+		d.indentation = "   "
+	}
+
+	d.write(strings.Repeat(d.indentation, d.depth))
 }
