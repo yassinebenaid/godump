@@ -113,4 +113,6 @@ godump.Node {
    PtrTypedChan: &godump.ChanType,
    PtrTypedChan1: &godump.Chan1Type,
    PtrTypedChan2: &godump.Chan2Type,
+   UnsafePointer1: unsafe.Pointer(<nil>),
+   UnsafePointer2: &unsafe.Pointer(0x7b),
 }

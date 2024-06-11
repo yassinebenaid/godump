@@ -5,9 +5,11 @@ import (
 	"os"
 	"reflect"
 	"testing"
+	"unsafe"
 )
 
 func TestCanDumpPrimitives(t *testing.T) {
+
 	type IntType int
 	type Int8Type int8
 	type Int16Type int16
@@ -181,6 +183,9 @@ func TestCanDumpPrimitives(t *testing.T) {
 		PtrTypedChan  *ChanType
 		PtrTypedChan1 *Chan1Type
 		PtrTypedChan2 *Chan2Type
+
+		UnsafePointer1 unsafe.Pointer
+		UnsafePointer2 *unsafe.Pointer
 	}
 
 	node := Node{
@@ -221,6 +226,8 @@ func TestCanDumpPrimitives(t *testing.T) {
 		TypedString:     StringType("foo bar"),
 
 		Nil: nil,
+
+		UnsafePointer1: nil,
 	}
 
 	node.IntPtr = &node.Int
@@ -303,6 +310,8 @@ func TestCanDumpPrimitives(t *testing.T) {
 	node.PtrTypedChan = &tch
 	node.PtrTypedChan1 = &tch1
 	node.PtrTypedChan2 = &tch2
+
+	node.UnsafePointer2 = (*unsafe.Pointer)(unsafe.Pointer(&node))
 
 	var d dumper
 	d.dump(reflect.ValueOf(node))
