@@ -20,69 +20,57 @@ type dumper struct {
 	ptrs        map[uintptr]*pointer
 }
 
-func (d *dumper) dump(v any, ignore_depth ...bool) {
+func (d *dumper) dump(val reflect.Value, ignore_depth ...bool) {
 	if len(ignore_depth) <= 0 || !ignore_depth[0] {
 		d.indent()
 	}
 
-	switch reflect.ValueOf(v).Kind() {
+	switch val.Kind() {
 	case reflect.String:
-		d.dumpString(fmt.Sprint(v))
+		d.write(d.theme.Quotes.apply(`"`) +
+			d.theme.String.apply(val.String()) +
+			d.theme.Quotes.apply(`"`))
 	case reflect.Bool:
-		d.write(d.theme.Bool.apply(fmt.Sprintf("%t", v)))
+		d.write(d.theme.Bool.apply(fmt.Sprintf("%t", val.Bool())))
 	case reflect.Slice, reflect.Array:
-		d.dumpSlice(v)
+		d.dumpSlice(val)
 	case reflect.Map:
-		d.dumpMap(v)
+		d.dumpMap(val)
 	case reflect.Func:
-		d.write(d.theme.Func.apply(fmt.Sprintf("%T", v)))
+		d.write(d.theme.Func.apply(val.Type().String()))
 	case reflect.Chan:
-		d.write(d.theme.VarType.apply(fmt.Sprintf("%T", v)))
-		cap := reflect.ValueOf(v).Cap()
-		if cap > 0 {
+		d.write(d.theme.VarType.apply(val.Type().String()))
+		if cap := val.Cap(); cap > 0 {
 			d.write(d.theme.VarType.apply(fmt.Sprintf("<%d>", cap)))
 		}
 	case reflect.Struct:
-		d.dumpStruct(v)
+		d.dumpStruct(val)
 	case reflect.Pointer:
-		d.dumpPointer(v)
+		d.dumpPointer(val)
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		v = fmt.Sprint(reflect.ValueOf(v).Int())
-		d.write(d.theme.Number.apply(v.(string)))
-	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-		v = fmt.Sprint(reflect.ValueOf(v).Uint())
-		d.write(d.theme.Number.apply(v.(string)))
+		d.write(d.theme.Number.apply(fmt.Sprint(val)))
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
+		d.write(d.theme.Number.apply(fmt.Sprint(val)))
 	case reflect.Float32, reflect.Float64:
-		v = fmt.Sprint(reflect.ValueOf(v).Float())
-		d.write(d.theme.Number.apply(v.(string)))
+		d.write(d.theme.Number.apply(fmt.Sprint(val)))
 	case reflect.Complex64, reflect.Complex128:
-		v = fmt.Sprint(reflect.ValueOf(v).Complex())
-		d.write(d.theme.Number.apply(v.(string)))
+		d.write(d.theme.Number.apply(fmt.Sprint(val)))
 	case reflect.Invalid:
 		d.write(d.theme.Nil.apply("nil"))
-	case reflect.Uintptr:
-		v = fmt.Sprint(reflect.ValueOf(v).Uint())
-		d.write(d.theme.Number.apply(v.(string)))
+	case reflect.Interface:
+		d.dump(val.Elem(), true)
 	}
 }
 
-func (d *dumper) dumpString(v string) {
-	d.write(d.theme.Quotes.apply(`"`))
-	d.write(d.theme.String.apply(v))
-	d.write(d.theme.Quotes.apply(`"`))
-}
+func (d *dumper) dumpSlice(v reflect.Value) {
+	length := v.Len()
 
-func (d *dumper) dumpSlice(v any) {
-	value := reflect.ValueOf(v)
-	length := value.Len()
-	capacity := value.Cap()
-
-	d.write(d.theme.VarType.apply(fmt.Sprintf("%T:%d:%d {", v, length, capacity)))
+	d.write(d.theme.VarType.apply(fmt.Sprintf("%s:%d:%d {", v.Type(), length, v.Cap())))
 
 	d.depth++
 	for i := 0; i < length; i++ {
 		d.write("\n")
-		d.dump(value.Index(i).Interface())
+		d.dump(v.Index(i))
 		d.write(",")
 	}
 	d.depth--
@@ -95,18 +83,16 @@ func (d *dumper) dumpSlice(v any) {
 	d.write(d.theme.VarType.apply("}"))
 }
 
-func (d *dumper) dumpMap(v any) {
-	value := reflect.ValueOf(v)
-	keys := value.MapKeys()
-
-	d.write(d.theme.VarType.apply(fmt.Sprintf("%T:%d {", v, len(keys))))
+func (d *dumper) dumpMap(v reflect.Value) {
+	keys := v.MapKeys()
+	d.write(d.theme.VarType.apply(fmt.Sprintf("%s:%d {", v.Type(), len(keys))))
 
 	d.depth++
 	for _, key := range keys {
 		d.write("\n")
-		d.dump(key.Interface())
+		d.dump(key)
 		d.write((": "))
-		d.dump(value.MapIndex(key).Interface(), true)
+		d.dump(v.MapIndex(key), true)
 		d.write((","))
 	}
 	d.depth--
@@ -119,14 +105,14 @@ func (d *dumper) dumpMap(v any) {
 	d.write(d.theme.VarType.apply("}"))
 }
 
-func (d *dumper) dumpPointer(v any) {
+func (d *dumper) dumpPointer(v reflect.Value) {
 	if d.ptrs == nil {
 		d.ptrs = make(map[uintptr]*pointer)
 	}
 
-	ptr := uintptr(reflect.ValueOf(v).UnsafePointer())
+	addr := uintptr(v.UnsafePointer())
 
-	if p, ok := d.ptrs[ptr]; ok {
+	if p, ok := d.ptrs[addr]; ok {
 		d.write(d.theme.PointerSign.apply("&"))
 		d.write(d.theme.PointerCounter.apply(fmt.Sprintf("@%d", p.id)))
 
@@ -137,68 +123,13 @@ func (d *dumper) dumpPointer(v any) {
 		return
 	}
 
-	d.ptrs[ptr] = &pointer{
+	d.ptrs[addr] = &pointer{
 		id:  len(d.ptrs) + 1,
 		pos: len(d.buf),
 	}
 
 	d.write(d.theme.PointerSign.apply("&"))
-
-	actual := reflect.ValueOf(v).Elem()
-	if actual.IsValid() {
-		d.dump(actual.Interface(), true)
-	} else {
-		d.write(d.theme.Nil.apply("nil"))
-	}
-
-}
-
-func (d *dumper) dumpStruct(v any) {
-	typ := fmt.Sprintf("%T", v)
-	if strings.HasPrefix(typ, "struct") {
-		typ = "struct"
-	}
-	d.write(d.theme.VarType.apply(typ + " {"))
-
-	def := reflect.TypeOf(v)
-	value := reflect.ValueOf(v)
-
-	d.depth++
-	for i := 0; i < def.NumField(); i++ {
-		d.write("\n")
-		k := def.Field(i)
-		d.dumpStructKey(k)
-		d.write((": "))
-
-		if !k.IsExported() {
-			d.write(d.theme.VarType.apply(fmt.Sprintf("%v", k.Type)))
-			continue
-		}
-
-		d.dump(value.Field(i).Interface(), true)
-
-		d.write((","))
-	}
-	d.depth--
-
-	if def.NumField() > 0 {
-		d.write("\n")
-		d.indent()
-	}
-
-	d.write(d.theme.VarType.apply("}"))
-}
-
-func (d *dumper) dumpStructKey(key reflect.StructField) {
-	d.indent()
-	if !key.IsExported() {
-		d.write(d.theme.StructFieldHash.apply("#"))
-	}
-	d.write(d.theme.StructField.apply(key.Name))
-}
-
-func (d *dumper) write(s string) {
-	d.buf = append(d.buf, []byte(s)...)
+	d.dump(v.Elem(), true)
 }
 
 func (d *dumper) tagPtr(ptr *pointer) {
@@ -214,6 +145,46 @@ func (d *dumper) tagPtr(ptr *pointer) {
 	nbuf = append(nbuf, []byte(d.theme.PointerCounter.apply(fmt.Sprintf("#%d", ptr.id)))...)
 	nbuf = append(nbuf, d.buf[ptr.pos+shifted:]...)
 	d.buf = nbuf
+}
+
+func (d *dumper) dumpStruct(v reflect.Value) {
+	vtype := v.Type()
+
+	if t := vtype.String(); t == "" {
+		d.write(d.theme.VarType.apply("struct {"))
+	} else {
+		d.write(d.theme.VarType.apply(t + " {"))
+	}
+
+	d.depth++
+	for i := 0; i < v.NumField(); i++ {
+		d.write("\n")
+		d.indent()
+
+		key := vtype.Field(i)
+		d.write(d.theme.StructField.apply(key.Name))
+		d.write((": "))
+
+		if !key.IsExported() {
+			d.write(d.theme.VarType.apply(key.Type.String()))
+		} else {
+			d.dump(v.Field(i), true)
+		}
+
+		d.write((","))
+	}
+	d.depth--
+
+	if v.NumField() > 0 {
+		d.write("\n")
+		d.indent()
+	}
+
+	d.write(d.theme.VarType.apply("}"))
+}
+
+func (d *dumper) write(s string) {
+	d.buf = append(d.buf, []byte(s)...)
 }
 
 func (d *dumper) indent() {

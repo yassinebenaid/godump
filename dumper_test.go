@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"math/cmplx"
 	"os"
+	"reflect"
 	"testing"
 )
 
@@ -27,12 +28,12 @@ func TestDumper(t *testing.T) {
 		{uint16(123), "123"},
 		{uint32(123), "123"},
 		{uint64(123), "123"},
-		{float32(12.3), "12.300000190734863"},   // due to float64 casting caused by the `reflect` package
-		{float32(-12.3), "-12.300000190734863"}, // due to float64 casting caused by the `reflect` package
+		{float32(12.3), "12.3"},
+		{float32(-12.3), "-12.3"},
 		{float64(12.3), "12.3"},
 		{float64(-12.3), "-12.3"},
-		{complex64(12.3), "(12.300000190734863+0i)"},
-		{complex64(-12.3), "(-12.300000190734863+0i)"},
+		{complex64(12.3), "(12.3+0i)"},
+		{complex64(-12.3), "(-12.3+0i)"},
 		{complex128(12.3), "(12.3+0i)"},
 		{complex128(-12.3), "(-12.3+0i)"},
 		{true, "true"},
@@ -131,9 +132,9 @@ func TestDumper(t *testing.T) {
 		{
 			[]float32{1.2, 3.4, 5.6},
 			`[]float32:3:3 {
-   1.2000000476837158,
-   3.4000000953674316,
-   5.599999904632568,
+   1.2,
+   3.4,
+   5.6,
 }`,
 		},
 		{
@@ -148,7 +149,7 @@ func TestDumper(t *testing.T) {
 			[]complex64{1, 2.3, -4},
 			`[]complex64:3:3 {
    (1+0i),
-   (2.299999952316284+0i),
+   (2.3+0i),
    (-4+0i),
 }`,
 		},
@@ -217,7 +218,7 @@ func TestDumper(t *testing.T) {
 
 	for i, tc := range testCases {
 		var d dumper
-		d.dump(tc.inputVar)
+		d.dump(reflect.ValueOf(tc.inputVar))
 
 		if returned := string(d.buf); returned != tc.expected {
 			t.Fatalf(`Case#%d failed, dumper returned unuexpected results : "%s" (%d), expected "%s" (%d)`, i, returned, len(returned), tc.expected,
@@ -256,6 +257,7 @@ type Node struct {
 	ChannelStruct   chan Detail
 	Array           [3]int
 	SubNode         *SubNode
+	privateSubNode  *SubNode
 	CyclicReference **Node
 	NamedTypes      NamedTypes
 }
@@ -344,6 +346,25 @@ func TestDumperWithComplexDataStructure(t *testing.T) {
 					"attr": []float64{1.1, 2.2, 3.3},
 				},
 				SubNode: &SubNode{
+					Code: 100,
+					SubDetails: []Detail{
+						{
+							Info:  "Detail1",
+							Count: 1,
+							Next: &Detail{
+								Info:        "Detail2",
+								Count:       2,
+								Next:        nil,
+								DetailMap:   map[string]bool{"key1": true},
+								DetailSlice: []complex64{1 + 1i, 2 + 2i},
+							},
+							DetailMap:   map[string]bool{"key2": false},
+							DetailSlice: []complex64{3 + 3i, 4 + 4i},
+						},
+					},
+					ChannelSub: channelSub,
+				},
+				privateSubNode: &SubNode{
 					Code: 100,
 					SubDetails: []Detail{
 						{
@@ -564,7 +585,7 @@ func TestDumperWithComplexDataStructure(t *testing.T) {
 	}
 
 	var d dumper
-	d.dump(root)
+	d.dump(reflect.ValueOf(root))
 	returned := d.buf
 
 	r_lines := bytes.Split(returned, []byte("\n"))
