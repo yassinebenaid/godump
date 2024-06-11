@@ -13,11 +13,12 @@ type pointer struct {
 }
 
 type dumper struct {
-	buf         []byte
-	indentation string
-	theme       theme
-	depth       int
-	ptrs        map[uintptr]*pointer
+	buf               []byte
+	indentation       string
+	dumpPrivateFields bool
+	theme             theme
+	depth             int
+	ptrs              map[uintptr]*pointer
 }
 
 func (d *dumper) dump(val reflect.Value, ignore_depth ...bool) {
@@ -148,16 +149,16 @@ func (d *dumper) tagPtr(ptr *pointer) {
 }
 
 func (d *dumper) dumpStruct(v reflect.Value) {
-	vtype := v.Type()
+	vtype, numFields := v.Type(), v.NumField()
 
-	if t := vtype.String(); t == "" {
+	if t := vtype.String(); strings.HasPrefix(t, "struct") {
 		d.write(d.theme.VarType.apply("struct {"))
 	} else {
 		d.write(d.theme.VarType.apply(t + " {"))
 	}
 
 	d.depth++
-	for i := 0; i < v.NumField(); i++ {
+	for i := 0; i < numFields; i++ {
 		d.write("\n")
 		d.indent()
 
@@ -165,7 +166,7 @@ func (d *dumper) dumpStruct(v reflect.Value) {
 		d.write(d.theme.StructField.apply(key.Name))
 		d.write((": "))
 
-		if !key.IsExported() {
+		if !key.IsExported() && !d.dumpPrivateFields {
 			d.write(d.theme.VarType.apply(key.Type.String()))
 		} else {
 			d.dump(v.Field(i), true)
@@ -175,7 +176,7 @@ func (d *dumper) dumpStruct(v reflect.Value) {
 	}
 	d.depth--
 
-	if v.NumField() > 0 {
+	if numFields > 0 {
 		d.write("\n")
 		d.indent()
 	}
