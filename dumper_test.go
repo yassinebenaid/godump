@@ -577,8 +577,8 @@ func TestDumperWithComplexDataStructure(t *testing.T) {
 	for i, line := range e_lines {
 		if len(line) != len(r_lines[i]) {
 			t.Fatalf(`mismatche at line %d:
-- "%s"
-+ "%s"`, i, line, r_lines[i])
+--- "%s"
++++ "%s"`, i+1, line, r_lines[i])
 		}
 
 		for j, ch := range line {
