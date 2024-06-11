@@ -126,7 +126,9 @@ func (d *dumper) dumpPointer(v reflect.Value) {
 	elem := v.Elem()
 
 	if isPrimitive(elem) {
-		d.write(d.theme.PointerSign.apply("&"))
+		if elem.IsValid() {
+			d.write(d.theme.PointerSign.apply("&"))
+		}
 		d.dump(elem, true)
 		return
 	}
@@ -214,8 +216,6 @@ func isPrimitive(val reflect.Value) bool {
 		case reflect.Pointer:
 			v = v.Elem()
 		default:
-			fmt.Println(v.Kind())
-
 			return false
 		}
 	}
