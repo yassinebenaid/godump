@@ -27,6 +27,7 @@ func TestCanDumpPrimitives(t *testing.T) {
 	type Bool1Type bool
 	type Bool2Type bool
 	type StringType string
+	type UintptrType uintptr
 
 	type IntPtrType *int
 	type Int8PtrType *int8
@@ -45,6 +46,7 @@ func TestCanDumpPrimitives(t *testing.T) {
 	type Bool1PtrType *bool
 	type Bool2PtrType *bool
 	type StringPtrType *string
+	type UintptrPtrType *uintptr
 
 	type FuncType func()
 	type Func2Type func(int) float64
@@ -74,6 +76,8 @@ func TestCanDumpPrimitives(t *testing.T) {
 		Bool2      bool
 		String     string
 
+		Uintptr uintptr
+
 		IntPtr        *int
 		Int8Ptr       *int8
 		Int16Ptr      *int16
@@ -91,6 +95,8 @@ func TestCanDumpPrimitives(t *testing.T) {
 		Bool1Ptr      *bool
 		Bool2Ptr      *bool
 		StringPtr     *string
+
+		UintptrPtr *uintptr
 
 		TypedInt        IntType
 		TypedInt8       Int8Type
@@ -110,6 +116,8 @@ func TestCanDumpPrimitives(t *testing.T) {
 		TypedBool2      Bool2Type
 		TypedString     StringType
 
+		TypedUintptr UintptrType
+
 		TypedIntPtr        IntPtrType
 		TypedInt8Ptr       Int8PtrType
 		TypedInt16Ptr      Int16PtrType
@@ -128,6 +136,8 @@ func TestCanDumpPrimitives(t *testing.T) {
 		TypedBool2Ptr      Bool2PtrType
 		TypedStringPtr     StringPtrType
 
+		TypedUintptrPtr UintptrPtrType
+
 		PtrTypedInt        *IntType
 		PtrTypedInt8       *Int8Type
 		PtrTypedInt16      *Int16Type
@@ -145,6 +155,8 @@ func TestCanDumpPrimitives(t *testing.T) {
 		PtrTypedBool1      *Bool1Type
 		PtrTypedBool2      *Bool2Type
 		PtrTypedString     *StringType
+
+		PtrTypedUintptr *UintptrType
 
 		Nil *any
 
@@ -207,6 +219,8 @@ func TestCanDumpPrimitives(t *testing.T) {
 		Bool2:      false,
 		String:     "foo bar",
 
+		Uintptr: 1234567890,
+
 		TypedInt:        IntType(123),
 		TypedInt8:       Int8Type(-45),
 		TypedInt16:      Int16Type(6789),
@@ -224,6 +238,8 @@ func TestCanDumpPrimitives(t *testing.T) {
 		TypedBool1:      Bool1Type(true),
 		TypedBool2:      Bool2Type(false),
 		TypedString:     StringType("foo bar"),
+
+		TypedUintptr: UintptrType(1234567890),
 
 		Nil: nil,
 
@@ -248,6 +264,8 @@ func TestCanDumpPrimitives(t *testing.T) {
 	node.Bool2Ptr = &node.Bool2
 	node.StringPtr = &node.String
 
+	node.UintptrPtr = &node.Uintptr
+
 	node.TypedIntPtr = node.IntPtr
 	node.TypedInt8Ptr = node.Int8Ptr
 	node.TypedInt16Ptr = node.Int16Ptr
@@ -266,6 +284,8 @@ func TestCanDumpPrimitives(t *testing.T) {
 	node.TypedBool2Ptr = node.Bool2Ptr
 	node.TypedStringPtr = node.StringPtr
 
+	node.TypedUintptrPtr = node.UintptrPtr
+
 	node.PtrTypedInt = &node.TypedInt
 	node.PtrTypedInt8 = &node.TypedInt8
 	node.PtrTypedInt16 = &node.TypedInt16
@@ -283,6 +303,8 @@ func TestCanDumpPrimitives(t *testing.T) {
 	node.PtrTypedBool1 = &node.TypedBool1
 	node.PtrTypedBool2 = &node.TypedBool2
 	node.PtrTypedString = &node.TypedString
+
+	node.PtrTypedUintptr = &node.TypedUintptr
 
 	node.FuncPtr = &node.Func
 	node.Func2Ptr = &node.Func2
