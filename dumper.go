@@ -23,42 +23,42 @@ func (d *dumper) dump(val reflect.Value, ignore_depth ...bool) {
 
 	switch val.Kind() {
 	case reflect.String:
-		d.write(d.theme.Quotes.apply(`"`) +
-			d.theme.String.apply(val.String()) +
-			d.theme.Quotes.apply(`"`))
+		d.write(d.theme.Quotes.__(`"`) +
+			d.theme.String.__(val.String()) +
+			d.theme.Quotes.__(`"`))
 	case reflect.Bool:
-		d.write(d.theme.Bool.apply(fmt.Sprintf("%t", val.Bool())))
+		d.write(d.theme.Bool.__(fmt.Sprintf("%t", val.Bool())))
 	case reflect.Slice, reflect.Array:
 		d.dumpSlice(val)
 	case reflect.Map:
 		d.dumpMap(val)
 	case reflect.Func:
-		d.write(d.theme.Func.apply(val.Type().String()))
+		d.write(d.theme.Func.__(val.Type().String()))
 	case reflect.Chan:
-		d.write(d.theme.Chan.apply(val.Type().String()))
+		d.write(d.theme.Chan.__(val.Type().String()))
 		if cap := val.Cap(); cap > 0 {
-			d.write(d.theme.Chan.apply(fmt.Sprintf("<%d>", cap)))
+			d.write(d.theme.Chan.__(fmt.Sprintf("<%d>", cap)))
 		}
 	case reflect.Struct:
 		d.dumpStruct(val)
 	case reflect.Pointer:
 		d.dumpPointer(val)
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		d.write(d.theme.Number.apply(fmt.Sprint(val)))
+		d.write(d.theme.Number.__(fmt.Sprint(val)))
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-		d.write(d.theme.Number.apply(fmt.Sprint(val)))
+		d.write(d.theme.Number.__(fmt.Sprint(val)))
 	case reflect.Float32, reflect.Float64:
-		d.write(d.theme.Number.apply(fmt.Sprint(val)))
+		d.write(d.theme.Number.__(fmt.Sprint(val)))
 	case reflect.Complex64, reflect.Complex128:
-		d.write(d.theme.Number.apply(fmt.Sprint(val)))
+		d.write(d.theme.Number.__(fmt.Sprint(val)))
 	case reflect.Uintptr:
-		d.write(d.theme.Number.apply(fmt.Sprintf("0x%x", val.Uint())))
+		d.write(d.theme.Number.__(fmt.Sprintf("0x%x", val.Uint())))
 	case reflect.Invalid:
-		d.write(d.theme.Nil.apply("nil"))
+		d.write(d.theme.Nil.__("nil"))
 	case reflect.Interface:
 		d.dump(val.Elem(), true)
 	case reflect.UnsafePointer:
-		d.write(d.theme.VarType.apply(fmt.Sprintf("unsafe.Pointer(%v)", val.UnsafePointer())))
+		d.write(d.theme.UnsafePointer.__(fmt.Sprintf("unsafe.Pointer(0x%x)", uintptr(val.UnsafePointer()))))
 	}
 }
 
@@ -67,11 +67,11 @@ func (d *dumper) dumpSlice(v reflect.Value) {
 
 	var tag string
 	if d.ptrTag != 0 {
-		tag = d.theme.PointerCounter.apply(fmt.Sprintf("#%d", d.ptrTag))
+		tag = d.theme.PointerCounter.__(fmt.Sprintf("#%d", d.ptrTag))
 		d.ptrTag = 0
 	}
 
-	d.write(d.theme.VarType.apply(fmt.Sprintf("%s:%d:%d {%s", v.Type(), length, v.Cap(), tag)))
+	d.write(d.theme.Types.__(fmt.Sprintf("%s:%d:%d {%s", v.Type(), length, v.Cap(), tag)))
 
 	d.depth++
 	for i := 0; i < length; i++ {
@@ -86,7 +86,7 @@ func (d *dumper) dumpSlice(v reflect.Value) {
 		d.indent()
 	}
 
-	d.write(d.theme.VarType.apply("}"))
+	d.write(d.theme.Types.__("}"))
 }
 
 func (d *dumper) dumpMap(v reflect.Value) {
@@ -94,11 +94,11 @@ func (d *dumper) dumpMap(v reflect.Value) {
 
 	var tag string
 	if d.ptrTag != 0 {
-		tag = d.theme.PointerCounter.apply(fmt.Sprintf("#%d", d.ptrTag))
+		tag = d.theme.PointerCounter.__(fmt.Sprintf("#%d", d.ptrTag))
 		d.ptrTag = 0
 	}
 
-	d.write(d.theme.VarType.apply(fmt.Sprintf("%s:%d {%s", v.Type(), len(keys), tag)))
+	d.write(d.theme.Types.__(fmt.Sprintf("%s:%d {%s", v.Type(), len(keys), tag)))
 
 	d.depth++
 	for _, key := range keys {
@@ -115,7 +115,7 @@ func (d *dumper) dumpMap(v reflect.Value) {
 		d.indent()
 	}
 
-	d.write(d.theme.VarType.apply("}"))
+	d.write(d.theme.Types.__("}"))
 }
 
 func (d *dumper) dumpPointer(v reflect.Value) {
@@ -127,7 +127,7 @@ func (d *dumper) dumpPointer(v reflect.Value) {
 
 	if isPrimitive(elem) {
 		if elem.IsValid() {
-			d.write(d.theme.PointerSign.apply("&"))
+			d.write(d.theme.PointerSign.__("&"))
 		}
 		d.dump(elem, true)
 		return
@@ -136,15 +136,15 @@ func (d *dumper) dumpPointer(v reflect.Value) {
 	addr := uintptr(v.UnsafePointer())
 
 	if id, ok := d.ptrs[addr]; ok {
-		d.write(d.theme.PointerSign.apply("&"))
-		d.write(d.theme.PointerCounter.apply(fmt.Sprintf("@%d", id)))
+		d.write(d.theme.PointerSign.__("&"))
+		d.write(d.theme.PointerCounter.__(fmt.Sprintf("@%d", id)))
 		return
 	}
 
 	d.ptrs[addr] = uint(len(d.ptrs) + 1)
 
 	d.ptrTag = uint(len(d.ptrs))
-	d.write(d.theme.PointerSign.apply("&"))
+	d.write(d.theme.PointerSign.__("&"))
 	d.dump(elem, true)
 	d.ptrTag = 0
 }
@@ -159,11 +159,11 @@ func (d *dumper) dumpStruct(v reflect.Value) {
 	}
 
 	if t := vtype.String(); strings.HasPrefix(t, "struct") {
-		d.write(d.theme.VarType.apply("struct {"))
+		d.write(d.theme.Types.__("struct {"))
 	} else {
-		d.write(d.theme.VarType.apply(t + " {"))
+		d.write(d.theme.Types.__(t + " {"))
 	}
-	d.write(d.theme.PointerCounter.apply(tag))
+	d.write(d.theme.PointerCounter.__(tag))
 
 	d.depth++
 	for i := 0; i < numFields; i++ {
@@ -171,11 +171,11 @@ func (d *dumper) dumpStruct(v reflect.Value) {
 		d.indent()
 
 		key := vtype.Field(i)
-		d.write(d.theme.StructField.apply(key.Name))
+		d.write(d.theme.StructField.__(key.Name))
 		d.write((": "))
 
 		if !key.IsExported() && !d.dumpPrivateFields {
-			d.write(d.theme.VarType.apply(key.Type.String()))
+			d.write(d.theme.Types.__(key.Type.String()))
 		} else {
 			d.dump(v.Field(i), true)
 		}
@@ -189,7 +189,7 @@ func (d *dumper) dumpStruct(v reflect.Value) {
 		d.indent()
 	}
 
-	d.write(d.theme.VarType.apply("}"))
+	d.write(d.theme.Types.__("}"))
 }
 
 func (d *dumper) write(s string) {

@@ -9,6 +9,7 @@ import (
 // Dump the given variable
 func Dump(v any) error {
 	d := dumper{}
+	d.dumpPrivateFields = true
 	d.theme = defaultTheme
 	d.dump(reflect.ValueOf(v))
 	_, err := fmt.Fprintln(os.Stdout, string(d.buf))
