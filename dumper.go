@@ -55,6 +55,8 @@ func (d *dumper) dump(val reflect.Value, ignore_depth ...bool) {
 		d.write(d.theme.Nil.apply("nil"))
 	case reflect.Interface:
 		d.dump(val.Elem(), true)
+	case reflect.UnsafePointer:
+		d.write(d.theme.VarType.apply(fmt.Sprintf("unsafe.Pointer(%v)", val.UnsafePointer())))
 	}
 }
 
