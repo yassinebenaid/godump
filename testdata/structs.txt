@@ -36,6 +36,7 @@ godump.Node {
          Field2: &@1,
       },
    },
+   Ptr: &&123,
    Empty: struct {},
    Ref: &godump.Node {#3
       Inline: struct {
@@ -61,6 +62,7 @@ godump.Node {
          },
          Field2: &@2,
       },
+      Ptr: &&123,
       Empty: struct {},
       Ref: &@3,
    },

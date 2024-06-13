@@ -45,12 +45,14 @@ func (d *dumper) dump(val reflect.Value, ignore_depth ...bool) {
 		d.dumpPointer(val)
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
 		d.write(d.theme.Number.apply(fmt.Sprint(val)))
-	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr:
+	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
 		d.write(d.theme.Number.apply(fmt.Sprint(val)))
 	case reflect.Float32, reflect.Float64:
 		d.write(d.theme.Number.apply(fmt.Sprint(val)))
 	case reflect.Complex64, reflect.Complex128:
 		d.write(d.theme.Number.apply(fmt.Sprint(val)))
+	case reflect.Uintptr:
+		d.write(d.theme.Number.apply(fmt.Sprintf("0x%x", val.Uint())))
 	case reflect.Invalid:
 		d.write(d.theme.Nil.apply("nil"))
 	case reflect.Interface:
@@ -124,7 +126,9 @@ func (d *dumper) dumpPointer(v reflect.Value) {
 	elem := v.Elem()
 
 	if isPrimitive(elem) {
-		d.write(d.theme.PointerSign.apply("&"))
+		if elem.IsValid() {
+			d.write(d.theme.PointerSign.apply("&"))
+		}
 		d.dump(elem, true)
 		return
 	}
@@ -142,6 +146,7 @@ func (d *dumper) dumpPointer(v reflect.Value) {
 	d.ptrTag = uint(len(d.ptrs))
 	d.write(d.theme.PointerSign.apply("&"))
 	d.dump(elem, true)
+	d.ptrTag = 0
 }
 
 func (d *dumper) dumpStruct(v reflect.Value) {
@@ -200,13 +205,18 @@ func (d *dumper) indent() {
 }
 
 func isPrimitive(val reflect.Value) bool {
-	switch val.Kind() {
-	case reflect.String, reflect.Bool, reflect.Func, reflect.Chan,
-		reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
-		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr,
-		reflect.Float32, reflect.Float64, reflect.Complex64, reflect.Complex128, reflect.Invalid:
-		return true
-	default:
-		return false
+	v := val
+	for {
+		switch v.Kind() {
+		case reflect.String, reflect.Bool, reflect.Func, reflect.Chan,
+			reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
+			reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64, reflect.Uintptr,
+			reflect.Float32, reflect.Float64, reflect.Complex64, reflect.Complex128, reflect.Invalid, reflect.UnsafePointer:
+			return true
+		case reflect.Pointer:
+			v = v.Elem()
+		default:
+			return false
+		}
 	}
 }
