@@ -71,7 +71,8 @@ func (d *dumper) dumpSlice(v reflect.Value) {
 		d.ptrTag = 0
 	}
 
-	d.write(d.theme.Types.__(fmt.Sprintf("%s:%d:%d {%s", v.Type(), length, v.Cap(), tag)))
+	d.write(d.theme.Types.__(fmt.Sprintf("%s:%d:%d", v.Type(), length, v.Cap())))
+	d.write(d.theme.Braces.__(fmt.Sprintf(" {%s", tag)))
 
 	d.depth++
 	for i := 0; i < length; i++ {
@@ -86,7 +87,7 @@ func (d *dumper) dumpSlice(v reflect.Value) {
 		d.indent()
 	}
 
-	d.write(d.theme.Types.__("}"))
+	d.write(d.theme.Braces.__("}"))
 }
 
 func (d *dumper) dumpMap(v reflect.Value) {
@@ -98,7 +99,8 @@ func (d *dumper) dumpMap(v reflect.Value) {
 		d.ptrTag = 0
 	}
 
-	d.write(d.theme.Types.__(fmt.Sprintf("%s:%d {%s", v.Type(), len(keys), tag)))
+	d.write(d.theme.Types.__(fmt.Sprintf("%s:%d", v.Type(), len(keys))))
+	d.write(d.theme.Braces.__(fmt.Sprintf(" {%s", tag)))
 
 	d.depth++
 	for _, key := range keys {
@@ -115,7 +117,7 @@ func (d *dumper) dumpMap(v reflect.Value) {
 		d.indent()
 	}
 
-	d.write(d.theme.Types.__("}"))
+	d.write(d.theme.Braces.__("}"))
 }
 
 func (d *dumper) dumpPointer(v reflect.Value) {
@@ -159,10 +161,11 @@ func (d *dumper) dumpStruct(v reflect.Value) {
 	}
 
 	if t := vtype.String(); strings.HasPrefix(t, "struct") {
-		d.write(d.theme.Types.__("struct {"))
+		d.write(d.theme.Types.__("struct"))
 	} else {
-		d.write(d.theme.Types.__(t + " {"))
+		d.write(d.theme.Types.__(t))
 	}
+	d.write(d.theme.Braces.__(" {"))
 	d.write(d.theme.PointerCounter.__(tag))
 
 	d.depth++
@@ -189,7 +192,7 @@ func (d *dumper) dumpStruct(v reflect.Value) {
 		d.indent()
 	}
 
-	d.write(d.theme.Types.__("}"))
+	d.write(d.theme.Braces.__("}"))
 }
 
 func (d *dumper) write(s string) {

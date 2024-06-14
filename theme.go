@@ -26,6 +26,7 @@ type theme struct {
 	Func           *rgb
 	StructField    *rgb
 	Chan           *rgb
+	Braces         *rgb
 }
 
 var defaultTheme = theme{
@@ -41,6 +42,7 @@ var defaultTheme = theme{
 	StructField:    &rgb{189, 176, 194},
 	Chan:           &rgb{195, 154, 76},
 	UnsafePointer:  &rgb{89, 193, 180},
+	Braces:         &rgb{185, 86, 86},
 }
 
 // DisableColors disables the colors globally.
