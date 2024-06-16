@@ -12,7 +12,7 @@ func Dump(v any) error {
 	d.dumpPrivateFields = true
 	d.theme = defaultTheme
 	d.dump(reflect.ValueOf(v))
-	_, err := fmt.Fprintln(os.Stdout, string(d.buf))
+	_, err := fmt.Fprintln(os.Stdout, d.buf.String())
 	if err != nil {
 		return err
 	}
@@ -23,7 +23,7 @@ func Dump(v any) error {
 func DumpNC(v any) error {
 	d := Dumper{}
 	d.dump(reflect.ValueOf(v))
-	_, err := fmt.Fprintln(os.Stdout, string(d.buf))
+	_, err := fmt.Fprintln(os.Stdout, d.buf.String())
 	if err != nil {
 		return err
 	}
@@ -35,12 +35,12 @@ func Sdump(v any) string {
 	d := Dumper{}
 	d.theme = defaultTheme
 	d.dump(reflect.ValueOf(v))
-	return string(d.buf)
+	return d.buf.String()
 }
 
 // SdumpNC is just like DumpNC but returns the result instead of printing to STDOUT
 func SdumpNC(v any) string {
 	d := Dumper{}
 	d.dump(reflect.ValueOf(v))
-	return string(d.buf)
+	return d.buf.String()
 }
