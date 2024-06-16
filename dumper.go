@@ -20,6 +20,7 @@ type Dumper struct {
 }
 
 func (d *Dumper) Print(v any) error {
+	d.init()
 	d.dump(reflect.ValueOf(v))
 	if _, err := d.buf.WriteTo(os.Stdout); err != nil {
 		return fmt.Errorf("dumper error: encountered unexpected error while writing to STDOUT, %v", err)
@@ -28,6 +29,7 @@ func (d *Dumper) Print(v any) error {
 }
 
 func (d *Dumper) Println(v any) error {
+	d.init()
 	d.dump(reflect.ValueOf(v))
 	d.buf.WriteString("\n")
 	if _, err := d.buf.WriteTo(os.Stdout); err != nil {
@@ -37,6 +39,7 @@ func (d *Dumper) Println(v any) error {
 }
 
 func (d *Dumper) Fprint(dst io.Writer, v any) error {
+	d.init()
 	d.dump(reflect.ValueOf(v))
 	if _, err := d.buf.WriteTo(dst); err != nil {
 		return fmt.Errorf("dumper error: encountered unexpected error while writing to dst, %v", err)
@@ -45,6 +48,7 @@ func (d *Dumper) Fprint(dst io.Writer, v any) error {
 }
 
 func (d *Dumper) Fprintln(dst io.Writer, v any) error {
+	d.init()
 	d.dump(reflect.ValueOf(v))
 	d.buf.WriteString("\n")
 	if _, err := d.buf.WriteTo(dst); err != nil {
@@ -54,14 +58,25 @@ func (d *Dumper) Fprintln(dst io.Writer, v any) error {
 }
 
 func (d *Dumper) Sprint(v any) string {
+	d.init()
 	d.dump(reflect.ValueOf(v))
 	return d.buf.String()
 }
 
 func (d *Dumper) Sprintln(v any) string {
+	d.init()
 	d.dump(reflect.ValueOf(v))
 	d.buf.WriteString("\n")
 	return d.buf.String()
+}
+
+func (d *Dumper) init() {
+	d.buf.Reset()
+	if d.indentation == "" {
+		d.indentation = "   "
+	}
+	d.ptrs = make(map[uintptr]uint)
+	d.depth = 0
 }
 
 func (d *Dumper) dump(val reflect.Value, ignore_depth ...bool) {
