@@ -3,6 +3,8 @@ package godump
 import (
 	"bytes"
 	"fmt"
+	"io"
+	"os"
 	"reflect"
 	"strings"
 )
@@ -15,6 +17,51 @@ type Dumper struct {
 	depth             uint
 	ptrs              map[uintptr]uint
 	ptrTag            uint
+}
+
+func (d *Dumper) Print(v any) error {
+	d.dump(reflect.ValueOf(v))
+	if _, err := d.buf.WriteTo(os.Stdout); err != nil {
+		return fmt.Errorf("dumper error: encountered unexpected error while writing to STDOUT, %v", err)
+	}
+	return nil
+}
+
+func (d *Dumper) Println(v any) error {
+	d.dump(reflect.ValueOf(v))
+	d.buf.WriteString("\n")
+	if _, err := d.buf.WriteTo(os.Stdout); err != nil {
+		return fmt.Errorf("dumper error: encountered unexpected error while writing to STDOUT, %v", err)
+	}
+	return nil
+}
+
+func (d *Dumper) Fprint(dst io.Writer, v any) error {
+	d.dump(reflect.ValueOf(v))
+	if _, err := d.buf.WriteTo(dst); err != nil {
+		return fmt.Errorf("dumper error: encountered unexpected error while writing to dst, %v", err)
+	}
+	return nil
+}
+
+func (d *Dumper) Fprintln(dst io.Writer, v any) error {
+	d.dump(reflect.ValueOf(v))
+	d.buf.WriteString("\n")
+	if _, err := d.buf.WriteTo(dst); err != nil {
+		return fmt.Errorf("dumper error: encountered unexpected error while writing to dst, %v", err)
+	}
+	return nil
+}
+
+func (d *Dumper) Sprint(v any) string {
+	d.dump(reflect.ValueOf(v))
+	return d.buf.String()
+}
+
+func (d *Dumper) Sprintln(v any) string {
+	d.dump(reflect.ValueOf(v))
+	d.buf.WriteString("\n")
+	return d.buf.String()
 }
 
 func (d *Dumper) dump(val reflect.Value, ignore_depth ...bool) {
