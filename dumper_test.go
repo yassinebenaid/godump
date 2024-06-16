@@ -3,7 +3,6 @@ package godump
 import (
 	"bytes"
 	"os"
-	"reflect"
 	"testing"
 	"unsafe"
 )
@@ -336,9 +335,9 @@ func TestCanDumpPrimitives(t *testing.T) {
 	node.UnsafePointer2 = (*unsafe.Pointer)(unsafe.Pointer(&node))
 
 	var d Dumper
-	d.dump(reflect.ValueOf(node))
+	result := d.Sprint(node)
 
-	checkFromFeed(t, d.buf.Bytes(), "./testdata/primitives.txt")
+	checkFromFeed(t, []byte(result), "./testdata/primitives.txt")
 }
 
 func TestCanDumpStructs(t *testing.T) {
@@ -421,9 +420,9 @@ func TestCanDumpStructs(t *testing.T) {
 	node.Ref = &node
 
 	var d Dumper
-	d.dump(reflect.ValueOf(node))
+	result := d.Sprint(node)
 
-	checkFromFeed(t, d.buf.Bytes(), "./testdata/structs.txt")
+	checkFromFeed(t, []byte(result), "./testdata/structs.txt")
 }
 
 func TestCanDumpPrivateStructs(t *testing.T) {
@@ -503,9 +502,9 @@ func TestCanDumpPrivateStructs(t *testing.T) {
 	n.ref = &n
 
 	var d Dumper
-	d.dump(reflect.ValueOf(n))
+	result := d.Sprint(n)
 
-	checkFromFeed(t, d.buf.Bytes(), "./testdata/private-structs.txt")
+	checkFromFeed(t, []byte(result), "./testdata/private-structs.txt")
 }
 
 func TestCanDumpPrivateStructsWhenPrivateFieldsDumpingIsEnabled(t *testing.T) {
@@ -586,9 +585,9 @@ func TestCanDumpPrivateStructsWhenPrivateFieldsDumpingIsEnabled(t *testing.T) {
 
 	var d Dumper
 	d.dumpPrivateFields = true
-	d.dump(reflect.ValueOf(n))
+	result := d.Sprint(n)
 
-	checkFromFeed(t, d.buf.Bytes(), "./testdata/private-structs-dumped.txt")
+	checkFromFeed(t, []byte(result), "./testdata/private-structs-dumped.txt")
 }
 
 func TestCanDumpSlices(t *testing.T) {
@@ -620,9 +619,9 @@ func TestCanDumpSlices(t *testing.T) {
 	s = append(s, &s)
 
 	var d Dumper
-	d.dump(reflect.ValueOf(s))
+	result := d.Sprint(s)
 
-	checkFromFeed(t, d.buf.Bytes(), "./testdata/slices.txt")
+	checkFromFeed(t, []byte(result), "./testdata/slices.txt")
 }
 
 func TestCanDumpMaps(t *testing.T) {
@@ -645,9 +644,9 @@ func TestCanDumpMaps(t *testing.T) {
 	}
 
 	var d Dumper
-	d.dump(reflect.ValueOf(maps))
+	result := d.Sprint(maps)
 
-	checkFromFeed(t, d.buf.Bytes(), "./testdata/maps.txt")
+	checkFromFeed(t, []byte(result), "./testdata/maps.txt")
 }
 
 func checkFromFeed(t *testing.T, result []byte, feed_path string) {
