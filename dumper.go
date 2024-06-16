@@ -11,8 +11,8 @@ import (
 
 type Dumper struct {
 	Indentation       string
+	HidePrivateFields bool
 	buf               bytes.Buffer
-	dumpPrivateFields bool
 	theme             theme
 	depth             uint
 	ptrs              map[uintptr]uint
@@ -210,7 +210,7 @@ func (d *Dumper) dumpPointer(v reflect.Value) {
 }
 
 func (d *Dumper) dumpStruct(v reflect.Value) {
-	vtype, numFields := v.Type(), v.NumField()
+	vtype := v.Type()
 
 	var tag string
 	if d.ptrTag != 0 {
@@ -226,26 +226,28 @@ func (d *Dumper) dumpStruct(v reflect.Value) {
 	d.buf.WriteString(d.theme.Braces.__(" {"))
 	d.buf.WriteString(d.theme.PointerCounter.__(tag))
 
+	var has_fields bool
+
 	d.depth++
-	for i := 0; i < numFields; i++ {
+	for i := 0; i < v.NumField(); i++ {
+		key := vtype.Field(i)
+		if !key.IsExported() && d.HidePrivateFields {
+			continue
+		}
+
+		has_fields = true
+
 		d.buf.WriteString("\n")
 		d.indent()
 
-		key := vtype.Field(i)
 		d.buf.WriteString(d.theme.StructField.__(key.Name))
 		d.buf.WriteString((": "))
-
-		if !key.IsExported() && !d.dumpPrivateFields {
-			d.buf.WriteString(d.theme.Types.__(key.Type.String()))
-		} else {
-			d.dump(v.Field(i), true)
-		}
-
+		d.dump(v.Field(i), true)
 		d.buf.WriteString((","))
 	}
 	d.depth--
 
-	if numFields > 0 {
+	if has_fields {
 		d.buf.WriteString("\n")
 		d.indent()
 	}

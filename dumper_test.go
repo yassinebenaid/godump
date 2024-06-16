@@ -7,8 +7,6 @@ import (
 	"unsafe"
 )
 
-var d Dumper
-
 func TestCanDumpPrimitives(t *testing.T) {
 
 	type IntType int
@@ -336,6 +334,7 @@ func TestCanDumpPrimitives(t *testing.T) {
 
 	node.UnsafePointer2 = (*unsafe.Pointer)(unsafe.Pointer(&node))
 
+	var d Dumper
 	result := d.Sprint(node)
 
 	checkFromFeed(t, []byte(result), "./testdata/primitives.txt")
@@ -420,9 +419,96 @@ func TestCanDumpStructs(t *testing.T) {
 	node.Typed.Field2 = &node.Inline.Field2
 	node.Ref = &node
 
+	var d Dumper
 	result := d.Sprint(node)
 
 	checkFromFeed(t, []byte(result), "./testdata/structs.txt")
+}
+
+func TestCannotDumpPrivateStructsWhenHidingOptionIsEnabled(t *testing.T) {
+
+	type number int
+
+	type child1 struct {
+		x int
+		y float64
+		z number
+	}
+
+	type child struct {
+		field1 child1
+
+		field2 *child
+	}
+
+	type node struct {
+		inline struct {
+			field1 struct {
+				x int
+				y float64
+				z number
+			}
+
+			field2 child
+		}
+
+		typed child
+
+		empty struct{}
+
+		ref *node
+	}
+
+	n := node{
+		inline: struct {
+			field1 struct {
+				x int
+				y float64
+				z number
+			}
+			field2 child
+		}{
+			field1: struct {
+				x int
+				y float64
+				z number
+			}{
+				x: 123,
+				y: 123.456,
+				z: number(987),
+			},
+
+			field2: child{
+				field1: child1{
+					x: 12344,
+					y: 578,
+					z: number(9876543),
+				},
+				field2: &child{
+					field1: child1{
+						x: 12344,
+						y: 578,
+						z: number(9876543),
+					},
+				},
+			},
+		},
+		empty: struct{}{},
+	}
+
+	n.inline.field2.field2.field2 = n.inline.field2.field2
+
+	n.typed.field2 = &n.inline.field2
+	n.ref = &n
+
+	var d Dumper
+	d.HidePrivateFields = true
+
+	result := d.Sprint(n)
+
+	if result != "godump.node {}" {
+		t.Fatalf("unexpected result when trying to dump a private struct with hide private fields option enabled, expected `godump.node {}`, got `%v`", result)
+	}
 }
 
 func TestCanDumpPrivateStructs(t *testing.T) {
@@ -501,91 +587,10 @@ func TestCanDumpPrivateStructs(t *testing.T) {
 	n.typed.field2 = &n.inline.field2
 	n.ref = &n
 
+	var d Dumper
 	result := d.Sprint(n)
 
 	checkFromFeed(t, []byte(result), "./testdata/private-structs.txt")
-}
-
-func TestCanDumpPrivateStructsWhenPrivateFieldsDumpingIsEnabled(t *testing.T) {
-
-	type number int
-
-	type child1 struct {
-		x int
-		y float64
-		z number
-	}
-
-	type child struct {
-		field1 child1
-
-		field2 *child
-	}
-
-	type node struct {
-		inline struct {
-			field1 struct {
-				x int
-				y float64
-				z number
-			}
-
-			field2 child
-		}
-
-		typed child
-
-		empty struct{}
-
-		ref *node
-	}
-
-	n := node{
-		inline: struct {
-			field1 struct {
-				x int
-				y float64
-				z number
-			}
-			field2 child
-		}{
-			field1: struct {
-				x int
-				y float64
-				z number
-			}{
-				x: 123,
-				y: 123.456,
-				z: number(987),
-			},
-
-			field2: child{
-				field1: child1{
-					x: 12344,
-					y: 578,
-					z: number(9876543),
-				},
-				field2: &child{
-					field1: child1{
-						x: 12344,
-						y: 578,
-						z: number(9876543),
-					},
-				},
-			},
-		},
-		empty: struct{}{},
-	}
-
-	n.inline.field2.field2.field2 = n.inline.field2.field2
-
-	n.typed.field2 = &n.inline.field2
-	n.ref = &n
-
-	d.dumpPrivateFields = true
-	result := d.Sprint(n)
-
-	checkFromFeed(t, []byte(result), "./testdata/private-structs-dumped.txt")
 }
 
 func TestCanDumpSlices(t *testing.T) {
@@ -616,6 +621,7 @@ func TestCanDumpSlices(t *testing.T) {
 	}
 	s = append(s, &s)
 
+	var d Dumper
 	result := d.Sprint(s)
 
 	checkFromFeed(t, []byte(result), "./testdata/slices.txt")
@@ -640,6 +646,7 @@ func TestCanDumpMaps(t *testing.T) {
 		},
 	}
 
+	var d Dumper
 	result := d.Sprint(maps)
 
 	checkFromFeed(t, []byte(result), "./testdata/maps.txt")

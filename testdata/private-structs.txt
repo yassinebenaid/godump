@@ -1,6 +1,67 @@
 godump.node {
-   inline: struct { field1 struct { x int; y float64; z godump.number }; field2 godump.child },
-   typed: godump.child,
+   inline: struct {
+      field1: struct {
+         x: 123,
+         y: 123.456,
+         z: 987,
+      },
+      field2: godump.child {
+         field1: godump.child1 {
+            x: 12344,
+            y: 578,
+            z: 9876543,
+         },
+         field2: &godump.child {#1
+            field1: godump.child1 {
+               x: 12344,
+               y: 578,
+               z: 9876543,
+            },
+            field2: &@1,
+         },
+      },
+   },
+   typed: godump.child {
+      field1: godump.child1 {
+         x: 0,
+         y: 0,
+         z: 0,
+      },
+      field2: &godump.child {#2
+         field1: godump.child1 {
+            x: 12344,
+            y: 578,
+            z: 9876543,
+         },
+         field2: &@1,
+      },
+   },
    empty: struct {},
-   ref: *godump.node,
+   ref: &godump.node {#3
+      inline: struct {
+         field1: struct {
+            x: 123,
+            y: 123.456,
+            z: 987,
+         },
+         field2: godump.child {
+            field1: godump.child1 {
+               x: 12344,
+               y: 578,
+               z: 9876543,
+            },
+            field2: &@1,
+         },
+      },
+      typed: godump.child {
+         field1: godump.child1 {
+            x: 0,
+            y: 0,
+            z: 0,
+         },
+         field2: &@2,
+      },
+      empty: struct {},
+      ref: &@3,
+   },
 }
