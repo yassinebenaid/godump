@@ -10,8 +10,8 @@ import (
 )
 
 type Dumper struct {
+	Indentation       string
 	buf               bytes.Buffer
-	indentation       string
 	dumpPrivateFields bool
 	theme             theme
 	depth             uint
@@ -73,8 +73,8 @@ func (d *Dumper) Sprintln(v any) string {
 func (d *Dumper) init() {
 	d.buf.Reset()
 	d.ptrs = make(map[uintptr]uint)
-	if d.indentation == "" {
-		d.indentation = "   "
+	if d.Indentation == "" {
+		d.Indentation = "   "
 	}
 }
 
@@ -254,7 +254,7 @@ func (d *Dumper) dumpStruct(v reflect.Value) {
 }
 
 func (d *Dumper) indent() {
-	d.buf.WriteString(strings.Repeat(d.indentation, int(d.depth)))
+	d.buf.WriteString(strings.Repeat(d.Indentation, int(d.depth)))
 }
 
 func isPrimitive(val reflect.Value) bool {
