@@ -335,7 +335,7 @@ func TestCanDumpPrimitives(t *testing.T) {
 
 	node.UnsafePointer2 = (*unsafe.Pointer)(unsafe.Pointer(&node))
 
-	var d dumper
+	var d Dumper
 	d.dump(reflect.ValueOf(node))
 
 	checkFromFeed(t, d.buf, "./testdata/primitives.txt")
@@ -420,7 +420,7 @@ func TestCanDumpStructs(t *testing.T) {
 	node.Typed.Field2 = &node.Inline.Field2
 	node.Ref = &node
 
-	var d dumper
+	var d Dumper
 	d.dump(reflect.ValueOf(node))
 
 	checkFromFeed(t, d.buf, "./testdata/structs.txt")
@@ -502,7 +502,7 @@ func TestCanDumpPrivateStructs(t *testing.T) {
 	n.typed.field2 = &n.inline.field2
 	n.ref = &n
 
-	var d dumper
+	var d Dumper
 	d.dump(reflect.ValueOf(n))
 
 	checkFromFeed(t, d.buf, "./testdata/private-structs.txt")
@@ -584,7 +584,7 @@ func TestCanDumpPrivateStructsWhenPrivateFieldsDumpingIsEnabled(t *testing.T) {
 	n.typed.field2 = &n.inline.field2
 	n.ref = &n
 
-	var d dumper
+	var d Dumper
 	d.dumpPrivateFields = true
 	d.dump(reflect.ValueOf(n))
 
@@ -619,7 +619,7 @@ func TestCanDumpSlices(t *testing.T) {
 	}
 	s = append(s, &s)
 
-	var d dumper
+	var d Dumper
 	d.dump(reflect.ValueOf(s))
 
 	checkFromFeed(t, d.buf, "./testdata/slices.txt")
@@ -644,7 +644,7 @@ func TestCanDumpMaps(t *testing.T) {
 		},
 	}
 
-	var d dumper
+	var d Dumper
 	d.dump(reflect.ValueOf(maps))
 
 	checkFromFeed(t, d.buf, "./testdata/maps.txt")

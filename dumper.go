@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-type dumper struct {
+type Dumper struct {
 	buf               []byte
 	indentation       string
 	dumpPrivateFields bool
@@ -16,7 +16,7 @@ type dumper struct {
 	ptrTag            uint
 }
 
-func (d *dumper) dump(val reflect.Value, ignore_depth ...bool) {
+func (d *Dumper) dump(val reflect.Value, ignore_depth ...bool) {
 	if len(ignore_depth) <= 0 || !ignore_depth[0] {
 		d.indent()
 	}
@@ -62,7 +62,7 @@ func (d *dumper) dump(val reflect.Value, ignore_depth ...bool) {
 	}
 }
 
-func (d *dumper) dumpSlice(v reflect.Value) {
+func (d *Dumper) dumpSlice(v reflect.Value) {
 	length := v.Len()
 
 	var tag string
@@ -90,7 +90,7 @@ func (d *dumper) dumpSlice(v reflect.Value) {
 	d.write(d.theme.Braces.__("}"))
 }
 
-func (d *dumper) dumpMap(v reflect.Value) {
+func (d *Dumper) dumpMap(v reflect.Value) {
 	keys := v.MapKeys()
 
 	var tag string
@@ -120,7 +120,7 @@ func (d *dumper) dumpMap(v reflect.Value) {
 	d.write(d.theme.Braces.__("}"))
 }
 
-func (d *dumper) dumpPointer(v reflect.Value) {
+func (d *Dumper) dumpPointer(v reflect.Value) {
 	if d.ptrs == nil {
 		d.ptrs = make(map[uintptr]uint)
 	}
@@ -151,7 +151,7 @@ func (d *dumper) dumpPointer(v reflect.Value) {
 	d.ptrTag = 0
 }
 
-func (d *dumper) dumpStruct(v reflect.Value) {
+func (d *Dumper) dumpStruct(v reflect.Value) {
 	vtype, numFields := v.Type(), v.NumField()
 
 	var tag string
@@ -195,11 +195,11 @@ func (d *dumper) dumpStruct(v reflect.Value) {
 	d.write(d.theme.Braces.__("}"))
 }
 
-func (d *dumper) write(s string) {
+func (d *Dumper) write(s string) {
 	d.buf = append(d.buf, []byte(s)...)
 }
 
-func (d *dumper) indent() {
+func (d *Dumper) indent() {
 	if d.indentation == "" {
 		d.indentation = "   "
 	}

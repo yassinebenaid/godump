@@ -8,7 +8,7 @@ import (
 
 // Dump the given variable
 func Dump(v any) error {
-	d := dumper{}
+	d := Dumper{}
 	d.dumpPrivateFields = true
 	d.theme = defaultTheme
 	d.dump(reflect.ValueOf(v))
@@ -21,7 +21,7 @@ func Dump(v any) error {
 
 // DumpNC is just like Dump but doesn't produce any colors , useful if you want to write to a file or stream.
 func DumpNC(v any) error {
-	d := dumper{}
+	d := Dumper{}
 	d.dump(reflect.ValueOf(v))
 	_, err := fmt.Fprintln(os.Stdout, string(d.buf))
 	if err != nil {
@@ -32,7 +32,7 @@ func DumpNC(v any) error {
 
 // Sdump is just like Dump but returns the result instead of printing to STDOUT
 func Sdump(v any) string {
-	d := dumper{}
+	d := Dumper{}
 	d.theme = defaultTheme
 	d.dump(reflect.ValueOf(v))
 	return string(d.buf)
@@ -40,7 +40,7 @@ func Sdump(v any) string {
 
 // SdumpNC is just like DumpNC but returns the result instead of printing to STDOUT
 func SdumpNC(v any) string {
-	d := dumper{}
+	d := Dumper{}
 	d.dump(reflect.ValueOf(v))
 	return string(d.buf)
 }
