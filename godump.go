@@ -1,9 +1,5 @@
 package godump
 
-import (
-	"reflect"
-)
-
 // Dump the given variable
 func Dump(v any) error {
 	d := Dumper{}
@@ -13,9 +9,7 @@ func Dump(v any) error {
 
 // DumpNC is just like Dump but doesn't produce any colors , useful if you want to write to a file or stream.
 func DumpNC(v any) error {
-	d := Dumper{}
-	d.dump(reflect.ValueOf(v))
-	return d.Println(v)
+	return (&Dumper{}).Println(v)
 }
 
 // Sdump is just like Dump but returns the result instead of printing to STDOUT
