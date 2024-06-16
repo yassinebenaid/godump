@@ -1,8 +1,6 @@
 package godump
 
 import (
-	"fmt"
-	"os"
 	"reflect"
 )
 
@@ -11,23 +9,14 @@ func Dump(v any) error {
 	d := Dumper{}
 	d.dumpPrivateFields = true
 	d.theme = defaultTheme
-	d.dump(reflect.ValueOf(v))
-	_, err := fmt.Fprintln(os.Stdout, d.buf.String())
-	if err != nil {
-		return err
-	}
-	return nil
+	return d.Println(v)
 }
 
 // DumpNC is just like Dump but doesn't produce any colors , useful if you want to write to a file or stream.
 func DumpNC(v any) error {
 	d := Dumper{}
 	d.dump(reflect.ValueOf(v))
-	_, err := fmt.Fprintln(os.Stdout, d.buf.String())
-	if err != nil {
-		return err
-	}
-	return nil
+	return d.Println(v)
 }
 
 // Sdump is just like Dump but returns the result instead of printing to STDOUT
