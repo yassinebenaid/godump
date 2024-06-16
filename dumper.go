@@ -72,11 +72,10 @@ func (d *Dumper) Sprintln(v any) string {
 
 func (d *Dumper) init() {
 	d.buf.Reset()
+	d.ptrs = make(map[uintptr]uint)
 	if d.indentation == "" {
 		d.indentation = "   "
 	}
-	d.ptrs = make(map[uintptr]uint)
-	d.depth = 0
 }
 
 func (d *Dumper) dump(val reflect.Value, ignore_depth ...bool) {
@@ -184,10 +183,6 @@ func (d *Dumper) dumpMap(v reflect.Value) {
 }
 
 func (d *Dumper) dumpPointer(v reflect.Value) {
-	if d.ptrs == nil {
-		d.ptrs = make(map[uintptr]uint)
-	}
-
 	elem := v.Elem()
 
 	if isPrimitive(elem) {
@@ -259,10 +254,6 @@ func (d *Dumper) dumpStruct(v reflect.Value) {
 }
 
 func (d *Dumper) indent() {
-	if d.indentation == "" {
-		d.indentation = "   "
-	}
-
 	d.buf.WriteString(strings.Repeat(d.indentation, int(d.depth)))
 }
 
