@@ -7,6 +7,8 @@ import (
 	"unsafe"
 )
 
+var d Dumper
+
 func TestCanDumpPrimitives(t *testing.T) {
 
 	type IntType int
@@ -334,7 +336,6 @@ func TestCanDumpPrimitives(t *testing.T) {
 
 	node.UnsafePointer2 = (*unsafe.Pointer)(unsafe.Pointer(&node))
 
-	var d Dumper
 	result := d.Sprint(node)
 
 	checkFromFeed(t, []byte(result), "./testdata/primitives.txt")
@@ -419,7 +420,6 @@ func TestCanDumpStructs(t *testing.T) {
 	node.Typed.Field2 = &node.Inline.Field2
 	node.Ref = &node
 
-	var d Dumper
 	result := d.Sprint(node)
 
 	checkFromFeed(t, []byte(result), "./testdata/structs.txt")
@@ -501,7 +501,6 @@ func TestCanDumpPrivateStructs(t *testing.T) {
 	n.typed.field2 = &n.inline.field2
 	n.ref = &n
 
-	var d Dumper
 	result := d.Sprint(n)
 
 	checkFromFeed(t, []byte(result), "./testdata/private-structs.txt")
@@ -583,7 +582,6 @@ func TestCanDumpPrivateStructsWhenPrivateFieldsDumpingIsEnabled(t *testing.T) {
 	n.typed.field2 = &n.inline.field2
 	n.ref = &n
 
-	var d Dumper
 	d.dumpPrivateFields = true
 	result := d.Sprint(n)
 
@@ -618,7 +616,6 @@ func TestCanDumpSlices(t *testing.T) {
 	}
 	s = append(s, &s)
 
-	var d Dumper
 	result := d.Sprint(s)
 
 	checkFromFeed(t, []byte(result), "./testdata/slices.txt")
@@ -643,7 +640,6 @@ func TestCanDumpMaps(t *testing.T) {
 		},
 	}
 
-	var d Dumper
 	result := d.Sprint(maps)
 
 	checkFromFeed(t, []byte(result), "./testdata/maps.txt")
