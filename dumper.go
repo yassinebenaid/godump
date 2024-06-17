@@ -12,8 +12,8 @@ import (
 type Dumper struct {
 	Indentation       string
 	HidePrivateFields bool
-	buf               bytes.Buffer
 	Theme             Theme
+	buf               bytes.Buffer
 	depth             uint
 	ptrs              map[uintptr]uint
 	ptrTag            uint
