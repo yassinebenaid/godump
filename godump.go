@@ -1,6 +1,6 @@
 package godump
 
-// Dump the given variable
+// Dump pretty prints `v` using the default Dumper options and the default theme
 func Dump(v any) error {
 	return (&Dumper{
 		Theme: DefaultTheme,

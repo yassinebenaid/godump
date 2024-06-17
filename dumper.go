@@ -9,16 +9,29 @@ import (
 	"strings"
 )
 
+// Dumper provides an elegant interface to pretty print any variable of any type in a colored and structured format.
+//
+// The zero value for Dumper is a themeless Dumper ready to use.
 type Dumper struct {
-	Indentation       string
+	// Indentation is an optional string used for indentation.
+	// The default value is a string of three spaces.
+	Indentation string
+
+	// HidePrivateFields allows you to optionally hide struct's unexported fields from being printed.
 	HidePrivateFields bool
-	Theme             Theme
-	buf               bytes.Buffer
-	depth             uint
-	ptrs              map[uintptr]uint
-	ptrTag            uint
+
+	// Theme allows you to define your preferred styling.
+	Theme Theme
+
+	buf    bytes.Buffer
+	depth  uint
+	ptrs   map[uintptr]uint
+	ptrTag uint
 }
 
+// Print formats `v` and writes the result to standard output.
+//
+// It returns a write error if encountered while writing to standard output.
 func (d *Dumper) Print(v any) error {
 	d.init()
 	d.dump(reflect.ValueOf(v))
@@ -28,6 +41,9 @@ func (d *Dumper) Print(v any) error {
 	return nil
 }
 
+// Println formats `v` , appends a new line and writes the result to standard output.
+//
+// It returns a write error if encountered while writing to standard output.
 func (d *Dumper) Println(v any) error {
 	d.init()
 	d.dump(reflect.ValueOf(v))
@@ -38,6 +54,9 @@ func (d *Dumper) Println(v any) error {
 	return nil
 }
 
+// Fprint formats `v` and writes the result to `dst`.
+//
+// It returns a write error if encountered while writing to `dst`.
 func (d *Dumper) Fprint(dst io.Writer, v any) error {
 	d.init()
 	d.dump(reflect.ValueOf(v))
@@ -47,6 +66,9 @@ func (d *Dumper) Fprint(dst io.Writer, v any) error {
 	return nil
 }
 
+// Fprintln formats `v` , appends a new line and writes the result to `dst`.
+//
+// It returns a write error if encountered while writing to `dst`.
 func (d *Dumper) Fprintln(dst io.Writer, v any) error {
 	d.init()
 	d.dump(reflect.ValueOf(v))
@@ -57,12 +79,14 @@ func (d *Dumper) Fprintln(dst io.Writer, v any) error {
 	return nil
 }
 
+// Sprint formats `v` and returns the resulting string.
 func (d *Dumper) Sprint(v any) string {
 	d.init()
 	d.dump(reflect.ValueOf(v))
 	return d.buf.String()
 }
 
+// Sprintln formats `v`, appends a new line and returns the resulting string.
 func (d *Dumper) Sprintln(v any) string {
 	d.init()
 	d.dump(reflect.ValueOf(v))
@@ -129,11 +153,11 @@ func (d *Dumper) dumpSlice(v reflect.Value) {
 
 	var tag string
 	if d.ptrTag != 0 {
-		tag = __(d.Theme.PointerCounter, fmt.Sprintf("#%d", d.ptrTag))
+		tag = __(d.Theme.PointerTag, fmt.Sprintf("#%d", d.ptrTag))
 		d.ptrTag = 0
 	}
 
-	d.buf.WriteString(__(d.Theme.Types, fmt.Sprintf("%s:%d:%d", v.Type(), length, v.Cap())))
+	d.buf.WriteString(__(d.Theme.StructuralTypes, fmt.Sprintf("%s:%d:%d", v.Type(), length, v.Cap())))
 	d.buf.WriteString(__(d.Theme.Braces, fmt.Sprintf(" {%s", tag)))
 
 	d.depth++
@@ -157,11 +181,11 @@ func (d *Dumper) dumpMap(v reflect.Value) {
 
 	var tag string
 	if d.ptrTag != 0 {
-		tag = __(d.Theme.PointerCounter, fmt.Sprintf("#%d", d.ptrTag))
+		tag = __(d.Theme.PointerTag, fmt.Sprintf("#%d", d.ptrTag))
 		d.ptrTag = 0
 	}
 
-	d.buf.WriteString(__(d.Theme.Types, fmt.Sprintf("%s:%d", v.Type(), len(keys))))
+	d.buf.WriteString(__(d.Theme.StructuralTypes, fmt.Sprintf("%s:%d", v.Type(), len(keys))))
 	d.buf.WriteString(__(d.Theme.Braces, fmt.Sprintf(" {%s", tag)))
 
 	d.depth++
@@ -187,7 +211,7 @@ func (d *Dumper) dumpPointer(v reflect.Value) {
 
 	if isPrimitive(elem) {
 		if elem.IsValid() {
-			d.buf.WriteString(__(d.Theme.PointerSign, "&"))
+			d.buf.WriteString(__(d.Theme.PointerSymbol, "&"))
 		}
 		d.dump(elem, true)
 		return
@@ -196,15 +220,15 @@ func (d *Dumper) dumpPointer(v reflect.Value) {
 	addr := uintptr(v.UnsafePointer())
 
 	if id, ok := d.ptrs[addr]; ok {
-		d.buf.WriteString(__(d.Theme.PointerSign, "&"))
-		d.buf.WriteString(__(d.Theme.PointerCounter, fmt.Sprintf("@%d", id)))
+		d.buf.WriteString(__(d.Theme.PointerSymbol, "&"))
+		d.buf.WriteString(__(d.Theme.PointerTag, fmt.Sprintf("@%d", id)))
 		return
 	}
 
 	d.ptrs[addr] = uint(len(d.ptrs) + 1)
 
 	d.ptrTag = uint(len(d.ptrs))
-	d.buf.WriteString(__(d.Theme.PointerSign, "&"))
+	d.buf.WriteString(__(d.Theme.PointerSymbol, "&"))
 	d.dump(elem, true)
 	d.ptrTag = 0
 }
@@ -219,12 +243,12 @@ func (d *Dumper) dumpStruct(v reflect.Value) {
 	}
 
 	if t := vtype.String(); strings.HasPrefix(t, "struct") {
-		d.buf.WriteString(__(d.Theme.Types, "struct"))
+		d.buf.WriteString(__(d.Theme.StructuralTypes, "struct"))
 	} else {
-		d.buf.WriteString(__(d.Theme.Types, t))
+		d.buf.WriteString(__(d.Theme.StructuralTypes, t))
 	}
 	d.buf.WriteString(__(d.Theme.Braces, " {"))
-	d.buf.WriteString(__(d.Theme.PointerCounter, tag))
+	d.buf.WriteString(__(d.Theme.PointerTag, tag))
 
 	var has_fields bool
 
@@ -240,7 +264,7 @@ func (d *Dumper) dumpStruct(v reflect.Value) {
 		d.buf.WriteString("\n")
 		d.indent()
 
-		d.buf.WriteString(__(d.Theme.StructField, key.Name))
+		d.buf.WriteString(__(d.Theme.Fields, key.Name))
 		d.buf.WriteString((": "))
 		d.dump(v.Field(i), true)
 		d.buf.WriteString((","))
