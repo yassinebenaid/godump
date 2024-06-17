@@ -683,6 +683,49 @@ func TestCanCustomizeIndentation(t *testing.T) {
 	checkFromFeed(t, []byte(result), "./testdata/indentation.txt")
 }
 
+func TestCanCustomizeTheme(t *testing.T) {
+
+	type User struct {
+		Name       string
+		Age        int
+		hobbies    []string
+		bestFriend *User
+	}
+
+	me := User{
+		Name: "yassinebenaid",
+		Age:  22,
+		hobbies: []string{
+			"Dev",
+			"Go",
+			"Web",
+			"DevOps",
+		},
+	}
+	me.bestFriend = &me
+
+	var d = godump.Dumper{
+		Theme: godump.Theme{
+			String:         godump.RGB{138, 201, 38},
+			Quotes:         godump.RGB{112, 214, 255},
+			Bool:           godump.RGB{249, 87, 56},
+			Number:         godump.RGB{10, 178, 242},
+			Types:          godump.RGB{0, 150, 199},
+			PointerSign:    godump.RGB{205, 93, 0},
+			PointerCounter: godump.RGB{110, 110, 110},
+			Nil:            godump.RGB{219, 57, 26},
+			Func:           godump.RGB{160, 90, 220},
+			StructField:    godump.RGB{189, 176, 194},
+			Chan:           godump.RGB{195, 154, 76},
+			UnsafePointer:  godump.RGB{89, 193, 180},
+			Braces:         godump.RGB{185, 86, 86},
+		},
+	}
+	result := d.Sprint(me)
+
+	checkFromFeed(t, []byte(result), "./testdata/theme.txt")
+}
+
 func checkFromFeed(t *testing.T, result []byte, feed_path string) {
 	t.Helper()
 
