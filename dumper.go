@@ -85,42 +85,42 @@ func (d *Dumper) dump(val reflect.Value, ignore_depth ...bool) {
 
 	switch val.Kind() {
 	case reflect.String:
-		d.buf.WriteString(d.Theme.Quotes.__(`"`) +
-			d.Theme.String.__(val.String()) +
-			d.Theme.Quotes.__(`"`))
+		d.buf.WriteString(__(d.Theme.Quotes, `"`) +
+			__(d.Theme.String, val.String()) +
+			__(d.Theme.Quotes, `"`))
 	case reflect.Bool:
-		d.buf.WriteString(d.Theme.Bool.__(fmt.Sprintf("%t", val.Bool())))
+		d.buf.WriteString(__(d.Theme.Bool, fmt.Sprintf("%t", val.Bool())))
 	case reflect.Slice, reflect.Array:
 		d.dumpSlice(val)
 	case reflect.Map:
 		d.dumpMap(val)
 	case reflect.Func:
-		d.buf.WriteString(d.Theme.Func.__(val.Type().String()))
+		d.buf.WriteString(__(d.Theme.Func, val.Type().String()))
 	case reflect.Chan:
-		d.buf.WriteString(d.Theme.Chan.__(val.Type().String()))
+		d.buf.WriteString(__(d.Theme.Chan, val.Type().String()))
 		if cap := val.Cap(); cap > 0 {
-			d.buf.WriteString(d.Theme.Chan.__(fmt.Sprintf("<%d>", cap)))
+			d.buf.WriteString(__(d.Theme.Chan, fmt.Sprintf("<%d>", cap)))
 		}
 	case reflect.Struct:
 		d.dumpStruct(val)
 	case reflect.Pointer:
 		d.dumpPointer(val)
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		d.buf.WriteString(d.Theme.Number.__(fmt.Sprint(val)))
+		d.buf.WriteString(__(d.Theme.Number, fmt.Sprint(val)))
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-		d.buf.WriteString(d.Theme.Number.__(fmt.Sprint(val)))
+		d.buf.WriteString(__(d.Theme.Number, fmt.Sprint(val)))
 	case reflect.Float32, reflect.Float64:
-		d.buf.WriteString(d.Theme.Number.__(fmt.Sprint(val)))
+		d.buf.WriteString(__(d.Theme.Number, fmt.Sprint(val)))
 	case reflect.Complex64, reflect.Complex128:
-		d.buf.WriteString(d.Theme.Number.__(fmt.Sprint(val)))
+		d.buf.WriteString(__(d.Theme.Number, fmt.Sprint(val)))
 	case reflect.Uintptr:
-		d.buf.WriteString(d.Theme.Number.__(fmt.Sprintf("0x%x", val.Uint())))
+		d.buf.WriteString(__(d.Theme.Number, fmt.Sprintf("0x%x", val.Uint())))
 	case reflect.Invalid:
-		d.buf.WriteString(d.Theme.Nil.__("nil"))
+		d.buf.WriteString(__(d.Theme.Nil, "nil"))
 	case reflect.Interface:
 		d.dump(val.Elem(), true)
 	case reflect.UnsafePointer:
-		d.buf.WriteString(d.Theme.UnsafePointer.__(fmt.Sprintf("unsafe.Pointer(0x%x)", uintptr(val.UnsafePointer()))))
+		d.buf.WriteString(__(d.Theme.UnsafePointer, fmt.Sprintf("unsafe.Pointer(0x%x)", uintptr(val.UnsafePointer()))))
 	}
 }
 
@@ -129,12 +129,12 @@ func (d *Dumper) dumpSlice(v reflect.Value) {
 
 	var tag string
 	if d.ptrTag != 0 {
-		tag = d.Theme.PointerCounter.__(fmt.Sprintf("#%d", d.ptrTag))
+		tag = __(d.Theme.PointerCounter, fmt.Sprintf("#%d", d.ptrTag))
 		d.ptrTag = 0
 	}
 
-	d.buf.WriteString(d.Theme.Types.__(fmt.Sprintf("%s:%d:%d", v.Type(), length, v.Cap())))
-	d.buf.WriteString(d.Theme.Braces.__(fmt.Sprintf(" {%s", tag)))
+	d.buf.WriteString(__(d.Theme.Types, fmt.Sprintf("%s:%d:%d", v.Type(), length, v.Cap())))
+	d.buf.WriteString(__(d.Theme.Braces, fmt.Sprintf(" {%s", tag)))
 
 	d.depth++
 	for i := 0; i < length; i++ {
@@ -149,7 +149,7 @@ func (d *Dumper) dumpSlice(v reflect.Value) {
 		d.indent()
 	}
 
-	d.buf.WriteString(d.Theme.Braces.__("}"))
+	d.buf.WriteString(__(d.Theme.Braces, "}"))
 }
 
 func (d *Dumper) dumpMap(v reflect.Value) {
@@ -157,12 +157,12 @@ func (d *Dumper) dumpMap(v reflect.Value) {
 
 	var tag string
 	if d.ptrTag != 0 {
-		tag = d.Theme.PointerCounter.__(fmt.Sprintf("#%d", d.ptrTag))
+		tag = __(d.Theme.PointerCounter, fmt.Sprintf("#%d", d.ptrTag))
 		d.ptrTag = 0
 	}
 
-	d.buf.WriteString(d.Theme.Types.__(fmt.Sprintf("%s:%d", v.Type(), len(keys))))
-	d.buf.WriteString(d.Theme.Braces.__(fmt.Sprintf(" {%s", tag)))
+	d.buf.WriteString(__(d.Theme.Types, fmt.Sprintf("%s:%d", v.Type(), len(keys))))
+	d.buf.WriteString(__(d.Theme.Braces, fmt.Sprintf(" {%s", tag)))
 
 	d.depth++
 	for _, key := range keys {
@@ -179,7 +179,7 @@ func (d *Dumper) dumpMap(v reflect.Value) {
 		d.indent()
 	}
 
-	d.buf.WriteString(d.Theme.Braces.__("}"))
+	d.buf.WriteString(__(d.Theme.Braces, "}"))
 }
 
 func (d *Dumper) dumpPointer(v reflect.Value) {
@@ -187,7 +187,7 @@ func (d *Dumper) dumpPointer(v reflect.Value) {
 
 	if isPrimitive(elem) {
 		if elem.IsValid() {
-			d.buf.WriteString(d.Theme.PointerSign.__("&"))
+			d.buf.WriteString(__(d.Theme.PointerSign, "&"))
 		}
 		d.dump(elem, true)
 		return
@@ -196,15 +196,15 @@ func (d *Dumper) dumpPointer(v reflect.Value) {
 	addr := uintptr(v.UnsafePointer())
 
 	if id, ok := d.ptrs[addr]; ok {
-		d.buf.WriteString(d.Theme.PointerSign.__("&"))
-		d.buf.WriteString(d.Theme.PointerCounter.__(fmt.Sprintf("@%d", id)))
+		d.buf.WriteString(__(d.Theme.PointerSign, "&"))
+		d.buf.WriteString(__(d.Theme.PointerCounter, fmt.Sprintf("@%d", id)))
 		return
 	}
 
 	d.ptrs[addr] = uint(len(d.ptrs) + 1)
 
 	d.ptrTag = uint(len(d.ptrs))
-	d.buf.WriteString(d.Theme.PointerSign.__("&"))
+	d.buf.WriteString(__(d.Theme.PointerSign, "&"))
 	d.dump(elem, true)
 	d.ptrTag = 0
 }
@@ -219,12 +219,12 @@ func (d *Dumper) dumpStruct(v reflect.Value) {
 	}
 
 	if t := vtype.String(); strings.HasPrefix(t, "struct") {
-		d.buf.WriteString(d.Theme.Types.__("struct"))
+		d.buf.WriteString(__(d.Theme.Types, "struct"))
 	} else {
-		d.buf.WriteString(d.Theme.Types.__(t))
+		d.buf.WriteString(__(d.Theme.Types, t))
 	}
-	d.buf.WriteString(d.Theme.Braces.__(" {"))
-	d.buf.WriteString(d.Theme.PointerCounter.__(tag))
+	d.buf.WriteString(__(d.Theme.Braces, " {"))
+	d.buf.WriteString(__(d.Theme.PointerCounter, tag))
 
 	var has_fields bool
 
@@ -240,7 +240,7 @@ func (d *Dumper) dumpStruct(v reflect.Value) {
 		d.buf.WriteString("\n")
 		d.indent()
 
-		d.buf.WriteString(d.Theme.StructField.__(key.Name))
+		d.buf.WriteString(__(d.Theme.StructField, key.Name))
 		d.buf.WriteString((": "))
 		d.dump(v.Field(i), true)
 		d.buf.WriteString((","))
@@ -252,7 +252,7 @@ func (d *Dumper) dumpStruct(v reflect.Value) {
 		d.indent()
 	}
 
-	d.buf.WriteString(d.Theme.Braces.__("}"))
+	d.buf.WriteString(__(d.Theme.Braces, "}"))
 }
 
 func (d *Dumper) indent() {
