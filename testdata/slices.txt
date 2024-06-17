@@ -1,4 +1,4 @@
-godump.Slice:10:18 {
+godump_test.Slice:10:18 {
    1,
    2.3,
    true,
@@ -19,7 +19,7 @@ godump.Slice:10:18 {
       nil,
       nil,
    },
-   &godump.Slice:10:18 {#2
+   &godump_test.Slice:10:18 {#2
       1,
       2.3,
       true,

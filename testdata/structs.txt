@@ -1,18 +1,18 @@
-godump.Node {
+godump_test.Node {
    Inline: struct {
       Field1: struct {
          X: 123,
          Y: 123.456,
          Z: 987,
       },
-      Field2: godump.Child {
-         Field1: godump.Child1 {
+      Field2: godump_test.Child {
+         Field1: godump_test.Child1 {
             X: 12344,
             Y: 578,
             Z: 9876543,
          },
-         Field2: &godump.Child {#1
-            Field1: godump.Child1 {
+         Field2: &godump_test.Child {#1
+            Field1: godump_test.Child1 {
                X: 12344,
                Y: 578,
                Z: 9876543,
@@ -21,14 +21,14 @@ godump.Node {
          },
       },
    },
-   Typed: godump.Child {
-      Field1: godump.Child1 {
+   Typed: godump_test.Child {
+      Field1: godump_test.Child1 {
          X: 0,
          Y: 0,
          Z: 0,
       },
-      Field2: &godump.Child {#2
-         Field1: godump.Child1 {
+      Field2: &godump_test.Child {#2
+         Field1: godump_test.Child1 {
             X: 12344,
             Y: 578,
             Z: 9876543,
@@ -38,15 +38,15 @@ godump.Node {
    },
    Ptr: &&123,
    Empty: struct {},
-   Ref: &godump.Node {#3
+   Ref: &godump_test.Node {#3
       Inline: struct {
          Field1: struct {
             X: 123,
             Y: 123.456,
             Z: 987,
          },
-         Field2: godump.Child {
-            Field1: godump.Child1 {
+         Field2: godump_test.Child {
+            Field1: godump_test.Child1 {
                X: 12344,
                Y: 578,
                Z: 9876543,
@@ -54,8 +54,8 @@ godump.Node {
             Field2: &@1,
          },
       },
-      Typed: godump.Child {
-         Field1: godump.Child1 {
+      Typed: godump_test.Child {
+         Field1: godump_test.Child1 {
             X: 0,
             Y: 0,
             Z: 0,

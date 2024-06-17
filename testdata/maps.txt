@@ -8,9 +8,9 @@
    map[string]interface {}:1 {
       "cyclic": &@1,
    },
-   godump.SomeMap:1 {
-      &godump.SomeMap:0 {#2}: &godump.SomeMap:1 {#3
-         &godump.SomeMap:0 {#4}: &@4,
+   godump_test.SomeMap:1 {
+      &godump_test.SomeMap:0 {#2}: &godump_test.SomeMap:1 {#3
+         &godump_test.SomeMap:0 {#4}: &@4,
       },
    },
 }

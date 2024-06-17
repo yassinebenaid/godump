@@ -1,18 +1,18 @@
-godump.node {
+godump_test.node {
    inline: struct {
       field1: struct {
          x: 123,
          y: 123.456,
          z: 987,
       },
-      field2: godump.child {
-         field1: godump.child1 {
+      field2: godump_test.child {
+         field1: godump_test.child1 {
             x: 12344,
             y: 578,
             z: 9876543,
          },
-         field2: &godump.child {#1
-            field1: godump.child1 {
+         field2: &godump_test.child {#1
+            field1: godump_test.child1 {
                x: 12344,
                y: 578,
                z: 9876543,
@@ -21,14 +21,14 @@ godump.node {
          },
       },
    },
-   typed: godump.child {
-      field1: godump.child1 {
+   typed: godump_test.child {
+      field1: godump_test.child1 {
          x: 0,
          y: 0,
          z: 0,
       },
-      field2: &godump.child {#2
-         field1: godump.child1 {
+      field2: &godump_test.child {#2
+         field1: godump_test.child1 {
             x: 12344,
             y: 578,
             z: 9876543,
@@ -37,15 +37,15 @@ godump.node {
       },
    },
    empty: struct {},
-   ref: &godump.node {#3
+   ref: &godump_test.node {#3
       inline: struct {
          field1: struct {
             x: 123,
             y: 123.456,
             z: 987,
          },
-         field2: godump.child {
-            field1: godump.child1 {
+         field2: godump_test.child {
+            field1: godump_test.child1 {
                x: 12344,
                y: 578,
                z: 9876543,
@@ -53,8 +53,8 @@ godump.node {
             field2: &@1,
          },
       },
-      typed: godump.child {
-         field1: godump.child1 {
+      typed: godump_test.child {
+         field1: godump_test.child1 {
             x: 0,
             y: 0,
             z: 0,

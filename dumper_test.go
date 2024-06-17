@@ -1,10 +1,12 @@
-package godump
+package godump_test
 
 import (
 	"bytes"
 	"os"
 	"testing"
 	"unsafe"
+
+	"github.com/yassinebenaid/godump"
 )
 
 func TestCanDumpPrimitives(t *testing.T) {
@@ -334,7 +336,7 @@ func TestCanDumpPrimitives(t *testing.T) {
 
 	node.UnsafePointer2 = (*unsafe.Pointer)(unsafe.Pointer(&node))
 
-	var d Dumper
+	var d godump.Dumper
 	result := d.Sprint(node)
 
 	checkFromFeed(t, []byte(result), "./testdata/primitives.txt")
@@ -419,7 +421,7 @@ func TestCanDumpStructs(t *testing.T) {
 	node.Typed.Field2 = &node.Inline.Field2
 	node.Ref = &node
 
-	var d Dumper
+	var d godump.Dumper
 	result := d.Sprint(node)
 
 	checkFromFeed(t, []byte(result), "./testdata/structs.txt")
@@ -501,12 +503,12 @@ func TestCannotDumpPrivateStructsWhenHidingOptionIsEnabled(t *testing.T) {
 	n.typed.field2 = &n.inline.field2
 	n.ref = &n
 
-	var d Dumper
+	var d godump.Dumper
 	d.HidePrivateFields = true
 
 	result := d.Sprint(n)
 
-	if result != "godump.node {}" {
+	if result != "godump_test.node {}" {
 		t.Fatalf("unexpected result when trying to dump a private struct with hide private fields option enabled, expected `godump.node {}`, got `%v`", result)
 	}
 }
@@ -587,7 +589,7 @@ func TestCanDumpPrivateStructs(t *testing.T) {
 	n.typed.field2 = &n.inline.field2
 	n.ref = &n
 
-	var d Dumper
+	var d godump.Dumper
 	result := d.Sprint(n)
 
 	checkFromFeed(t, []byte(result), "./testdata/private-structs.txt")
@@ -621,7 +623,7 @@ func TestCanDumpSlices(t *testing.T) {
 	}
 	s = append(s, &s)
 
-	var d Dumper
+	var d godump.Dumper
 	result := d.Sprint(s)
 
 	checkFromFeed(t, []byte(result), "./testdata/slices.txt")
@@ -646,7 +648,7 @@ func TestCanDumpMaps(t *testing.T) {
 		},
 	}
 
-	var d Dumper
+	var d godump.Dumper
 	result := d.Sprint(maps)
 
 	checkFromFeed(t, []byte(result), "./testdata/maps.txt")
