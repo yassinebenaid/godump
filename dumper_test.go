@@ -654,6 +654,35 @@ func TestCanDumpMaps(t *testing.T) {
 	checkFromFeed(t, []byte(result), "./testdata/maps.txt")
 }
 
+func TestCanCustomizeIndentation(t *testing.T) {
+
+	type User struct {
+		Name       string
+		Age        int
+		hobbies    []string
+		bestFriend *User
+	}
+
+	me := User{
+		Name: "yassinebenaid",
+		Age:  22,
+		hobbies: []string{
+			"Dev",
+			"Go",
+			"Web",
+			"DevOps",
+		},
+	}
+	me.bestFriend = &me
+
+	var d = godump.Dumper{
+		Indentation: "            ",
+	}
+	result := d.Sprint(me)
+
+	checkFromFeed(t, []byte(result), "./testdata/indentation.txt")
+}
+
 func checkFromFeed(t *testing.T, result []byte, feed_path string) {
 	t.Helper()
 
@@ -672,8 +701,8 @@ func checkFromFeed(t *testing.T, result []byte, feed_path string) {
 	for i, line := range e_lines {
 		if string(line) != string(r_lines[i]) {
 			t.Fatalf(`mismatche at line %d:
---- "%s"
-+++ "%s"`, i+1, line, r_lines[i])
+--- "%s" (%d)
++++ "%s" (%d)`, i+1, line, len(line), r_lines[i], len(r_lines[i]))
 		}
 	}
 }

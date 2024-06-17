@@ -1,0 +1,21 @@
+godump_test.User {
+            Name: "yassinebenaid",
+            Age: 22,
+            hobbies: []string:4:4 {
+                        "Dev",
+                        "Go",
+                        "Web",
+                        "DevOps",
+            },
+            bestFriend: &godump_test.User {#1
+                        Name: "yassinebenaid",
+                        Age: 22,
+                        hobbies: []string:4:4 {
+                                    "Dev",
+                                    "Go",
+                                    "Web",
+                                    "DevOps",
+                        },
+                        bestFriend: &@1,
+            },
+}
