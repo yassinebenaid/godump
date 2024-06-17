@@ -46,6 +46,8 @@ var DefaultTheme = Theme{
 }
 
 // DisableColors disables the colors globally.
+//
+// Deprecated: As of v0.8.0 this function only sets the [godump.DefaultTheme] to a zero value
 func DisableColors() { // TODO: deprecate this function
 	DefaultTheme = Theme{}
 }
