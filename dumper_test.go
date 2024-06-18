@@ -2,6 +2,7 @@ package godump_test
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"testing"
 	"unsafe"
@@ -724,6 +725,86 @@ func TestCanCustomizeTheme(t *testing.T) {
 	result := d.Sprint(me)
 
 	checkFromFeed(t, []byte(result), "./testdata/theme.txt")
+}
+
+func TestDumperPrint_Sprint_And_Fprint(t *testing.T) {
+	type User struct {
+		Name    string
+		Age     int
+		hobbies []string
+	}
+
+	me := User{
+		Name: "yassinebenaid",
+		Age:  22,
+		hobbies: []string{
+			"Dev",
+			"Go",
+			"Web",
+			"DevOps",
+		},
+	}
+
+	expected := `godump_test.User {
+   Name: "yassinebenaid",
+   Age: 22,
+   hobbies: []string:4:4 {
+      "Dev",
+      "Go",
+      "Web",
+      "DevOps",
+   },
+}`
+	var d godump.Dumper
+
+	if r := d.Sprint(me); expected != r {
+		t.Fatalf("unexpected result by Dumper.Sprint : `%s`", r)
+	}
+
+	if r := d.Sprintln(me); expected+"\n" != r {
+		t.Fatalf("unexpected result by Dumper.Sprintln : `%s`", r)
+	}
+
+	var buf bytes.Buffer
+
+	if err := d.Fprint(&buf, me); err != nil {
+		t.Fatalf("unexpected error by Dumper.Fprint : `%s`", err)
+	} else if expected != buf.String() {
+		t.Fatalf("unexpected result by Dumper.Fprint : `%s`", buf.String())
+	}
+
+	buf.Reset()
+	if err := d.Fprintln(&buf, me); err != nil {
+		t.Fatalf("unexpected error by Dumper.Fprintln : `%s`", err)
+	} else if expected+"\n" != buf.String() {
+		t.Fatalf("unexpected result by Dumper.Fprintln : `%s`", buf.String())
+	}
+}
+
+type X int
+
+func (X) Write(p []byte) (n int, err error) {
+	return 0, fmt.Errorf("foobar")
+}
+
+func TestDumperFprintReturnsAWriteErrorIfEncountered(t *testing.T) {
+
+	var d godump.Dumper
+
+	var x X
+
+	if err := d.Fprint(x, nil); err == nil {
+		t.Fatalf("unexpected nil error returned by Dumper.Fprint")
+	} else if err.Error() != "dumper error: encountered unexpected write error, foobar" {
+		t.Fatalf("unexpected error by Dumper.Fprint : `%s`", err.Error())
+	}
+
+	if err := d.Fprintln(x, nil); err == nil {
+		t.Fatalf("unexpected nil error returned by Dumper.Fprintln")
+	} else if err.Error() != "dumper error: encountered unexpected write error, foobar" {
+		t.Fatalf("unexpected error by Dumper.Fprintln : `%s`", err.Error())
+	}
+
 }
 
 func checkFromFeed(t *testing.T, result []byte, feed_path string) {
