@@ -33,25 +33,14 @@ type Dumper struct {
 //
 // It returns a write error if encountered while writing to standard output.
 func (d *Dumper) Print(v any) error {
-	d.init()
-	d.dump(reflect.ValueOf(v))
-	if _, err := d.buf.WriteTo(os.Stdout); err != nil {
-		return fmt.Errorf("dumper error: encountered unexpected error while writing to STDOUT, %v", err)
-	}
-	return nil
+	return d.Fprint(os.Stdout, v)
 }
 
 // Println formats `v` , appends a new line and writes the result to standard output.
 //
 // It returns a write error if encountered while writing to standard output.
 func (d *Dumper) Println(v any) error {
-	d.init()
-	d.dump(reflect.ValueOf(v))
-	d.buf.WriteString("\n")
-	if _, err := d.buf.WriteTo(os.Stdout); err != nil {
-		return fmt.Errorf("dumper error: encountered unexpected error while writing to STDOUT, %v", err)
-	}
-	return nil
+	return d.Fprintln(os.Stdout, v)
 }
 
 // Fprint formats `v` and writes the result to `dst`.
@@ -61,7 +50,7 @@ func (d *Dumper) Fprint(dst io.Writer, v any) error {
 	d.init()
 	d.dump(reflect.ValueOf(v))
 	if _, err := d.buf.WriteTo(dst); err != nil {
-		return fmt.Errorf("dumper error: encountered unexpected error while writing to dst, %v", err)
+		return fmt.Errorf("dumper error: encountered unexpected write error, %v", err)
 	}
 	return nil
 }
@@ -74,7 +63,7 @@ func (d *Dumper) Fprintln(dst io.Writer, v any) error {
 	d.dump(reflect.ValueOf(v))
 	d.buf.WriteString("\n")
 	if _, err := d.buf.WriteTo(dst); err != nil {
-		return fmt.Errorf("dumper error: encountered unexpected error while writing to dst, %v", err)
+		return fmt.Errorf("dumper error: encountered unexpected write error, %v", err)
 	}
 	return nil
 }
@@ -217,18 +206,16 @@ func (d *Dumper) dumpPointer(v reflect.Value) {
 		return
 	}
 
+	d.buf.WriteString(__(d.Theme.Address, "&"))
 	addr := uintptr(v.UnsafePointer())
 
 	if id, ok := d.ptrs[addr]; ok {
-		d.buf.WriteString(__(d.Theme.Address, "&"))
 		d.buf.WriteString(__(d.Theme.PointerTag, fmt.Sprintf("@%d", id)))
 		return
 	}
 
 	d.ptrs[addr] = uint(len(d.ptrs) + 1)
-
 	d.ptrTag = uint(len(d.ptrs))
-	d.buf.WriteString(__(d.Theme.Address, "&"))
 	d.dump(elem, true)
 	d.ptrTag = 0
 }
