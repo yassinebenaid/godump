@@ -706,19 +706,19 @@ func TestCanCustomizeTheme(t *testing.T) {
 
 	var d = godump.Dumper{
 		Theme: godump.Theme{
-			String:          godump.RGB{138, 201, 38},
-			Quotes:          godump.RGB{112, 214, 255},
-			Bool:            godump.RGB{249, 87, 56},
-			Number:          godump.RGB{10, 178, 242},
-			StructuralTypes: godump.RGB{0, 150, 199},
-			PointerSymbol:   godump.RGB{205, 93, 0},
-			PointerTag:      godump.RGB{110, 110, 110},
-			Nil:             godump.RGB{219, 57, 26},
-			Func:            godump.RGB{160, 90, 220},
-			Fields:          godump.RGB{189, 176, 194},
-			Chan:            godump.RGB{195, 154, 76},
-			UnsafePointer:   godump.RGB{89, 193, 180},
-			Braces:          godump.RGB{185, 86, 86},
+			String:        godump.RGB{138, 201, 38},
+			Quotes:        godump.RGB{112, 214, 255},
+			Bool:          godump.RGB{249, 87, 56},
+			Number:        godump.RGB{10, 178, 242},
+			Types:         godump.RGB{0, 150, 199},
+			Address:       godump.RGB{205, 93, 0},
+			PointerTag:    godump.RGB{110, 110, 110},
+			Nil:           godump.RGB{219, 57, 26},
+			Func:          godump.RGB{160, 90, 220},
+			Fields:        godump.RGB{189, 176, 194},
+			Chan:          godump.RGB{195, 154, 76},
+			UnsafePointer: godump.RGB{89, 193, 180},
+			Braces:        godump.RGB{185, 86, 86},
 		},
 	}
 	result := d.Sprint(me)

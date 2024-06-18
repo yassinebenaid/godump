@@ -157,7 +157,7 @@ func (d *Dumper) dumpSlice(v reflect.Value) {
 		d.ptrTag = 0
 	}
 
-	d.buf.WriteString(__(d.Theme.StructuralTypes, fmt.Sprintf("%s:%d:%d", v.Type(), length, v.Cap())))
+	d.buf.WriteString(__(d.Theme.Types, fmt.Sprintf("%s:%d:%d", v.Type(), length, v.Cap())))
 	d.buf.WriteString(__(d.Theme.Braces, fmt.Sprintf(" {%s", tag)))
 
 	d.depth++
@@ -185,7 +185,7 @@ func (d *Dumper) dumpMap(v reflect.Value) {
 		d.ptrTag = 0
 	}
 
-	d.buf.WriteString(__(d.Theme.StructuralTypes, fmt.Sprintf("%s:%d", v.Type(), len(keys))))
+	d.buf.WriteString(__(d.Theme.Types, fmt.Sprintf("%s:%d", v.Type(), len(keys))))
 	d.buf.WriteString(__(d.Theme.Braces, fmt.Sprintf(" {%s", tag)))
 
 	d.depth++
@@ -211,7 +211,7 @@ func (d *Dumper) dumpPointer(v reflect.Value) {
 
 	if isPrimitive(elem) {
 		if elem.IsValid() {
-			d.buf.WriteString(__(d.Theme.PointerSymbol, "&"))
+			d.buf.WriteString(__(d.Theme.Address, "&"))
 		}
 		d.dump(elem, true)
 		return
@@ -220,7 +220,7 @@ func (d *Dumper) dumpPointer(v reflect.Value) {
 	addr := uintptr(v.UnsafePointer())
 
 	if id, ok := d.ptrs[addr]; ok {
-		d.buf.WriteString(__(d.Theme.PointerSymbol, "&"))
+		d.buf.WriteString(__(d.Theme.Address, "&"))
 		d.buf.WriteString(__(d.Theme.PointerTag, fmt.Sprintf("@%d", id)))
 		return
 	}
@@ -228,7 +228,7 @@ func (d *Dumper) dumpPointer(v reflect.Value) {
 	d.ptrs[addr] = uint(len(d.ptrs) + 1)
 
 	d.ptrTag = uint(len(d.ptrs))
-	d.buf.WriteString(__(d.Theme.PointerSymbol, "&"))
+	d.buf.WriteString(__(d.Theme.Address, "&"))
 	d.dump(elem, true)
 	d.ptrTag = 0
 }
@@ -243,9 +243,9 @@ func (d *Dumper) dumpStruct(v reflect.Value) {
 	}
 
 	if t := vtype.String(); strings.HasPrefix(t, "struct") {
-		d.buf.WriteString(__(d.Theme.StructuralTypes, "struct"))
+		d.buf.WriteString(__(d.Theme.Types, "struct"))
 	} else {
-		d.buf.WriteString(__(d.Theme.StructuralTypes, t))
+		d.buf.WriteString(__(d.Theme.Types, t))
 	}
 	d.buf.WriteString(__(d.Theme.Braces, " {"))
 	d.buf.WriteString(__(d.Theme.PointerTag, tag))
