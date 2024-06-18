@@ -1,4 +1,4 @@
-<div align="center"> 
+<div align="center">
 
 <div width="50px" height="50px">
 
@@ -11,7 +11,6 @@
 
 <div align="center">
 
-
 [![Tests](https://github.com/yassinebenaid/godump/actions/workflows/test.yml/badge.svg)](https://github.com/yassinebenaid/godump/actions/workflows/test.yml)
 [![Version](https://badge.fury.io/gh/yassinebenaid%2Fgodump.svg)](https://badge.fury.io/gh/yassinebenaid%2Fgodump)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENCE)
@@ -23,6 +22,17 @@ A versatile Go library designed to output any Go variable in a structured and co
 
 This library is especially useful for debugging and testing when the standard fmt library falls short in displaying arbitrary data effectively. It can also serve as a powerful logging adapter, providing clear and readable logs for both development and production environments.
 
+`godump` is not here to replace the `fmt` package. Instead, it provides an extension to what the `fmt.Printf("%#v")` can do.
+
+## Why godump
+
+- ability to pretty print values of all types
+- coloreful output
+- unexported structs are dumped too
+- pointers are followed and recursive pointers are taken in mind
+- customizable
+- zero dependencies
+
 ## Get Started
 
 Install the library:
@@ -31,7 +41,7 @@ Install the library:
 go get -u github.com/yassinebenaid/godump
 ```
 
-Then use the **Dump** function , you can pass any variable of any type:
+Then use the **Dump** function:
 
 ```go
 package main
@@ -41,83 +51,96 @@ import (
 )
 
 func main() {
-	var anything any = "this can be anything"
-	godump.Dump(anything)
+	godump.Dump("Anything")
 }
 
 ```
 
-# Demo
+## Cusomization
+
+If you need more control over the output. Use the `Dumper`
 
 ```go
 package main
 
 import (
+	"os"
+
 	"github.com/yassinebenaid/godump"
 )
 
-type SomeError struct{ E string }
-
-func (e SomeError) Error() string {
-	return e.E
-}
-
-type DefinedType struct {
-	Field  string
-	Field2 int
-	Field3 bool
-	Field4 float64
-}
-
-type Slice []int
-type User struct {
-	Name   string
-	Friend *User
-}
-
 func main() {
 
-	person1 := User{"test", nil}
-	person2 := User{"test 2", &person1}
-	person3 := User{"test 3", &person2}
-	person1.Friend = &person3
-
-	godump.Dump(map[any]any{
-		"uint":         uint(100),
-		"int":          1234,
-		"signed-int":   -1234,
-		"float":        1234.5678,
-		"signed-float": -1234.5678,
-		"slice":        []int{1, 2, 3},
-		"typed-slice":  Slice{1, 2, 3},
-		"channel":      make(chan string, 10),
-		"map": map[complex64]bool{
-			0xf4a5c5d: true,
-			0xa0bff6e: false,
+	var v = "Foo Bar"
+	var d = godump.Dumper{
+		Indentation:       "  ",
+		HidePrivateFields: false,
+		Theme: godump.Theme{
+			String: godump.RGB{R: 138, G: 201, B: 38},
+			// ...
 		},
-		"inline-struct": struct {
-			Pointer      *User
-			privateField string
-			Err          SomeError
-			SomeType     DefinedType
-		}{
-			Pointer:      &person3,
-			privateField: "private",
-			Err:          SomeError{"some random error"},
-			SomeType: DefinedType{
-				"hello world",
-				45324,
-				true,
-				698.4521,
-			},
-		},
-		"func": func(string) string { return "" },
-	})
+	}
 
+	d.Print(v)
+	d.Println(v)
+	d.Fprint(os.Stdout, v)
+	d.Fprintln(os.Stdout, v)
+	d.Sprint(v)
+	d.Sprintln(v)
+}
+
+```
+
+## Demo
+
+### Example 1.
+
+```go
+package main
+
+import (
+	"os"
+
+	"github.com/yassinebenaid/godump"
+)
+
+func main() {
+	godump.Dump(os.Stdout)
 }
 
 ```
 
 Output:
 
-![demo](./demo/demo.png)
+![stdout](./demo/stdout.png)
+
+### Example 2.
+
+```go
+package main
+
+import (
+	"net"
+
+	"github.com/yassinebenaid/godump"
+)
+
+func main() {
+	godump.Dump(net.Dialer{})
+}
+
+```
+
+Output:
+
+![stdout](./demo/dialer.png)
+
+For more examples, please have a look at [dumper_test](./dumper_test.go) along with [testdata](./testdata)
+
+## Contribution
+
+Anyone can contribute to `godump`, you don't have to wite code (ofcourse you can if you like), feel free to suggest improvements, new features and report bugs.
+
+The whole point of `godump` is to provide a formatted, structured and well looking form of your variables. And For the sake of simplicity, we're trying to keep the api minimal and simple, without unecessary/unrelated features.
+
+Please make sure your contribution respects the mentioned conventions.
