@@ -1,11 +1,13 @@
-package godump
+package godump_test
 
 import (
 	"bytes"
+	"fmt"
 	"os"
-	"reflect"
 	"testing"
 	"unsafe"
+
+	"github.com/yassinebenaid/godump"
 )
 
 func TestCanDumpPrimitives(t *testing.T) {
@@ -335,10 +337,10 @@ func TestCanDumpPrimitives(t *testing.T) {
 
 	node.UnsafePointer2 = (*unsafe.Pointer)(unsafe.Pointer(&node))
 
-	var d dumper
-	d.dump(reflect.ValueOf(node))
+	var d godump.Dumper
+	result := d.Sprint(node)
 
-	checkFromFeed(t, d.buf, "./testdata/primitives.txt")
+	checkFromFeed(t, []byte(result), "./testdata/primitives.txt")
 }
 
 func TestCanDumpStructs(t *testing.T) {
@@ -420,10 +422,96 @@ func TestCanDumpStructs(t *testing.T) {
 	node.Typed.Field2 = &node.Inline.Field2
 	node.Ref = &node
 
-	var d dumper
-	d.dump(reflect.ValueOf(node))
+	var d godump.Dumper
+	result := d.Sprint(node)
 
-	checkFromFeed(t, d.buf, "./testdata/structs.txt")
+	checkFromFeed(t, []byte(result), "./testdata/structs.txt")
+}
+
+func TestCannotDumpPrivateStructsWhenHidingOptionIsEnabled(t *testing.T) {
+
+	type number int
+
+	type child1 struct {
+		x int
+		y float64
+		z number
+	}
+
+	type child struct {
+		field1 child1
+
+		field2 *child
+	}
+
+	type node struct {
+		inline struct {
+			field1 struct {
+				x int
+				y float64
+				z number
+			}
+
+			field2 child
+		}
+
+		typed child
+
+		empty struct{}
+
+		ref *node
+	}
+
+	n := node{
+		inline: struct {
+			field1 struct {
+				x int
+				y float64
+				z number
+			}
+			field2 child
+		}{
+			field1: struct {
+				x int
+				y float64
+				z number
+			}{
+				x: 123,
+				y: 123.456,
+				z: number(987),
+			},
+
+			field2: child{
+				field1: child1{
+					x: 12344,
+					y: 578,
+					z: number(9876543),
+				},
+				field2: &child{
+					field1: child1{
+						x: 12344,
+						y: 578,
+						z: number(9876543),
+					},
+				},
+			},
+		},
+		empty: struct{}{},
+	}
+
+	n.inline.field2.field2.field2 = n.inline.field2.field2
+
+	n.typed.field2 = &n.inline.field2
+	n.ref = &n
+
+	var d godump.Dumper
+	d.HidePrivateFields = true
+
+	result := d.Sprint(n)
+
+	if result != "godump_test.node {}" {
+		t.Fatalf("unexpected result when trying to dump a private struct with hide private fields option enabled, expected `godump.node {}`, got `%v`", result)
+	}
 }
 
 func TestCanDumpPrivateStructs(t *testing.T) {
@@ -502,93 +590,10 @@ func TestCanDumpPrivateStructs(t *testing.T) {
 	n.typed.field2 = &n.inline.field2
 	n.ref = &n
 
-	var d dumper
-	d.dump(reflect.ValueOf(n))
+	var d godump.Dumper
+	result := d.Sprint(n)
 
-	checkFromFeed(t, d.buf, "./testdata/private-structs.txt")
-}
-
-func TestCanDumpPrivateStructsWhenPrivateFieldsDumpingIsEnabled(t *testing.T) {
-
-	type number int
-
-	type child1 struct {
-		x int
-		y float64
-		z number
-	}
-
-	type child struct {
-		field1 child1
-
-		field2 *child
-	}
-
-	type node struct {
-		inline struct {
-			field1 struct {
-				x int
-				y float64
-				z number
-			}
-
-			field2 child
-		}
-
-		typed child
-
-		empty struct{}
-
-		ref *node
-	}
-
-	n := node{
-		inline: struct {
-			field1 struct {
-				x int
-				y float64
-				z number
-			}
-			field2 child
-		}{
-			field1: struct {
-				x int
-				y float64
-				z number
-			}{
-				x: 123,
-				y: 123.456,
-				z: number(987),
-			},
-
-			field2: child{
-				field1: child1{
-					x: 12344,
-					y: 578,
-					z: number(9876543),
-				},
-				field2: &child{
-					field1: child1{
-						x: 12344,
-						y: 578,
-						z: number(9876543),
-					},
-				},
-			},
-		},
-		empty: struct{}{},
-	}
-
-	n.inline.field2.field2.field2 = n.inline.field2.field2
-
-	n.typed.field2 = &n.inline.field2
-	n.ref = &n
-
-	var d dumper
-	d.dumpPrivateFields = true
-	d.dump(reflect.ValueOf(n))
-
-	checkFromFeed(t, d.buf, "./testdata/private-structs-dumped.txt")
+	checkFromFeed(t, []byte(result), "./testdata/private-structs.txt")
 }
 
 func TestCanDumpSlices(t *testing.T) {
@@ -619,10 +624,10 @@ func TestCanDumpSlices(t *testing.T) {
 	}
 	s = append(s, &s)
 
-	var d dumper
-	d.dump(reflect.ValueOf(s))
+	var d godump.Dumper
+	result := d.Sprint(s)
 
-	checkFromFeed(t, d.buf, "./testdata/slices.txt")
+	checkFromFeed(t, []byte(result), "./testdata/slices.txt")
 }
 
 func TestCanDumpMaps(t *testing.T) {
@@ -644,10 +649,162 @@ func TestCanDumpMaps(t *testing.T) {
 		},
 	}
 
-	var d dumper
-	d.dump(reflect.ValueOf(maps))
+	var d godump.Dumper
+	result := d.Sprint(maps)
 
-	checkFromFeed(t, d.buf, "./testdata/maps.txt")
+	checkFromFeed(t, []byte(result), "./testdata/maps.txt")
+}
+
+func TestCanCustomizeIndentation(t *testing.T) {
+
+	type User struct {
+		Name       string
+		Age        int
+		hobbies    []string
+		bestFriend *User
+	}
+
+	me := User{
+		Name: "yassinebenaid",
+		Age:  22,
+		hobbies: []string{
+			"Dev",
+			"Go",
+			"Web",
+			"DevOps",
+		},
+	}
+	me.bestFriend = &me
+
+	var d = godump.Dumper{
+		Indentation: "            ",
+	}
+	result := d.Sprint(me)
+
+	checkFromFeed(t, []byte(result), "./testdata/indentation.txt")
+}
+
+func TestCanCustomizeTheme(t *testing.T) {
+
+	type User struct {
+		Name       string
+		Age        int
+		hobbies    []string
+		bestFriend *User
+	}
+
+	me := User{
+		Name: "yassinebenaid",
+		Age:  22,
+		hobbies: []string{
+			"Dev",
+			"Go",
+			"Web",
+			"DevOps",
+		},
+	}
+	me.bestFriend = &me
+
+	var d = godump.Dumper{
+		Theme: godump.Theme{
+			String:        godump.RGB{138, 201, 38},
+			Quotes:        godump.RGB{112, 214, 255},
+			Bool:          godump.RGB{249, 87, 56},
+			Number:        godump.RGB{10, 178, 242},
+			Types:         godump.RGB{0, 150, 199},
+			Address:       godump.RGB{205, 93, 0},
+			PointerTag:    godump.RGB{110, 110, 110},
+			Nil:           godump.RGB{219, 57, 26},
+			Func:          godump.RGB{160, 90, 220},
+			Fields:        godump.RGB{189, 176, 194},
+			Chan:          godump.RGB{195, 154, 76},
+			UnsafePointer: godump.RGB{89, 193, 180},
+			Braces:        godump.RGB{185, 86, 86},
+		},
+	}
+	result := d.Sprint(me)
+
+	checkFromFeed(t, []byte(result), "./testdata/theme.txt")
+}
+
+func TestDumperPrint_Sprint_And_Fprint(t *testing.T) {
+	type User struct {
+		Name    string
+		Age     int
+		hobbies []string
+	}
+
+	me := User{
+		Name: "yassinebenaid",
+		Age:  22,
+		hobbies: []string{
+			"Dev",
+			"Go",
+			"Web",
+			"DevOps",
+		},
+	}
+
+	expected := `godump_test.User {
+   Name: "yassinebenaid",
+   Age: 22,
+   hobbies: []string:4:4 {
+      "Dev",
+      "Go",
+      "Web",
+      "DevOps",
+   },
+}`
+	var d godump.Dumper
+
+	if r := d.Sprint(me); expected != r {
+		t.Fatalf("unexpected result by Dumper.Sprint : `%s`", r)
+	}
+
+	if r := d.Sprintln(me); expected+"\n" != r {
+		t.Fatalf("unexpected result by Dumper.Sprintln : `%s`", r)
+	}
+
+	var buf bytes.Buffer
+
+	if err := d.Fprint(&buf, me); err != nil {
+		t.Fatalf("unexpected error by Dumper.Fprint : `%s`", err)
+	} else if expected != buf.String() {
+		t.Fatalf("unexpected result by Dumper.Fprint : `%s`", buf.String())
+	}
+
+	buf.Reset()
+	if err := d.Fprintln(&buf, me); err != nil {
+		t.Fatalf("unexpected error by Dumper.Fprintln : `%s`", err)
+	} else if expected+"\n" != buf.String() {
+		t.Fatalf("unexpected result by Dumper.Fprintln : `%s`", buf.String())
+	}
+}
+
+type X int
+
+func (X) Write(p []byte) (n int, err error) {
+	return 0, fmt.Errorf("foobar")
+}
+
+func TestDumperFprintReturnsAWriteErrorIfEncountered(t *testing.T) {
+
+	var d godump.Dumper
+
+	var x X
+
+	if err := d.Fprint(x, nil); err == nil {
+		t.Fatalf("unexpected nil error returned by Dumper.Fprint")
+	} else if err.Error() != "dumper error: encountered unexpected write error, foobar" {
+		t.Fatalf("unexpected error by Dumper.Fprint : `%s`", err.Error())
+	}
+
+	if err := d.Fprintln(x, nil); err == nil {
+		t.Fatalf("unexpected nil error returned by Dumper.Fprintln")
+	} else if err.Error() != "dumper error: encountered unexpected write error, foobar" {
+		t.Fatalf("unexpected error by Dumper.Fprintln : `%s`", err.Error())
+	}
+
 }
 
 func checkFromFeed(t *testing.T, result []byte, feed_path string) {
@@ -668,8 +825,8 @@ func checkFromFeed(t *testing.T, result []byte, feed_path string) {
 	for i, line := range e_lines {
 		if string(line) != string(r_lines[i]) {
 			t.Fatalf(`mismatche at line %d:
---- "%s"
-+++ "%s"`, i+1, line, r_lines[i])
+--- "%s" (%d)
++++ "%s" (%d)`, i+1, line, len(line), r_lines[i], len(r_lines[i]))
 		}
 	}
 }
