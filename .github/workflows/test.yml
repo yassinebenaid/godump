@@ -21,4 +21,4 @@ jobs:
           cache: false
 
       - name: Test
-        run: go test
+        run: go test -cover
