@@ -29,7 +29,7 @@ This library is especially useful for debugging and testing when the standard fm
 - ability to pretty print values of all types
 - coloreful output
 - unexported structs are dumped too
-- pointers are followed and recursive pointers are taken in mind
+- pointers are followed and recursive pointers are taken in mind ([see examples](#example-3))
 - customizable
 - zero dependencies
 
@@ -133,7 +133,43 @@ func main() {
 
 Output:
 
-![stdout](./demo/dialer.png)
+![dialer](./demo/dialer.png)
+
+### Example 3.
+
+This example shows how recursive pointers are handeled
+
+```go
+package main
+
+import (
+	"github.com/yassinebenaid/godump"
+)
+
+func main() {
+	type User struct {
+		Name       string
+		age        int
+		BestFriend *User
+	}
+
+	me := User{
+		Name: "yassinebenaid",
+		age:  22,
+	}
+
+    // This creates a ring
+	me.BestFriend = &me
+
+	godump.Dump(me)
+}
+```
+
+Output:
+
+![pointer](./demo/pointer.png)
+
+**Note**: the `&@1` syntax means that this is an address of the value with the id of 1. which is marked as `#1`.
 
 For more examples, please have a look at [dumper_test](./dumper_test.go) along with [testdata](./testdata)
 
