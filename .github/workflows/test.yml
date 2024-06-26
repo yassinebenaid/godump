@@ -11,13 +11,14 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
+        go-version: [1.21, 1.22]
     steps:
       - uses: actions/checkout@v4
 
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.21"
+          go-version: ${{ matrix.go-version }}
           cache: false
 
       - name: Test
