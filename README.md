@@ -177,8 +177,4 @@ For more examples, please have a look at [dumper_test](./dumper_test.go) along w
 
 ## Contribution
 
-Anyone can contribute to `godump`, you don't have to wite code (ofcourse you can if you like), feel free to suggest improvements, new features and report bugs.
-
-The whole point of `godump` is to provide a formatted, structured and well looking form of your variables. And For the sake of simplicity, we're trying to keep the api minimal and simple, without unecessary/unrelated features, And ofcourse the code should be well tested.
-
-Please make sure your contribution respects the mentioned conventions.
+Please read [CONTRIBUTING guildlines](.github/CONTRIBUTING.md)
