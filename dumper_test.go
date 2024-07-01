@@ -684,6 +684,14 @@ func TestCanCustomizeIndentation(t *testing.T) {
 	checkFromFeed(t, []byte(result), "./testdata/indentation.txt")
 }
 
+type CSSColor struct {
+	R, G, B int
+}
+
+func (c CSSColor) Apply(s string) string {
+	return fmt.Sprintf(`<div style="color: rgb(%d, %d, %d); display: inline-block">%s</div>`, c.R, c.G, c.B, s)
+}
+
 func TestCanCustomizeTheme(t *testing.T) {
 
 	type User struct {
@@ -705,23 +713,24 @@ func TestCanCustomizeTheme(t *testing.T) {
 	}
 	me.bestFriend = &me
 
-	var d = godump.Dumper{
-		Theme: godump.Theme{
-			String:        godump.RGB{138, 201, 38},
-			Quotes:        godump.RGB{112, 214, 255},
-			Bool:          godump.RGB{249, 87, 56},
-			Number:        godump.RGB{10, 178, 242},
-			Types:         godump.RGB{0, 150, 199},
-			Address:       godump.RGB{205, 93, 0},
-			PointerTag:    godump.RGB{110, 110, 110},
-			Nil:           godump.RGB{219, 57, 26},
-			Func:          godump.RGB{160, 90, 220},
-			Fields:        godump.RGB{189, 176, 194},
-			Chan:          godump.RGB{195, 154, 76},
-			UnsafePointer: godump.RGB{89, 193, 180},
-			Braces:        godump.RGB{185, 86, 86},
-		},
+	var d godump.Dumper
+
+	d.Theme = godump.Theme{
+		String:        CSSColor{138, 201, 38},
+		Quotes:        CSSColor{112, 214, 255},
+		Bool:          CSSColor{249, 87, 56},
+		Number:        CSSColor{10, 178, 242},
+		Types:         CSSColor{0, 150, 199},
+		Address:       CSSColor{205, 93, 0},
+		PointerTag:    CSSColor{110, 110, 110},
+		Nil:           CSSColor{219, 57, 26},
+		Func:          CSSColor{160, 90, 220},
+		Fields:        CSSColor{189, 176, 194},
+		Chan:          CSSColor{195, 154, 76},
+		UnsafePointer: CSSColor{89, 193, 180},
+		Braces:        CSSColor{185, 86, 86},
 	}
+
 	result := d.Sprint(me)
 
 	checkFromFeed(t, []byte(result), "./testdata/theme.txt")
