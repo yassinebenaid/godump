@@ -6,22 +6,22 @@ import (
 
 // Style defines a general interface used for styling.
 type Style interface {
-	apply(string) string
+	Apply(string) string
 }
 
 func __(s Style, v string) string {
 	if s == nil {
 		return v
 	}
-	return s.apply(v)
+	return s.Apply(v)
 }
 
-// RGB implements [Style] and allow you to define your style as an RGB value.
+// RGB implements [Style] and allow you to define your style as an RGB value, it uses ANSI escape sequences under the hood.
 type RGB struct {
 	R, G, B int
 }
 
-func (rgb RGB) apply(v string) string {
+func (rgb RGB) Apply(v string) string {
 	return fmt.Sprintf("\033[38;2;%v;%v;%vm%s\033[0m", rgb.R, rgb.G, rgb.B, v)
 }
 
