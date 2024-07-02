@@ -1,21 +1,21 @@
-[38;2;0;150;199mgodump_test.User[0m[38;2;185;86;86m {[0m[38;2;110;110;110m[0m
-   [38;2;189;176;194mName[0m: [38;2;112;214;255m"[0m[38;2;138;201;38myassinebenaid[0m[38;2;112;214;255m"[0m,
-   [38;2;189;176;194mAge[0m: [38;2;10;178;242m22[0m,
-   [38;2;189;176;194mhobbies[0m: [38;2;0;150;199m[]string:4:4[0m[38;2;185;86;86m {[0m
-      [38;2;112;214;255m"[0m[38;2;138;201;38mDev[0m[38;2;112;214;255m"[0m,
-      [38;2;112;214;255m"[0m[38;2;138;201;38mGo[0m[38;2;112;214;255m"[0m,
-      [38;2;112;214;255m"[0m[38;2;138;201;38mWeb[0m[38;2;112;214;255m"[0m,
-      [38;2;112;214;255m"[0m[38;2;138;201;38mDevOps[0m[38;2;112;214;255m"[0m,
-   [38;2;185;86;86m}[0m,
-   [38;2;189;176;194mbestFriend[0m: [38;2;205;93;0m&[0m[38;2;0;150;199mgodump_test.User[0m[38;2;185;86;86m {[0m[38;2;110;110;110m#1[0m
-      [38;2;189;176;194mName[0m: [38;2;112;214;255m"[0m[38;2;138;201;38myassinebenaid[0m[38;2;112;214;255m"[0m,
-      [38;2;189;176;194mAge[0m: [38;2;10;178;242m22[0m,
-      [38;2;189;176;194mhobbies[0m: [38;2;0;150;199m[]string:4:4[0m[38;2;185;86;86m {[0m
-         [38;2;112;214;255m"[0m[38;2;138;201;38mDev[0m[38;2;112;214;255m"[0m,
-         [38;2;112;214;255m"[0m[38;2;138;201;38mGo[0m[38;2;112;214;255m"[0m,
-         [38;2;112;214;255m"[0m[38;2;138;201;38mWeb[0m[38;2;112;214;255m"[0m,
-         [38;2;112;214;255m"[0m[38;2;138;201;38mDevOps[0m[38;2;112;214;255m"[0m,
-      [38;2;185;86;86m}[0m,
-      [38;2;189;176;194mbestFriend[0m: [38;2;205;93;0m&[0m[38;2;110;110;110m@1[0m,
-   [38;2;185;86;86m}[0m,
-[38;2;185;86;86m}[0m
+<div style="color: rgb(0, 150, 199); display: inline-block">godump_test.User</div><div style="color: rgb(185, 86, 86); display: inline-block"> {</div><div style="color: rgb(110, 110, 110); display: inline-block"></div>
+   <div style="color: rgb(189, 176, 194); display: inline-block">Name</div>: <div style="color: rgb(112, 214, 255); display: inline-block">"</div><div style="color: rgb(138, 201, 38); display: inline-block">yassinebenaid</div><div style="color: rgb(112, 214, 255); display: inline-block">"</div>,
+   <div style="color: rgb(189, 176, 194); display: inline-block">Age</div>: <div style="color: rgb(10, 178, 242); display: inline-block">22</div>,
+   <div style="color: rgb(189, 176, 194); display: inline-block">hobbies</div>: <div style="color: rgb(0, 150, 199); display: inline-block">[]string:4:4</div><div style="color: rgb(185, 86, 86); display: inline-block"> {</div>
+      <div style="color: rgb(112, 214, 255); display: inline-block">"</div><div style="color: rgb(138, 201, 38); display: inline-block">Dev</div><div style="color: rgb(112, 214, 255); display: inline-block">"</div>,
+      <div style="color: rgb(112, 214, 255); display: inline-block">"</div><div style="color: rgb(138, 201, 38); display: inline-block">Go</div><div style="color: rgb(112, 214, 255); display: inline-block">"</div>,
+      <div style="color: rgb(112, 214, 255); display: inline-block">"</div><div style="color: rgb(138, 201, 38); display: inline-block">Web</div><div style="color: rgb(112, 214, 255); display: inline-block">"</div>,
+      <div style="color: rgb(112, 214, 255); display: inline-block">"</div><div style="color: rgb(138, 201, 38); display: inline-block">DevOps</div><div style="color: rgb(112, 214, 255); display: inline-block">"</div>,
+   <div style="color: rgb(185, 86, 86); display: inline-block">}</div>,
+   <div style="color: rgb(189, 176, 194); display: inline-block">bestFriend</div>: <div style="color: rgb(205, 93, 0); display: inline-block">&</div><div style="color: rgb(0, 150, 199); display: inline-block">godump_test.User</div><div style="color: rgb(185, 86, 86); display: inline-block"> {</div><div style="color: rgb(110, 110, 110); display: inline-block">#1</div>
+      <div style="color: rgb(189, 176, 194); display: inline-block">Name</div>: <div style="color: rgb(112, 214, 255); display: inline-block">"</div><div style="color: rgb(138, 201, 38); display: inline-block">yassinebenaid</div><div style="color: rgb(112, 214, 255); display: inline-block">"</div>,
+      <div style="color: rgb(189, 176, 194); display: inline-block">Age</div>: <div style="color: rgb(10, 178, 242); display: inline-block">22</div>,
+      <div style="color: rgb(189, 176, 194); display: inline-block">hobbies</div>: <div style="color: rgb(0, 150, 199); display: inline-block">[]string:4:4</div><div style="color: rgb(185, 86, 86); display: inline-block"> {</div>
+         <div style="color: rgb(112, 214, 255); display: inline-block">"</div><div style="color: rgb(138, 201, 38); display: inline-block">Dev</div><div style="color: rgb(112, 214, 255); display: inline-block">"</div>,
+         <div style="color: rgb(112, 214, 255); display: inline-block">"</div><div style="color: rgb(138, 201, 38); display: inline-block">Go</div><div style="color: rgb(112, 214, 255); display: inline-block">"</div>,
+         <div style="color: rgb(112, 214, 255); display: inline-block">"</div><div style="color: rgb(138, 201, 38); display: inline-block">Web</div><div style="color: rgb(112, 214, 255); display: inline-block">"</div>,
+         <div style="color: rgb(112, 214, 255); display: inline-block">"</div><div style="color: rgb(138, 201, 38); display: inline-block">DevOps</div><div style="color: rgb(112, 214, 255); display: inline-block">"</div>,
+      <div style="color: rgb(185, 86, 86); display: inline-block">}</div>,
+      <div style="color: rgb(189, 176, 194); display: inline-block">bestFriend</div>: <div style="color: rgb(205, 93, 0); display: inline-block">&</div><div style="color: rgb(110, 110, 110); display: inline-block">@1</div>,
+   <div style="color: rgb(185, 86, 86); display: inline-block">}</div>,
+<div style="color: rgb(185, 86, 86); display: inline-block">}</div>

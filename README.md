@@ -30,10 +30,10 @@ This library is especially useful for debugging and testing when the standard fm
 ## Why godump
 
 - ability to pretty print values of all types
-- coloreful output
+- well formatted output
 - unexported structs are dumped too
 - pointers are followed and recursive pointers are taken in mind ([see examples](#example-3))
-- customizable
+- customizable, you have full ability over the output, **you can even generate HTML if you'd like to**, [see examples](#example-4)
 - zero dependencies
 
 ## Get Started
@@ -172,7 +172,69 @@ Output:
 
 ![pointer](./demo/pointer.png)
 
-**Note**: the `&@1` syntax means that this is an address of the value with the id of 1. which is marked as `#1`.
+### Example 4.
+
+This example emphasizes how you can generate html
+
+```go
+package main
+
+import (
+	"fmt"
+	"net"
+	"net/http"
+
+	"github.com/yassinebenaid/godump"
+)
+
+// Define your custome style implementation
+type CSSColor struct {
+	R, G, B int
+}
+
+func (c CSSColor) Apply(s string) string {
+	return fmt.Sprintf(`<div style="color: rgb(%d, %d, %d); display: inline-block">%s</div>`, c.R, c.G, c.B, s)
+}
+
+func main() {
+
+	var d godump.Dumper
+
+	d.Theme = godump.Theme{
+		String:        CSSColor{138, 201, 38},// edit the theme to use your implementation
+		Quotes:        CSSColor{112, 214, 255},
+		Bool:          CSSColor{249, 87, 56},
+		Number:        CSSColor{10, 178, 242},
+		Types:         CSSColor{0, 150, 199},
+		Address:       CSSColor{205, 93, 0},
+		PointerTag:    CSSColor{110, 110, 110},
+		Nil:           CSSColor{219, 57, 26},
+		Func:          CSSColor{160, 90, 220},
+		Fields:        CSSColor{189, 176, 194},
+		Chan:          CSSColor{195, 154, 76},
+		UnsafePointer: CSSColor{89, 193, 180},
+		Braces:        CSSColor{185, 86, 86},
+	}
+
+	var html = `<pre style="background: #111; padding: 10px; color: white">`
+	html += d.Sprint(net.Dialer{})
+	html += "<pre>"
+
+    // render it to browsers
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/html")
+		fmt.Fprint(w, html)
+	})
+
+	http.ListenAndServe(":8000", nil)
+
+}
+
+```
+
+Output:
+
+![theme](./demo/theme.png)
 
 For more examples, please have a look at [dumper_test](./dumper_test.go) along with [testdata](./testdata)
 
