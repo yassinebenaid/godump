@@ -12,9 +12,12 @@
 <div align="center">
 
 [![Tests](https://github.com/yassinebenaid/godump/actions/workflows/test.yml/badge.svg)](https://github.com/yassinebenaid/godump/actions/workflows/test.yml)
+[![codecov](https://codecov.io/github/yassinebenaid/godump/graph/badge.svg?token=EAZNA85AIS)](https://codecov.io/github/yassinebenaid/godump)
+[![Go Report Card](https://goreportcard.com/badge/github.com/yassinebenaid/godump)](https://goreportcard.com/report/github.com/yassinebenaid/godump)
 [![Version](https://badge.fury.io/gh/yassinebenaid%2Fgodump.svg)](https://badge.fury.io/gh/yassinebenaid%2Fgodump)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENCE)
 [![Go Reference](https://pkg.go.dev/badge/github.com/yassinebenaid/godump.svg)](https://pkg.go.dev/github.com/yassinebenaid/godump)
+
 
 </div>
 
@@ -237,8 +240,4 @@ For more examples, please have a look at [dumper_test](./dumper_test.go) along w
 
 ## Contribution
 
-Anyone can contribute to `godump`, you don't have to wite code (ofcourse you can if you like), feel free to suggest improvements, new features and report bugs.
-
-The whole point of `godump` is to provide a formatted, structured and well looking form of your variables. And For the sake of simplicity, we're trying to keep the api minimal and simple, without unecessary/unrelated features, And ofcourse the code should be well tested.
-
-Please make sure your contribution respects the mentioned conventions.
+Please read [CONTRIBUTING guildlines](.github/CONTRIBUTING.md)
