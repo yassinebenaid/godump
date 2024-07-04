@@ -33,7 +33,7 @@ This library is especially useful for debugging and testing when the standard fm
 - well formatted output
 - unexported structs are dumped too
 - pointers are followed and recursive pointers are taken in mind ([see examples](#example-3))
-- customizable, you have full ability over the output, **you can even generate HTML if you'd like to**, [see examples](#example-4)
+- customizable, you have full control over the output, **you can even generate HTML if you'd like to**, [see examples](#example-4)
 - zero dependencies
 
 ## Get Started
