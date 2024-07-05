@@ -44,7 +44,7 @@ type Theme struct {
 	// Number defines the style used for numbers, including all types of integers, floats and complex numbers.
 	Number Style
 
-	// Types defines the style used for defined and/or structural types, eg. slices, structs, maps...
+	// Types defines the style used for defined and/or structural types, eg., slices, structs, maps...
 	Types Style
 
 	// Nil defines the style used for nil.
@@ -98,7 +98,7 @@ func DisableColors() {
 
 // Dumper provides an elegant interface to pretty print any variable of any type in a colored and structured format.
 //
-// The zero value for Dumper is a themeless Dumper ready to use.
+// The zero value for Dumper is a theme-less Dumper ready to use.
 type Dumper struct {
 	// Indentation is an optional string used for indentation.
 	// The default value is a string of three spaces.

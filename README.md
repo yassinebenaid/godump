@@ -23,7 +23,7 @@
 
 A versatile Go library designed to output any Go variable in a structured and colored format.
 
-This library is especially useful for debugging and testing when the standard fmt library falls short in displaying arbitrary data effectively. It can also serve as a powerful logging adapter, providing clear and readable logs for both development and production environments.
+This library is especially useful for debugging and testing when the standard `fmt` library falls short in displaying arbitrary data effectively. It can also serve as a powerful logging adapter, providing clear and readable logs for both development and production environments.
 
 `godump` is not here to replace the `fmt` package. Instead, it provides an extension to what the `fmt.Printf("%#v")` can do.
 
@@ -32,7 +32,7 @@ This library is especially useful for debugging and testing when the standard fm
 - ability to pretty print values of all types
 - well formatted output
 - unexported structs are dumped too
-- pointers are followed and recursive pointers are taken in mind ([see examples](#example-3))
+- pointers are followed, and recursive pointers are taken in mind ([see examples](#example-3))
 - customizable, you have full control over the output, **you can even generate HTML if you'd like to**, [see examples](#example-4)
 - zero dependencies
 
@@ -59,7 +59,7 @@ func main() {
 
 ```
 
-## Cusomization
+## Customization
 
 If you need more control over the output. Use the `Dumper`
 
@@ -140,7 +140,7 @@ Output:
 
 ### Example 3.
 
-This example shows how recursive pointers are handeled
+This example shows how recursive pointers are handled.
 
 ```go
 package main
@@ -187,7 +187,7 @@ import (
 	"github.com/yassinebenaid/godump"
 )
 
-// Define your custome style implementation
+// Define your custom style implementation
 type CSSColor struct {
 	R, G, B int
 }
@@ -236,8 +236,8 @@ Output:
 
 ![theme](./demo/theme.png)
 
-For more examples, please have a look at [dumper_test](./dumper_test.go) along with [testdata](./testdata)
+For more examples, please take a look at [dumper_test](./dumper_test.go) along with [testdata](./testdata)
 
 ## Contribution
 
-Please read [CONTRIBUTING guildlines](.github/CONTRIBUTING.md)
+Please read [CONTRIBUTING guidelines](.github/CONTRIBUTING.md)

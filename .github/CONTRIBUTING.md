@@ -49,7 +49,7 @@ We will then take care of the issue as soon as possible.
 
 ## I Want To Contribute
 
-> ### Legal Notice 
+> ### Legal Notice
 > When contributing to this project, you must agree that you have authored 100% of the code, that you have the necessary rights to the code and that the code you contribute may be provided under the project license.
 
 ### Reporting Bugs
@@ -59,13 +59,13 @@ We will then take care of the issue as soon as possible.
 A good bug report shouldn't leave others needing to chase you up for more information. Therefore, we ask you to investigate carefully, collect information and describe the issue in detail in your report. Please complete the following steps in advance to help us fix any potential bug as fast as possible.
 
 - Make sure that you are using the latest version.
-- Determine if your bug is really a bug and not an error on your side e.g. using incompatible environment components/versions (Make sure that you have read the [documentation](https://github.com/yassinebenaid/godump). If you are looking for support, you might want to readI `i have a question` section).
+- Determine if your bug is really a bug and not an error on your side e.g., using incompatible environment components/versions (Make sure that you have read the [documentation](https://github.com/yassinebenaid/godump). If you are looking for support, you might want to read `i have a question` section).
 - Possibly your input and the output
 - Can you reliably reproduce the issue? And can you also reproduce it with older versions?
 
 #### How Do I Submit a Good Bug Report?
 
-> You must never report security related issues, vulnerabilities or bugs including sensitive information to the issue tracker, or elsewhere in public. Instead sensitive bugs must be sent by email to <yassinebenaide3@gmail.com>.
+> You must never report security related issues, vulnerabilities, or bugs including sensitive information to the issue tracker, or elsewhere in public. Instead, sensitive bugs must be sent by email to <yassinebenaide3@gmail.com>.
 
 We use GitHub issues to track bugs and errors. If you run into an issue with the project:
 
@@ -78,7 +78,7 @@ Once it's filed:
 
 - The project maintainer will label the issue accordingly.
 - The maintainer will try to reproduce the issue with your provided steps. If there are no reproduction steps or no obvious way to reproduce the issue, the maintainer will ask you for those steps and mark the issue as `needs-repro`. Bugs with the `needs-repro` tag will not be addressed until they are reproduced.
-- If the maintainer is able to reproduce the issue, it will be marked `needs-fix`, as well as possibly other tags (such as `critical`), and the issue will be implemented as soo as the maintainer is free to do or someone openes a PR to handle it.
+- If the maintainer is able to reproduce the issue, it will be marked `needs-fix`, as well as possibly other tags (such as `critical`), and the issue will be implemented as soo as the maintainer is free to do or someone opens a PR to handle it.
 
 
 ### Suggesting Enhancements
