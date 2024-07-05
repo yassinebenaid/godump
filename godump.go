@@ -7,7 +7,7 @@ func Dump(v any) error {
 	}).Println(v)
 }
 
-// DumpNC is just like Dump but doesn't produce any colors , useful if you want to write to a file or stream.
+// DumpNC is just like Dump but doesn't produce any colors, useful if you want to write to a file or stream.
 //
 // Deprecated: As of v0.8.0 this function only calls [Dumper.Println].
 func DumpNC(v any) error {
