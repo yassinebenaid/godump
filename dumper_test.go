@@ -833,7 +833,7 @@ func checkFromFeed(t *testing.T, result []byte, feed_path string) {
 
 	for i, line := range e_lines {
 		if string(line) != string(r_lines[i]) {
-			t.Fatalf(`mismatche at line %d:
+			t.Fatalf(`mismatch at line %d:
 --- "%s" (%d)
 +++ "%s" (%d)`, i+1, line, len(line), r_lines[i], len(r_lines[i]))
 		}

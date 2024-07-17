@@ -174,7 +174,7 @@ Output:
 
 ### Example 4.
 
-This example emphasizes how you can generate html
+This example emphasizes how you can generate HTML
 
 ```go
 package main

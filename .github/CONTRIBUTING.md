@@ -7,7 +7,7 @@ All types of contributions are encouraged and valued. See the [Table of Contents
 > And if you like the project, but just don't have time to contribute, that's fine. There are other easy ways to support the project and show your appreciation, which we would also be very happy about:
 > - Star the project
 > - Tweet about it
-> - Refer this project in your project's readme
+> - Refer this project in your project's README
 > - Mention the project at local meetups and tell your friends/colleagues
 
 ## Table of Contents
@@ -78,7 +78,7 @@ Once it's filed:
 
 - The project maintainer will label the issue accordingly.
 - The maintainer will try to reproduce the issue with your provided steps. If there are no reproduction steps or no obvious way to reproduce the issue, the maintainer will ask you for those steps and mark the issue as `needs-repro`. Bugs with the `needs-repro` tag will not be addressed until they are reproduced.
-- If the maintainer is able to reproduce the issue, it will be marked `needs-fix`, as well as possibly other tags (such as `critical`), and the issue will be implemented as soo as the maintainer is free to do or someone opens a PR to handle it.
+- If the maintainer is able to reproduce the issue, it will be marked `needs-fix`, as well as possibly other tags (such as `critical`), and the issue will be implemented as soon as the maintainer is free to do or someone opens a PR to handle it.
 
 
 ### Suggesting Enhancements
