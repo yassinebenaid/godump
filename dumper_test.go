@@ -784,7 +784,7 @@ func TestDumperPrint_Sprint_And_Fprint(t *testing.T) {
 
 type X int
 
-func (X) Write(p []byte) (n int, err error) {
+func (X) Write(_ []byte) (n int, err error) {
 	return 0, fmt.Errorf("foobar")
 }
 
