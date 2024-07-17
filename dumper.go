@@ -14,6 +14,7 @@ type Style interface {
 	Apply(string) string
 }
 
+//nolint:revive // this name is uncommon, but why not
 func __(s Style, v string) string {
 	if s == nil {
 		return v
@@ -178,8 +179,8 @@ func (d *Dumper) init() {
 	}
 }
 
-func (d *Dumper) dump(val reflect.Value, ignore_depth ...bool) {
-	if len(ignore_depth) <= 0 || !ignore_depth[0] {
+func (d *Dumper) dump(val reflect.Value, ignoreDepth ...bool) {
+	if len(ignoreDepth) <= 0 || !ignoreDepth[0] {
 		d.indent()
 	}
 
@@ -324,7 +325,7 @@ func (d *Dumper) dumpStruct(v reflect.Value) {
 	d.buf.WriteString(__(d.Theme.Braces, " {"))
 	d.buf.WriteString(__(d.Theme.PointerTag, tag))
 
-	var has_fields bool
+	var hasFields bool
 
 	d.depth++
 	for i := 0; i < v.NumField(); i++ {
@@ -333,7 +334,7 @@ func (d *Dumper) dumpStruct(v reflect.Value) {
 			continue
 		}
 
-		has_fields = true
+		hasFields = true
 
 		d.buf.WriteString("\n")
 		d.indent()
@@ -345,7 +346,7 @@ func (d *Dumper) dumpStruct(v reflect.Value) {
 	}
 	d.depth--
 
-	if has_fields {
+	if hasFields {
 		d.buf.WriteString("\n")
 		d.indent()
 	}
