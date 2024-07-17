@@ -199,8 +199,8 @@ func (d *Dumper) dump(val reflect.Value, ignoreDepth ...bool) {
 		d.buf.WriteString(__(d.Theme.Func, val.Type().String()))
 	case reflect.Chan:
 		d.buf.WriteString(__(d.Theme.Chan, val.Type().String()))
-		if cap := val.Cap(); cap > 0 {
-			d.buf.WriteString(__(d.Theme.Chan, fmt.Sprintf("<%d>", cap)))
+		if vCap := val.Cap(); vCap > 0 {
+			d.buf.WriteString(__(d.Theme.Chan, fmt.Sprintf("<%d>", vCap)))
 		}
 	case reflect.Struct:
 		d.dumpStruct(val)
