@@ -197,6 +197,8 @@ func TestCanDumpPrimitives(t *testing.T) {
 		PtrTypedChan1 *Chan1Type
 		PtrTypedChan2 *Chan2Type
 
+		BufferedChan chan struct{}
+
 		UnsafePointer1 unsafe.Pointer
 		UnsafePointer2 *unsafe.Pointer
 	}
@@ -245,6 +247,8 @@ func TestCanDumpPrimitives(t *testing.T) {
 		Nil: nil,
 
 		UnsafePointer1: nil,
+
+		BufferedChan: make(chan struct{}, 255),
 	}
 
 	node.IntPtr = &node.Int
