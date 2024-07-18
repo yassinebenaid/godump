@@ -11,7 +11,6 @@ import (
 )
 
 func TestCanDumpPrimitives(t *testing.T) {
-
 	type IntType int
 	type Int8Type int8
 	type Int16Type int16
@@ -344,7 +343,6 @@ func TestCanDumpPrimitives(t *testing.T) {
 }
 
 func TestCanDumpStructs(t *testing.T) {
-
 	type Number int
 
 	type Child1 struct {
@@ -378,8 +376,8 @@ func TestCanDumpStructs(t *testing.T) {
 		Ref *Node
 	}
 
-	var num = 123
-	var numaddr = &num
+	num := 123
+	numaddr := &num
 	node := Node{
 		Inline: struct {
 			Field1 struct {
@@ -429,7 +427,6 @@ func TestCanDumpStructs(t *testing.T) {
 }
 
 func TestCannotDumpPrivateStructsWhenHidingOptionIsEnabled(t *testing.T) {
-
 	type number int
 
 	type child1 struct {
@@ -515,7 +512,6 @@ func TestCannotDumpPrivateStructsWhenHidingOptionIsEnabled(t *testing.T) {
 }
 
 func TestCanDumpPrivateStructs(t *testing.T) {
-
 	type number int
 
 	type child1 struct {
@@ -597,12 +593,11 @@ func TestCanDumpPrivateStructs(t *testing.T) {
 }
 
 func TestCanDumpSlices(t *testing.T) {
-
 	type Slice []any
 
-	var foo = "foo"
-	var bar = "bar"
-	var baz = "baz"
+	foo := "foo"
+	bar := "bar"
+	baz := "baz"
 
 	s := Slice{
 		1,
@@ -631,11 +626,10 @@ func TestCanDumpSlices(t *testing.T) {
 }
 
 func TestCanDumpMaps(t *testing.T) {
-
 	type SomeMap map[*SomeMap]*SomeMap
-	var sm = &SomeMap{}
+	sm := &SomeMap{}
 
-	var m = map[any]any{12: 34}
+	m := map[any]any{12: 34}
 	maps := []any{
 		make(map[string]string),
 		map[any]int{
@@ -656,7 +650,6 @@ func TestCanDumpMaps(t *testing.T) {
 }
 
 func TestCanCustomizeIndentation(t *testing.T) {
-
 	type User struct {
 		Name       string
 		Age        int
@@ -676,7 +669,7 @@ func TestCanCustomizeIndentation(t *testing.T) {
 	}
 	me.bestFriend = &me
 
-	var d = godump.Dumper{
+	d := godump.Dumper{
 		Indentation: "            ",
 	}
 	result := d.Sprint(me)
@@ -693,7 +686,6 @@ func (c CSSColor) Apply(s string) string {
 }
 
 func TestCanCustomizeTheme(t *testing.T) {
-
 	type User struct {
 		Name       string
 		Age        int
@@ -792,12 +784,11 @@ func TestDumperPrint_Sprint_And_Fprint(t *testing.T) {
 
 type X int
 
-func (X) Write(p []byte) (n int, err error) {
+func (X) Write(_ []byte) (n int, err error) {
 	return 0, fmt.Errorf("foobar")
 }
 
 func TestDumperFprintReturnsAWriteErrorIfEncountered(t *testing.T) {
-
 	var d godump.Dumper
 
 	var x X
@@ -813,29 +804,28 @@ func TestDumperFprintReturnsAWriteErrorIfEncountered(t *testing.T) {
 	} else if err.Error() != "dumper error: encountered unexpected write error, foobar" {
 		t.Fatalf("unexpected error by Dumper.Fprintln : `%s`", err.Error())
 	}
-
 }
 
-func checkFromFeed(t *testing.T, result []byte, feed_path string) {
+func checkFromFeed(t *testing.T, result []byte, feedPath string) {
 	t.Helper()
 
-	expectedOutput, err := os.ReadFile(feed_path)
+	expectedOutput, err := os.ReadFile(feedPath)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	r_lines := bytes.Split(result, []byte("\n"))
-	e_lines := bytes.Split(expectedOutput, []byte("\n"))
+	resultLines := bytes.Split(result, []byte("\n"))
+	expectedLines := bytes.Split(expectedOutput, []byte("\n"))
 
-	if len(r_lines) != len(e_lines) {
-		t.Fatalf("expected %d lines, got %d", len(e_lines), len(r_lines))
+	if len(resultLines) != len(expectedLines) {
+		t.Fatalf("expected %d lines, got %d", len(expectedLines), len(resultLines))
 	}
 
-	for i, line := range e_lines {
-		if string(line) != string(r_lines[i]) {
+	for i, line := range expectedLines {
+		if string(line) != string(resultLines[i]) {
 			t.Fatalf(`mismatch at line %d:
 --- "%s" (%d)
-+++ "%s" (%d)`, i+1, line, len(line), r_lines[i], len(r_lines[i]))
++++ "%s" (%d)`, i+1, line, len(line), resultLines[i], len(resultLines[i]))
 		}
 	}
 }
