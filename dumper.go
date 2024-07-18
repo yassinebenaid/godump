@@ -21,7 +21,7 @@ func __(s Style, v string) string {
 	return s.Apply(v)
 }
 
-// RGB implements [Style] and allow you to define your style as an RGB value, it uses ANSI escape sequences under the hood.
+// RGB implements [Style] and allows you to define your style as an RGB value, it uses ANSI escape sequences under the hood.
 type RGB struct {
 	R, G, B int
 }
@@ -123,7 +123,7 @@ func (d *Dumper) Print(v any) error {
 	return d.Fprint(os.Stdout, v)
 }
 
-// Println formats `v` , appends a new line and writes the result to standard output.
+// Println formats `v`, appends a new line, and writes the result to standard output.
 //
 // It returns a write error if encountered while writing to standard output.
 func (d *Dumper) Println(v any) error {
@@ -142,7 +142,7 @@ func (d *Dumper) Fprint(dst io.Writer, v any) error {
 	return nil
 }
 
-// Fprintln formats `v` , appends a new line and writes the result to `dst`.
+// Fprintln formats `v`, appends a new line, and writes the result to `dst`.
 //
 // It returns a write error if encountered while writing to `dst`.
 func (d *Dumper) Fprintln(dst io.Writer, v any) error {
@@ -162,7 +162,7 @@ func (d *Dumper) Sprint(v any) string {
 	return d.buf.String()
 }
 
-// Sprintln formats `v`, appends a new line and returns the resulting string.
+// Sprintln formats `v`, appends a new line, and returns the resulting string.
 func (d *Dumper) Sprintln(v any) string {
 	d.init()
 	d.dump(reflect.ValueOf(v))
