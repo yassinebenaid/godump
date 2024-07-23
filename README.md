@@ -17,6 +17,7 @@
 [![Version](https://badge.fury.io/gh/yassinebenaid%2Fgodump.svg)](https://badge.fury.io/gh/yassinebenaid%2Fgodump)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENCE)
 [![Go Reference](https://pkg.go.dev/badge/github.com/yassinebenaid/godump.svg)](https://pkg.go.dev/github.com/yassinebenaid/godump)
+[![Mentioned in Awesome Go](https://awesome.re/mentioned-badge-flat.svg)](https://github.com/avelino/awesome-go?tab=readme-ov-file#parsersencodersdecoders)
 
 
 </div>
