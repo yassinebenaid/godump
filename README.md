@@ -38,6 +38,7 @@ This library is especially useful for debugging and testing when the standard `f
 - pointers are followed, and recursive pointers are taken in mind ([see examples](#example-3))
 - customizable, you have full control over the output, **you can even generate HTML if you'd like to**, [see examples](#example-4)
 - zero dependencies
+- small, you can just copy past the [dumper.go](./dumper.go) to your project without the need to add it as a dependency. (_remember to give us a start :)_)
 
 ## Get Started
 
