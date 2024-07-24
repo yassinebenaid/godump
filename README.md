@@ -15,6 +15,7 @@
 [![codecov](https://codecov.io/github/yassinebenaid/godump/graph/badge.svg?token=EAZNA85AIS)](https://codecov.io/github/yassinebenaid/godump)
 [![Go Report Card](https://goreportcard.com/badge/github.com/yassinebenaid/godump)](https://goreportcard.com/report/github.com/yassinebenaid/godump)
 [![OpenSSF Scorecard](https://api.scorecard.dev/projects/github.com/yassinebenaid/godump/badge)](https://scorecard.dev/viewer/?uri=github.com/yassinebenaid/godump)
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/9241/badge)](https://www.bestpractices.dev/projects/9241)
 [![Version](https://badge.fury.io/gh/yassinebenaid%2Fgodump.svg)](https://badge.fury.io/gh/yassinebenaid%2Fgodump)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENCE)
 [![Go Reference](https://pkg.go.dev/badge/github.com/yassinebenaid/godump.svg)](https://pkg.go.dev/github.com/yassinebenaid/godump)
