@@ -90,13 +90,6 @@ var DefaultTheme = Theme{
 	Braces:        RGB{185, 86, 86},
 }
 
-// DisableColors disables the colors globally.
-//
-// Deprecated: As of v0.8.0 this function only sets the [DefaultTheme] to a zero value
-func DisableColors() {
-	DefaultTheme = Theme{}
-}
-
 // Dump pretty prints `v` using the default Dumper options and the default theme
 func Dump(v any) error {
 	return (&Dumper{
