@@ -810,6 +810,12 @@ func TestDumperFprintReturnsAWriteErrorIfEncountered(t *testing.T) {
 	}
 }
 
+func TestDump(t *testing.T) {
+	if err := godump.Dump(nil); err != nil {
+		t.Fatalf("unexpected error returned by Dump")
+	}
+}
+
 func checkFromFeed(t *testing.T, result []byte, feedPath string) {
 	t.Helper()
 
