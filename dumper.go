@@ -97,6 +97,13 @@ func DisableColors() {
 	DefaultTheme = Theme{}
 }
 
+// Dump pretty prints `v` using the default Dumper options and the default theme
+func Dump(v any) error {
+	return (&Dumper{
+		Theme: DefaultTheme,
+	}).Println(v)
+}
+
 // Dumper provides an elegant interface to pretty print any variable of any type in a colored and structured format.
 //
 // The zero value for Dumper is a theme-less Dumper ready to use.
