@@ -3,19 +3,19 @@ godump_test.node {
       field1: struct {
          x: 123,
          y: 123.456,
-         z: 987,
+         z: godump_test.number(987),
       },
       field2: godump_test.child {
          field1: godump_test.child1 {
             x: 12344,
             y: 578,
-            z: 9876543,
+            z: godump_test.number(9876543),
          },
          field2: &godump_test.child {#1
             field1: godump_test.child1 {
                x: 12344,
                y: 578,
-               z: 9876543,
+               z: godump_test.number(9876543),
             },
             field2: &@1,
          },
@@ -25,13 +25,13 @@ godump_test.node {
       field1: godump_test.child1 {
          x: 0,
          y: 0,
-         z: 0,
+         z: godump_test.number(0),
       },
       field2: &godump_test.child {#2
          field1: godump_test.child1 {
             x: 12344,
             y: 578,
-            z: 9876543,
+            z: godump_test.number(9876543),
          },
          field2: &@1,
       },
@@ -42,13 +42,13 @@ godump_test.node {
          field1: struct {
             x: 123,
             y: 123.456,
-            z: 987,
+            z: godump_test.number(987),
          },
          field2: godump_test.child {
             field1: godump_test.child1 {
                x: 12344,
                y: 578,
-               z: 9876543,
+               z: godump_test.number(9876543),
             },
             field2: &@1,
          },
@@ -57,7 +57,7 @@ godump_test.node {
          field1: godump_test.child1 {
             x: 0,
             y: 0,
-            z: 0,
+            z: godump_test.number(0),
          },
          field2: &@2,
       },
