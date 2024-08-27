@@ -58,6 +58,8 @@ func TestCanDumpPrimitives(t *testing.T) {
 	type Chan1Type <-chan struct{}
 	type Chan2Type chan<- struct{}
 
+	type UnsafePointer unsafe.Pointer
+
 	type Node struct {
 		Int        int
 		Int8       int8
@@ -199,8 +201,9 @@ func TestCanDumpPrimitives(t *testing.T) {
 
 		BufferedChan chan struct{}
 
-		UnsafePointer1 unsafe.Pointer
-		UnsafePointer2 *unsafe.Pointer
+		UnsafePointer1     unsafe.Pointer
+		UnsafePointer2     *unsafe.Pointer
+		NamedUnsafePointer UnsafePointer
 	}
 
 	node := Node{
@@ -246,7 +249,8 @@ func TestCanDumpPrimitives(t *testing.T) {
 
 		Nil: nil,
 
-		UnsafePointer1: nil,
+		UnsafePointer1:     nil,
+		NamedUnsafePointer: nil,
 
 		BufferedChan: make(chan struct{}, 255),
 	}

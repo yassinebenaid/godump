@@ -105,6 +105,9 @@ type Dumper struct {
 	// The default value is a string of three spaces.
 	Indentation string
 
+	// ShowPrimitiveNamedTypes determines whether to show primitive named types.
+	ShowPrimitiveNamedTypes bool
+
 	// HidePrivateFields allows you to optionally hide struct's unexported fields from being printed.
 	HidePrivateFields bool
 
@@ -383,8 +386,10 @@ func isPrimitive(val reflect.Value) bool {
 }
 
 func (d *Dumper) wrapType(v reflect.Value, str string) {
-	if t := v.Type(); t.PkgPath() != "" {
-		str = __(d.Theme.Types, t.String()) + __(d.Theme.Braces, "(") + str + __(d.Theme.Braces, ")")
+	if d.ShowPrimitiveNamedTypes {
+		if t := v.Type(); t.PkgPath() != "" {
+			str = __(d.Theme.Types, t.String()) + __(d.Theme.Braces, "(") + str + __(d.Theme.Braces, ")")
+		}
 	}
 
 	d.buf.WriteString(str)

@@ -3,19 +3,19 @@ godump_test.Node {
       Field1: struct {
          X: 123,
          Y: 123.456,
-         Z: godump_test.Number(987),
+         Z: 987,
       },
       Field2: godump_test.Child {
          Field1: godump_test.Child1 {
             X: 12344,
             Y: 578,
-            Z: godump_test.Number(9876543),
+            Z: 9876543,
          },
          Field2: &godump_test.Child {#1
             Field1: godump_test.Child1 {
                X: 12344,
                Y: 578,
-               Z: godump_test.Number(9876543),
+               Z: 9876543,
             },
             Field2: &@1,
          },
@@ -25,13 +25,13 @@ godump_test.Node {
       Field1: godump_test.Child1 {
          X: 0,
          Y: 0,
-         Z: godump_test.Number(0),
+         Z: 0,
       },
       Field2: &godump_test.Child {#2
          Field1: godump_test.Child1 {
             X: 12344,
             Y: 578,
-            Z: godump_test.Number(9876543),
+            Z: 9876543,
          },
          Field2: &@1,
       },
@@ -43,13 +43,13 @@ godump_test.Node {
          Field1: struct {
             X: 123,
             Y: 123.456,
-            Z: godump_test.Number(987),
+            Z: 987,
          },
          Field2: godump_test.Child {
             Field1: godump_test.Child1 {
                X: 12344,
                Y: 578,
-               Z: godump_test.Number(9876543),
+               Z: 9876543,
             },
             Field2: &@1,
          },
@@ -58,7 +58,7 @@ godump_test.Node {
          Field1: godump_test.Child1 {
             X: 0,
             Y: 0,
-            Z: godump_test.Number(0),
+            Z: 0,
          },
          Field2: &@2,
       },
