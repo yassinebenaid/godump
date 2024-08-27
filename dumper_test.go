@@ -350,6 +350,117 @@ func TestCanDumpPrimitives(t *testing.T) {
 	checkFromFeed(t, []byte(result), "./testdata/primitives.txt")
 }
 
+func TestCanDumpNamedPrimitives(t *testing.T) {
+	type IntType int
+	type Int8Type int8
+	type Int16Type int16
+	type Int32Type int32
+	type Int64Type int64
+	type UintType uint
+	type Uint8Type uint8
+	type Uint16Type uint16
+	type Uint32Type uint32
+	type Uint64Type uint64
+	type Float32Type float32
+	type Float64Type float64
+	type Complex64Type complex64
+	type Complex128Type complex128
+	type Bool1Type bool
+	type Bool2Type bool
+	type StringType string
+	type UintptrType uintptr
+
+	type Node struct {
+		Int        IntType
+		Int8       Int8Type
+		Int16      Int16Type
+		Int32      Int32Type
+		Int64      Int64Type
+		Uint       UintType
+		Uint8      Uint8Type
+		Uint16     Uint16Type
+		Uint32     Uint32Type
+		Uint64     Uint64Type
+		Float32    Float32Type
+		Float64    Float64Type
+		Complex64  Complex64Type
+		Complex128 Complex128Type
+		Bool1      Bool1Type
+		Bool2      Bool2Type
+		String     StringType
+
+		Uintptr UintptrType
+
+		PtrInt        *IntType
+		PtrInt8       *Int8Type
+		PtrInt16      *Int16Type
+		PtrInt32      *Int32Type
+		PtrInt64      *Int64Type
+		PtrUint       *UintType
+		PtrUint8      *Uint8Type
+		PtrUint16     *Uint16Type
+		PtrUint32     *Uint32Type
+		PtrUint64     *Uint64Type
+		PtrFloat32    *Float32Type
+		PtrFloat64    *Float64Type
+		PtrComplex64  *Complex64Type
+		PtrComplex128 *Complex128Type
+		PtrBool1      *Bool1Type
+		PtrBool2      *Bool2Type
+		PtrString     *StringType
+
+		PtrUintptr *UintptrType
+	}
+
+	node := Node{
+		Int:        IntType(123),
+		Int8:       Int8Type(-45),
+		Int16:      Int16Type(6789),
+		Int32:      Int32Type(-987),
+		Int64:      Int64Type(3849876543247876432),
+		Uint:       UintType(837),
+		Uint8:      Uint8Type(38),
+		Uint16:     Uint16Type(3847),
+		Uint32:     Uint32Type(9843),
+		Uint64:     Uint64Type(2834),
+		Float32:    Float32Type(123.475),
+		Float64:    Float64Type(-12345.09876),
+		Complex64:  Complex64Type(12.987i),
+		Complex128: Complex128Type(-473i),
+		Bool1:      Bool1Type(true),
+		Bool2:      Bool2Type(false),
+		String:     StringType("foo bar"),
+
+		Uintptr: UintptrType(1234567890),
+	}
+
+	node.PtrInt = &node.Int
+	node.PtrInt8 = &node.Int8
+	node.PtrInt16 = &node.Int16
+	node.PtrInt32 = &node.Int32
+	node.PtrInt64 = &node.Int64
+	node.PtrUint = &node.Uint
+	node.PtrUint8 = &node.Uint8
+	node.PtrUint16 = &node.Uint16
+	node.PtrUint32 = &node.Uint32
+	node.PtrUint64 = &node.Uint64
+	node.PtrFloat32 = &node.Float32
+	node.PtrFloat64 = &node.Float64
+	node.PtrComplex64 = &node.Complex64
+	node.PtrComplex128 = &node.Complex128
+	node.PtrBool1 = &node.Bool1
+	node.PtrBool2 = &node.Bool2
+	node.PtrString = &node.String
+
+	node.PtrUintptr = &node.Uintptr
+
+	var d godump.Dumper
+	d.ShowPrimitiveNamedTypes = true
+	result := d.Sprint(node)
+
+	checkFromFeed(t, []byte(result), "./testdata/named-primitives.txt")
+}
+
 func TestCanDumpStructs(t *testing.T) {
 	type Number int
 
