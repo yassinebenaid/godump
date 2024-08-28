@@ -222,16 +222,12 @@ func (d *Dumper) dump(val reflect.Value, ignoreDepth ...bool) {
 	case reflect.Interface:
 		d.dump(val.Elem(), true)
 	case reflect.UnsafePointer:
-		if t := val.Type(); t.PkgPath() != "" {
-			d.buf.WriteString(
-				__(d.Theme.Types, t.String()) +
-					__(d.Theme.Braces, "(") +
-					__(d.Theme.UnsafePointer, fmt.Sprintf("0x%x", uintptr(val.UnsafePointer()))) +
-					__(d.Theme.Braces, ")"),
-			)
-		} else {
-			d.buf.WriteString(__(d.Theme.UnsafePointer, fmt.Sprintf("unsafe.Pointer(0x%x)", uintptr(val.UnsafePointer()))))
-		}
+		d.buf.WriteString(
+			__(d.Theme.Types, val.Type().String()) +
+				__(d.Theme.Braces, "(") +
+				__(d.Theme.UnsafePointer, fmt.Sprintf("0x%x", uintptr(val.UnsafePointer()))) +
+				__(d.Theme.Braces, ")"),
+		)
 	}
 }
 
