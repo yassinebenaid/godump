@@ -121,4 +121,5 @@ godump_test.Node {
    BufferedChan: chan struct {}<255>,
    UnsafePointer1: unsafe.Pointer(0x0),
    UnsafePointer2: &unsafe.Pointer(0x7b),
+   NamedUnsafePointer: godump_test.UnsafePointer(0x0),
 }

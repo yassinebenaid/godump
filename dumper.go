@@ -105,6 +105,9 @@ type Dumper struct {
 	// The default value is a string of three spaces.
 	Indentation string
 
+	// ShowPrimitiveNamedTypes determines whether to show primitive named types.
+	ShowPrimitiveNamedTypes bool
+
 	// HidePrivateFields allows you to optionally hide struct's unexported fields from being printed.
 	HidePrivateFields bool
 
@@ -186,11 +189,9 @@ func (d *Dumper) dump(val reflect.Value, ignoreDepth ...bool) {
 
 	switch val.Kind() {
 	case reflect.String:
-		d.buf.WriteString(__(d.Theme.Quotes, `"`) +
-			__(d.Theme.String, val.String()) +
-			__(d.Theme.Quotes, `"`))
+		d.wrapType(val, __(d.Theme.Quotes, `"`)+__(d.Theme.String, val.String())+__(d.Theme.Quotes, `"`))
 	case reflect.Bool:
-		d.buf.WriteString(__(d.Theme.Bool, fmt.Sprintf("%t", val.Bool())))
+		d.wrapType(val, __(d.Theme.Bool, fmt.Sprintf("%t", val.Bool())))
 	case reflect.Slice, reflect.Array:
 		d.dumpSlice(val)
 	case reflect.Map:
@@ -207,21 +208,26 @@ func (d *Dumper) dump(val reflect.Value, ignoreDepth ...bool) {
 	case reflect.Pointer:
 		d.dumpPointer(val)
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
-		d.buf.WriteString(__(d.Theme.Number, fmt.Sprint(val)))
+		d.wrapType(val, __(d.Theme.Number, fmt.Sprint(val)))
 	case reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
-		d.buf.WriteString(__(d.Theme.Number, fmt.Sprint(val)))
+		d.wrapType(val, __(d.Theme.Number, fmt.Sprint(val)))
 	case reflect.Float32, reflect.Float64:
-		d.buf.WriteString(__(d.Theme.Number, fmt.Sprint(val)))
+		d.wrapType(val, __(d.Theme.Number, fmt.Sprint(val)))
 	case reflect.Complex64, reflect.Complex128:
-		d.buf.WriteString(__(d.Theme.Number, fmt.Sprint(val)))
+		d.wrapType(val, __(d.Theme.Number, fmt.Sprint(val)))
 	case reflect.Uintptr:
-		d.buf.WriteString(__(d.Theme.Number, fmt.Sprintf("0x%x", val.Uint())))
+		d.wrapType(val, __(d.Theme.Number, fmt.Sprintf("0x%x", val.Uint())))
 	case reflect.Invalid:
 		d.buf.WriteString(__(d.Theme.Nil, "nil"))
 	case reflect.Interface:
 		d.dump(val.Elem(), true)
 	case reflect.UnsafePointer:
-		d.buf.WriteString(__(d.Theme.UnsafePointer, fmt.Sprintf("unsafe.Pointer(0x%x)", uintptr(val.UnsafePointer()))))
+		d.buf.WriteString(
+			__(d.Theme.Types, val.Type().String()) +
+				__(d.Theme.Braces, "(") +
+				__(d.Theme.UnsafePointer, fmt.Sprintf("0x%x", uintptr(val.UnsafePointer()))) +
+				__(d.Theme.Braces, ")"),
+		)
 	}
 }
 
@@ -373,4 +379,14 @@ func isPrimitive(val reflect.Value) bool {
 			return false
 		}
 	}
+}
+
+func (d *Dumper) wrapType(v reflect.Value, str string) {
+	if d.ShowPrimitiveNamedTypes {
+		if t := v.Type(); t.PkgPath() != "" {
+			str = __(d.Theme.Types, t.String()) + __(d.Theme.Braces, "(") + str + __(d.Theme.Braces, ")")
+		}
+	}
+
+	d.buf.WriteString(str)
 }
