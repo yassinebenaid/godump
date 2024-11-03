@@ -310,6 +310,11 @@ func (d *Dumper) dumpMap(v reflect.Value) {
 }
 
 func (d *Dumper) dumpPointer(v reflect.Value) {
+	if v.IsNil() {
+		d.buf.WriteString(__(d.Theme.Types, v.Type().String()) + __(d.Theme.Braces, "(") + __(d.Theme.Nil, "nil") + __(d.Theme.Braces, ")"))
+		return
+	}
+
 	elem := v.Elem()
 
 	if isPrimitive(elem) {

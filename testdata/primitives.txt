@@ -89,7 +89,7 @@ godump_test.Node {
    PtrTypedBool2: &false,
    PtrTypedString: &"foo bar",
    PtrTypedUintptr: &0x499602d2,
-   Nil: nil,
+   NilPointer: *int(nil),
    Func: func(),
    Func2: func(int) float64,
    Func3: func(...*interface {}) interface {},

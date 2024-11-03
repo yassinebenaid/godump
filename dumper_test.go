@@ -161,7 +161,7 @@ func TestCanDumpPrimitives(t *testing.T) {
 
 		PtrTypedUintptr *UintptrType
 
-		Nil *any
+		NilPointer *int
 
 		Func  func()
 		Func2 func(int) float64
@@ -249,8 +249,6 @@ func TestCanDumpPrimitives(t *testing.T) {
 		TypedString:     StringType("foo bar"),
 
 		TypedUintptr: UintptrType(1234567890),
-
-		Nil: nil,
 
 		UnsafePointer1:     nil,
 		NamedUnsafePointer: nil,
