@@ -1,4 +1,4 @@
-[]interface {}:4:4 {
+[]interface {}:5:5 {
    map[string]string:0 {},
    map[interface {}]int:1 {
       &map[interface {}]interface {}:1 {#1
@@ -13,4 +13,5 @@
          &godump_test.SomeMap:0 {#4}: &@4,
       },
    },
+   godump_test.SomeMap(nil),
 }

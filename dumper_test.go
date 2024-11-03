@@ -751,6 +751,8 @@ func TestCanDumpMaps(t *testing.T) {
 	type SomeMap map[*SomeMap]*SomeMap
 	sm := &SomeMap{}
 
+	var nilMap SomeMap
+
 	m := map[any]any{12: 34}
 	maps := []any{
 		make(map[string]string),
@@ -763,6 +765,7 @@ func TestCanDumpMaps(t *testing.T) {
 		SomeMap{
 			&SomeMap{}: &SomeMap{sm: sm},
 		},
+		nilMap,
 	}
 
 	var d godump.Dumper
