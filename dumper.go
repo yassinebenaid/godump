@@ -274,6 +274,12 @@ func (d *Dumper) dumpMap(v reflect.Value) {
 		d.ptrTag = 0
 	}
 
+	if v.IsNil() {
+		d.buf.WriteString(__(d.Theme.Types, v.Type().String()) + __(d.Theme.Braces, "(") +
+			__(d.Theme.Nil, "nil") + __(d.Theme.Braces, ")"+tag))
+		return
+	}
+
 	d.buf.WriteString(__(d.Theme.Types, fmt.Sprintf("%s:%d", v.Type(), len(keys))))
 	d.buf.WriteString(__(d.Theme.Braces, fmt.Sprintf(" {%s", tag)))
 
