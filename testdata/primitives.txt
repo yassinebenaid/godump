@@ -119,6 +119,7 @@ godump_test.Node {
    PtrTypedChan1: &godump_test.Chan1Type,
    PtrTypedChan2: &godump_test.Chan2Type,
    BufferedChan: chan struct {}<255>,
+   NilChan: chan struct {}(nil),
    UnsafePointer1: unsafe.Pointer(0x0),
    UnsafePointer2: &unsafe.Pointer(0x7b),
    NamedUnsafePointer: godump_test.UnsafePointer(0x0),

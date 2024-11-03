@@ -200,6 +200,7 @@ func TestCanDumpPrimitives(t *testing.T) {
 		PtrTypedChan2 *Chan2Type
 
 		BufferedChan chan struct{}
+		NilChan      chan struct{}
 
 		UnsafePointer1     unsafe.Pointer
 		UnsafePointer2     *unsafe.Pointer
@@ -252,6 +253,9 @@ func TestCanDumpPrimitives(t *testing.T) {
 		UnsafePointer1:     nil,
 		NamedUnsafePointer: nil,
 
+		Chan:         make(chan struct{}),
+		Chan1:        make(chan struct{}),
+		Chan2:        make(chan struct{}),
 		BufferedChan: make(chan struct{}, 255),
 	}
 

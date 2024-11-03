@@ -200,6 +200,11 @@ func (d *Dumper) dump(val reflect.Value, ignoreDepth ...bool) {
 		d.buf.WriteString(__(d.Theme.Func, val.Type().String()))
 	case reflect.Chan:
 		d.buf.WriteString(__(d.Theme.Chan, val.Type().String()))
+
+		if val.IsNil() {
+			d.buf.WriteString(__(d.Theme.Braces, "(") + __(d.Theme.Nil, "nil") + __(d.Theme.Braces, ")"))
+		}
+
 		if vCap := val.Cap(); vCap > 0 {
 			d.buf.WriteString(__(d.Theme.Chan, fmt.Sprintf("<%d>", vCap)))
 		}
