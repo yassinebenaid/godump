@@ -242,7 +242,7 @@ func (d *Dumper) dumpSlice(v reflect.Value) {
 
 	if v.IsNil() {
 		d.buf.WriteString(__(d.Theme.Types, v.Type().String()) + __(d.Theme.Braces, "(") +
-			__(d.Theme.Nil, "nil") + __(d.Theme.Braces, ") "+tag))
+			__(d.Theme.Nil, "nil") + __(d.Theme.Braces, ")"+tag))
 		return
 	}
 

@@ -714,6 +714,8 @@ func TestCanDumpPrivateStructs(t *testing.T) {
 func TestCanDumpSlices(t *testing.T) {
 	type Slice []any
 
+	var nilSLice []Slice
+
 	foo := "foo"
 	bar := "bar"
 	baz := "baz"
@@ -735,6 +737,7 @@ func TestCanDumpSlices(t *testing.T) {
 			false,
 		},
 		make([]any, 3, 8),
+		nilSLice,
 	}
 	s = append(s, &s)
 
