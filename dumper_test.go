@@ -183,6 +183,8 @@ func TestCanDumpPrimitives(t *testing.T) {
 		PtrTypedFunc3 *Func3Type
 		PtrTypedFunc4 *Func4Type
 
+		NilFunc func()
+
 		Chan  chan struct{}
 		Chan1 <-chan struct{}
 		Chan2 chan<- struct{}
@@ -318,6 +320,16 @@ func TestCanDumpPrimitives(t *testing.T) {
 	node.PtrTypedString = &node.TypedString
 
 	node.PtrTypedUintptr = &node.TypedUintptr
+
+	node.Func = func() {}
+	node.Func2 = func(int) float64 { return 0 }
+	node.Func3 = func(a ...*any) any { return nil }
+	node.Func4 = func(_ byte, _ ...[]*complex128) bool { return false }
+
+	node.TypedFunc = func() {}
+	node.TypedFunc2 = func(int) float64 { return 0 }
+	node.TypedFunc3 = func(a ...*any) any { return nil }
+	node.TypedFunc4 = func(_ byte, _ ...[]*complex128) bool { return false }
 
 	node.FuncPtr = &node.Func
 	node.Func2Ptr = &node.Func2

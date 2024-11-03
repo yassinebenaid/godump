@@ -106,6 +106,7 @@ godump_test.Node {
    PtrTypedFunc2: &godump_test.Func2Type,
    PtrTypedFunc3: &godump_test.Func3Type,
    PtrTypedFunc4: &godump_test.Func4Type,
+   NilFunc: func()(nil),
    Chan: chan struct {},
    Chan1: <-chan struct {},
    Chan2: chan<- struct {},

@@ -198,6 +198,9 @@ func (d *Dumper) dump(val reflect.Value, ignoreDepth ...bool) {
 		d.dumpMap(val)
 	case reflect.Func:
 		d.buf.WriteString(__(d.Theme.Func, val.Type().String()))
+		if val.IsNil() {
+			d.buf.WriteString(__(d.Theme.Braces, "(") + __(d.Theme.Nil, "nil") + __(d.Theme.Braces, ")"))
+		}
 	case reflect.Chan:
 		d.buf.WriteString(__(d.Theme.Chan, val.Type().String()))
 
