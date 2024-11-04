@@ -321,13 +321,13 @@ func TestCanDumpPrimitives(t *testing.T) {
 
 	node.Func = func() {}
 	node.Func2 = func(int) float64 { return 0 }
-	node.Func3 = func(a ...*any) any { return nil }
-	node.Func4 = func(_ byte, _ ...[]*complex128) bool { return false }
+	node.Func3 = func(...*any) any { return nil }
+	node.Func4 = func(byte, ...[]*complex128) bool { return false }
 
 	node.TypedFunc = func() {}
 	node.TypedFunc2 = func(int) float64 { return 0 }
-	node.TypedFunc3 = func(a ...*any) any { return nil }
-	node.TypedFunc4 = func(_ byte, _ ...[]*complex128) bool { return false }
+	node.TypedFunc3 = func(...*any) any { return nil }
+	node.TypedFunc4 = func(byte, ...[]*complex128) bool { return false }
 
 	node.FuncPtr = &node.Func
 	node.Func2Ptr = &node.Func2
