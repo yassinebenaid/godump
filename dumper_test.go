@@ -728,7 +728,7 @@ func TestCanDumpPrivateStructs(t *testing.T) {
 func TestCanDumpSlices(t *testing.T) {
 	type Slice []any
 
-	var nilSLice []Slice
+	var nilSlice []Slice
 
 	foo := "foo"
 	bar := "bar"
