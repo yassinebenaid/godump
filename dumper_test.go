@@ -161,7 +161,7 @@ func TestCanDumpPrimitives(t *testing.T) {
 
 		PtrTypedUintptr *UintptrType
 
-		Nil *any
+		NilPointer *int
 
 		Func  func()
 		Func2 func(int) float64
@@ -183,6 +183,8 @@ func TestCanDumpPrimitives(t *testing.T) {
 		PtrTypedFunc3 *Func3Type
 		PtrTypedFunc4 *Func4Type
 
+		NilFunc func()
+
 		Chan  chan struct{}
 		Chan1 <-chan struct{}
 		Chan2 chan<- struct{}
@@ -200,6 +202,7 @@ func TestCanDumpPrimitives(t *testing.T) {
 		PtrTypedChan2 *Chan2Type
 
 		BufferedChan chan struct{}
+		NilChan      chan struct{}
 
 		UnsafePointer1     unsafe.Pointer
 		UnsafePointer2     *unsafe.Pointer
@@ -247,11 +250,12 @@ func TestCanDumpPrimitives(t *testing.T) {
 
 		TypedUintptr: UintptrType(1234567890),
 
-		Nil: nil,
-
 		UnsafePointer1:     nil,
 		NamedUnsafePointer: nil,
 
+		Chan:         make(chan struct{}),
+		Chan1:        make(chan struct{}),
+		Chan2:        make(chan struct{}),
 		BufferedChan: make(chan struct{}, 255),
 	}
 
@@ -314,6 +318,16 @@ func TestCanDumpPrimitives(t *testing.T) {
 	node.PtrTypedString = &node.TypedString
 
 	node.PtrTypedUintptr = &node.TypedUintptr
+
+	node.Func = func() {}
+	node.Func2 = func(int) float64 { return 0 }
+	node.Func3 = func(...*any) any { return nil }
+	node.Func4 = func(byte, ...[]*complex128) bool { return false }
+
+	node.TypedFunc = func() {}
+	node.TypedFunc2 = func(int) float64 { return 0 }
+	node.TypedFunc3 = func(...*any) any { return nil }
+	node.TypedFunc4 = func(byte, ...[]*complex128) bool { return false }
 
 	node.FuncPtr = &node.Func
 	node.Func2Ptr = &node.Func2
@@ -714,6 +728,8 @@ func TestCanDumpPrivateStructs(t *testing.T) {
 func TestCanDumpSlices(t *testing.T) {
 	type Slice []any
 
+	var nilSlice []Slice
+
 	foo := "foo"
 	bar := "bar"
 	baz := "baz"
@@ -735,6 +751,7 @@ func TestCanDumpSlices(t *testing.T) {
 			false,
 		},
 		make([]any, 3, 8),
+		nilSlice,
 	}
 	s = append(s, &s)
 
@@ -748,6 +765,8 @@ func TestCanDumpMaps(t *testing.T) {
 	type SomeMap map[*SomeMap]*SomeMap
 	sm := &SomeMap{}
 
+	var nilMap SomeMap
+
 	m := map[any]any{12: 34}
 	maps := []any{
 		make(map[string]string),
@@ -760,6 +779,7 @@ func TestCanDumpMaps(t *testing.T) {
 		SomeMap{
 			&SomeMap{}: &SomeMap{sm: sm},
 		},
+		nilMap,
 	}
 
 	var d godump.Dumper
