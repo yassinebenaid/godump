@@ -199,13 +199,13 @@ func (d *Dumper) dump(val reflect.Value, ignoreDepth ...bool) {
 	case reflect.Func:
 		d.buf.WriteString(__(d.Theme.Func, val.Type().String()))
 		if val.IsNil() {
-			d.buf.WriteString(__(d.Theme.Braces, "(") + __(d.Theme.Nil, "nil") + __(d.Theme.Braces, ")"))
+			d.writeNil()
 		}
 	case reflect.Chan:
 		d.buf.WriteString(__(d.Theme.Chan, val.Type().String()))
 
 		if val.IsNil() {
-			d.buf.WriteString(__(d.Theme.Braces, "(") + __(d.Theme.Nil, "nil") + __(d.Theme.Braces, ")"))
+			d.writeNil()
 		}
 
 		if vCap := val.Cap(); vCap > 0 {
@@ -249,8 +249,9 @@ func (d *Dumper) dumpSlice(v reflect.Value) {
 	}
 
 	if v.IsNil() {
-		d.buf.WriteString(__(d.Theme.Types, v.Type().String()) + __(d.Theme.Braces, "(") +
-			__(d.Theme.Nil, "nil") + __(d.Theme.Braces, ")"+tag))
+		d.buf.WriteString(__(d.Theme.Types, v.Type().String()))
+		d.writeNil()
+		d.buf.WriteString(tag)
 		return
 	}
 
@@ -283,8 +284,9 @@ func (d *Dumper) dumpMap(v reflect.Value) {
 	}
 
 	if v.IsNil() {
-		d.buf.WriteString(__(d.Theme.Types, v.Type().String()) + __(d.Theme.Braces, "(") +
-			__(d.Theme.Nil, "nil") + __(d.Theme.Braces, ")"+tag))
+		d.buf.WriteString(__(d.Theme.Types, v.Type().String()))
+		d.writeNil()
+		d.buf.WriteString(tag)
 		return
 	}
 
@@ -311,7 +313,8 @@ func (d *Dumper) dumpMap(v reflect.Value) {
 
 func (d *Dumper) dumpPointer(v reflect.Value) {
 	if v.IsNil() {
-		d.buf.WriteString(__(d.Theme.Types, v.Type().String()) + __(d.Theme.Braces, "(") + __(d.Theme.Nil, "nil") + __(d.Theme.Braces, ")"))
+		d.buf.WriteString(__(d.Theme.Types, v.Type().String()))
+		d.writeNil()
 		return
 	}
 
@@ -414,4 +417,8 @@ func (d *Dumper) wrapType(v reflect.Value, str string) {
 	}
 
 	d.buf.WriteString(str)
+}
+
+func (d *Dumper) writeNil() {
+	d.buf.WriteString(__(d.Theme.Braces, "(") + __(d.Theme.Nil, "nil") + __(d.Theme.Braces, ")"))
 }
