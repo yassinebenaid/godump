@@ -729,6 +729,7 @@ func TestCanDumpSlices(t *testing.T) {
 	type Slice []any
 
 	var nilSlice []Slice
+	var zeroArray [2]any
 
 	foo := "foo"
 	bar := "bar"
@@ -752,6 +753,8 @@ func TestCanDumpSlices(t *testing.T) {
 		},
 		make([]any, 3, 8),
 		nilSlice,
+		[2]int{1, 2},
+		zeroArray,
 	}
 	s = append(s, &s)
 

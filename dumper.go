@@ -240,20 +240,20 @@ func (d *Dumper) dump(val reflect.Value, ignoreDepth ...bool) {
 }
 
 func (d *Dumper) dumpSlice(v reflect.Value) {
-	length := v.Len()
-
 	var tag string
 	if d.ptrTag != 0 {
 		tag = __(d.Theme.PointerTag, fmt.Sprintf("#%d", d.ptrTag))
 		d.ptrTag = 0
 	}
 
-	if v.IsNil() {
+	if v.Kind() == reflect.Slice && v.IsNil() {
 		d.buf.WriteString(__(d.Theme.Types, v.Type().String()))
 		d.writeNil()
 		d.buf.WriteString(tag)
 		return
 	}
+
+	length := v.Len()
 
 	d.buf.WriteString(__(d.Theme.Types, fmt.Sprintf("%s:%d:%d", v.Type(), length, v.Cap())))
 	d.buf.WriteString(__(d.Theme.Braces, fmt.Sprintf(" {%s", tag)))
