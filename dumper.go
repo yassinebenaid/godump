@@ -246,16 +246,20 @@ func (d *Dumper) dumpSlice(v reflect.Value) {
 		d.ptrTag = 0
 	}
 
-	if v.Kind() == reflect.Slice && v.IsNil() {
-		d.buf.WriteString(__(d.Theme.Types, v.Type().String()))
-		d.writeNil()
-		d.buf.WriteString(tag)
-		return
-	}
-
 	length := v.Len()
 
-	d.buf.WriteString(__(d.Theme.Types, fmt.Sprintf("%s:%d:%d", v.Type(), length, v.Cap())))
+	if v.Kind() == reflect.Slice {
+		if v.IsNil() {
+			d.buf.WriteString(__(d.Theme.Types, v.Type().String()))
+			d.writeNil()
+			d.buf.WriteString(tag)
+			return
+		}
+		d.buf.WriteString(__(d.Theme.Types, fmt.Sprintf("%s:%d:%d", v.Type(), length, v.Cap())))
+	} else {
+		d.buf.WriteString(__(d.Theme.Types, v.Type().String()))
+	}
+
 	d.buf.WriteString(__(d.Theme.Braces, fmt.Sprintf(" {%s", tag)))
 
 	d.depth++
