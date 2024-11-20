@@ -80,7 +80,7 @@ func main() {
 	var d = godump.Dumper{
 		Indentation:       "  ",
 		HidePrivateFields: false,
-		ShowPrimitiveNamedTypes = false
+		ShowPrimitiveNamedTypes: false
 		Theme: godump.Theme{
 			String: godump.RGB{R: 138, G: 201, B: 38},
 			// ...
