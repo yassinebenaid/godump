@@ -244,3 +244,7 @@ For more examples, please take a look at [dumper_test](./dumper_test.go) along w
 ## Contribution
 
 Please read [CONTRIBUTING guidelines](.github/CONTRIBUTING.md)
+
+## Alternatives
+
+- [litter](https://github.com/sanity-io/litter)
