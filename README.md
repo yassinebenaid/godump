@@ -58,7 +58,6 @@ import (
 func main() {
 	godump.Dump("Anything")
 }
-
 ```
 
 ## Customization
@@ -94,7 +93,6 @@ func main() {
 	d.Sprint(v)
 	d.Sprintln(v)
 }
-
 ```
 
 ## Demo
@@ -113,7 +111,6 @@ import (
 func main() {
 	godump.Dump(os.Stdout)
 }
-
 ```
 
 Output:
@@ -134,7 +131,6 @@ import (
 func main() {
 	godump.Dump(net.Dialer{})
 }
-
 ```
 
 Output:
@@ -164,7 +160,7 @@ func main() {
 		age:  22,
 	}
 
-    // This creates a ring
+	// This creates a ring
 	me.BestFriend = &me
 
 	godump.Dump(me)
@@ -200,11 +196,10 @@ func (c CSSColor) Apply(s string) string {
 }
 
 func main() {
-
 	var d godump.Dumper
 
 	d.Theme = godump.Theme{
-		String:        CSSColor{138, 201, 38},// edit the theme to use your implementation
+		String:        CSSColor{138, 201, 38}, // edit the theme to use your implementation
 		Quotes:        CSSColor{112, 214, 255},
 		Bool:          CSSColor{249, 87, 56},
 		Number:        CSSColor{10, 178, 242},
@@ -219,20 +214,18 @@ func main() {
 		Braces:        CSSColor{185, 86, 86},
 	}
 
-	var html = `<pre style="background: #111; padding: 10px; color: white">`
+	html := `<pre style="background: #111; padding: 10px; color: white">`
 	html += d.Sprint(net.Dialer{})
 	html += "<pre>"
 
-    // render it to browsers
+	// render it to browsers
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Type", "text/html")
 		fmt.Fprint(w, html)
 	})
 
 	http.ListenAndServe(":8000", nil)
-
 }
-
 ```
 
 Output:
